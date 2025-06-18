@@ -64,10 +64,14 @@ const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button variant="outline" className="text-gray-700 border-gray-300">
-              Login
-            </Button>
-            <Button className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
+            <Link to="/login">
+              <Button variant="outline" className="text-gray-700 border-gray-300">
+                Login
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -145,12 +149,16 @@ const Header = () => {
 
                 {/* Auth Buttons */}
                 <div className="p-4 border-t border-gray-200 space-y-3">
-                  <Button variant="outline" className="w-full text-gray-700 border-gray-300" onClick={closeMobileMenu}>
-                    Login
-                  </Button>
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={closeMobileMenu}>
-                    Sign Up
-                  </Button>
+                  <Link to="/login">
+                    <Button variant="outline" className="w-full text-gray-700 border-gray-300" onClick={closeMobileMenu}>
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={closeMobileMenu}>
+                      Sign Up
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
