@@ -57,7 +57,7 @@ const Signup = () => {
         <div className="relative z-10 flex flex-col justify-center px-12 py-16">
           <div className="mb-8">
             <div className="flex items-center space-x-2 mb-8">
-              <img src="/logo.png" alt="ProTakeoff Logo" className="h-12 w-20 brightness-0 invert" />
+              {/* <img src="/logo.png" alt="ProTakeoff Logo" className="h-12 w-20 brightness-0 invert" /> */}
               <img src="/ProTakeoff.ai.png" alt="ProTakeoff.ai" className="h-6 brightness-0 invert" />
             </div>
           </div>

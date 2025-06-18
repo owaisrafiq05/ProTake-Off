@@ -1,184 +1,308 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+"use client"
+
+import { useState } from "react"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Search, Filter, MapPin, Calendar, Ruler, DollarSign } from "lucide-react"
+
+interface TakeoffProject {
+  id: string
+  title: string
+  type: "Landscaping" | "Irrigation"
+  zipCode: string
+  size: "Small" | "Medium" | "Large"
+  price: number
+  dateAdded: string
+  description: string
+  sqft: string
+}
 
 const FindTakeoffs = () => {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedSize, setSelectedSize] = useState("")
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [zipCode, setZipCode] = useState("")
+
+  // Sample takeoff data
+  const takeoffProjects: TakeoffProject[] = [
+    {
+      id: "1",
+      title: "Residential Landscape Project",
+      type: "Landscaping",
+      zipCode: "75001",
+      size: "Medium",
+      price: 99,
+      dateAdded: "6/10/2025",
+      description: "Complete front and backyard landscaping design",
+      sqft: "8,500 sq ft",
+    },
+    {
+      id: "2",
+      title: "Commercial Irrigation System",
+      type: "Irrigation",
+      zipCode: "75002",
+      size: "Large",
+      price: 149,
+      dateAdded: "5/11/2025",
+      description: "Multi-zone irrigation system for office complex",
+      sqft: "25,000 sq ft",
+    },
+    {
+      id: "3",
+      title: "Small Garden Design",
+      type: "Landscaping",
+      zipCode: "75003",
+      size: "Small",
+      price: 49,
+      dateAdded: "6/10/2025",
+      description: "Intimate garden space with native plants",
+      sqft: "2,500 sq ft",
+    },
+    {
+      id: "4",
+      title: "Residential Landscape Project",
+      type: "Landscaping",
+      zipCode: "75001",
+      size: "Medium",
+      price: 89,
+      dateAdded: "6/10/2025",
+      description: "Modern landscape design with drought-resistant plants",
+      sqft: "7,200 sq ft",
+    },
+    {
+      id: "5",
+      title: "Residential Landscape Project",
+      type: "Landscaping",
+      zipCode: "75001",
+      size: "Medium",
+      price: 99,
+      dateAdded: "6/10/2025",
+      description: "Traditional landscape with seasonal flower beds",
+      sqft: "9,100 sq ft",
+    },
+    {
+      id: "6",
+      title: "Residential Landscape Project",
+      type: "Landscaping",
+      zipCode: "75001",
+      size: "Medium",
+      price: 99,
+      dateAdded: "6/10/2025",
+      description: "Contemporary outdoor living space design",
+      sqft: "8,800 sq ft",
+    },
+  ]
+
+  const handleTypeChange = (type: string) => {
+    setSelectedTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]))
+  }
+
+  const clearFilters = () => {
+    setSearchTerm("")
+    setSelectedSize("")
+    setSelectedTypes([])
+    setZipCode("")
+  }
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Header />
 
-      {/* Combined Hero and Browse Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 mb-4">
-              Browse Takeoffs
-            </h1>
-            <p className="text-xl text-gray-600">
-              Find and purchase takeoffs for your landscaping and irrigation
-              projects.
+      {/* Hero Section */}
+      <section className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Browse Takeoffs</h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Find and purchase takeoffs for your landscaping and irrigation projects.
             </p>
           </div>
+        </div>
+      </section>
 
-          {/* Browse Content */}
+      {/* Main Content */}
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Filters Sidebar */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                <svg
-                  className="w-4 h-4 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707v4.586l-4-2v-2.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                  />
-                </svg>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Zip Code
-                  </label>
-                  <Input placeholder="Enter Zip Code" className="w-full" />
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <Filter className="h-5 w-5 mr-2 text-gray-600" />
+                    Filters
+                  </h3>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project Size
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="size"
-                        value="small"
-                        className="mr-2"
+                <div className="space-y-6">
+                  {/* Search */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Search Projects</label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search by title..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
                       />
-                      <span className="text-gray-600">Small</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="size"
-                        value="medium"
-                        className="mr-2"
-                      />
-                      <span className="text-gray-600">Medium</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="size"
-                        value="large"
-                        className="mr-2"
-                      />
-                      <span className="text-gray-600">Large</span>
-                    </label>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project Type
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      <span className="text-gray-600">Landscaping</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      <span className="text-gray-600">Irrigation</span>
-                    </label>
+                  {/* Zip Code */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Enter Zip Code"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-3">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                    Apply Filters
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    Clear Filters
-                  </Button>
+                  {/* Project Size */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">Project Size</label>
+                    <div className="space-y-3">
+                      {["Small", "Medium", "Large"].map((size) => (
+                        <label key={size} className="flex items-center cursor-pointer group">
+                          <input
+                            type="radio"
+                            name="size"
+                            value={size}
+                            checked={selectedSize === size}
+                            onChange={(e) => setSelectedSize(e.target.value)}
+                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
+                          />
+                          <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors">{size}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Project Type */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">Project Type</label>
+                    <div className="space-y-3">
+                      {["Landscaping", "Irrigation"].map((type) => (
+                        <label key={type} className="flex items-center cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={selectedTypes.includes(type)}
+                            onChange={() => handleTypeChange(type)}
+                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors">{type}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Filter Actions */}
+                  <div className="space-y-3 pt-4 border-t border-gray-200">
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium">
+                      Apply Filters
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={clearFilters}
+                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Results Grid */}
             <div className="lg:col-span-3">
+              {/* Results Header */}
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-gray-600">
+                  Showing <span className="font-medium">{takeoffProjects.length}</span> takeoffs
+                </p>
+                <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option>Sort by: Newest</option>
+                  <option>Sort by: Price (Low to High)</option>
+                  <option>Sort by: Price (High to Low)</option>
+                  <option>Sort by: Size</option>
+                </select>
+              </div>
+
+              {/* Project Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {/* Sample Takeoff Card */}
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                  <div className="mb-4">
-                    <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mb-2">
-                      Landscaping
-                    </span>
-                    <p className="text-sm text-gray-600">Over 15,000 sq ft</p>
+                {takeoffProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 group"
+                  >
+                    {/* Project Type Badge */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          project.type === "Landscaping" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
+                        }`}
+                      >
+                        {project.type}
+                      </span>
+                      <span className="text-xs text-gray-500 font-medium">${project.price}</span>
+                    </div>
+
+                    {/* Project Title */}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+                      {project.title}
+                    </h3>
+
+                    {/* Project Details */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>ZIP Code: {project.zipCode}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Ruler className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>Size: {project.size}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>Date Added: {project.dateAdded}</span>
+                      </div>
+                    </div>
+
+                    {/* Project Description */}
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p>
+
+                    {/* Square Footage */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm text-gray-500">{project.sqft}</span>
+                      <div className="flex items-center text-lg font-bold text-gray-900">
+                        <DollarSign className="h-5 w-5 mr-1" />
+                        {project.price}
+                      </div>
+                    </div>
+
+                    {/* View Details Button */}
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105">
+                      View Details
+                    </Button>
                   </div>
+                ))}
+              </div>
 
-                  <div className="mb-4">
-                    <span className="text-3xl font-bold text-gray-900">
-                      150$
-                    </span>
-                    <span className="text-gray-600"> per takeoff</span>
-                  </div>
-
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                    Browse Large Projects
-                  </Button>
-                </div>
-
-                {/* Additional sample cards */}
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                  <div className="mb-4">
-                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-2">
-                      Irrigation
-                    </span>
-                    <p className="text-sm text-gray-600">
-                      5,000 - 15,000 sq ft
-                    </p>
-                  </div>
-
-                  <div className="mb-4">
-                    <span className="text-3xl font-bold text-gray-900">
-                      100$
-                    </span>
-                    <span className="text-gray-600"> per takeoff</span>
-                  </div>
-
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                    Browse Medium Projects
-                  </Button>
-                </div>
-
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                  <div className="mb-4">
-                    <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mb-2">
-                      Landscaping
-                    </span>
-                    <p className="text-sm text-gray-600">Under 5,000 sq ft</p>
-                  </div>
-
-                  <div className="mb-4">
-                    <span className="text-3xl font-bold text-gray-900">
-                      50$
-                    </span>
-                    <span className="text-gray-600"> per takeoff</span>
-                  </div>
-
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                    Browse Small Projects
-                  </Button>
-                </div>
+              {/* Load More */}
+              <div className="text-center mt-12">
+                <Button
+                  variant="outline"
+                  className="px-8 py-3 border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
+                >
+                  Load More Projects
+                </Button>
               </div>
             </div>
           </div>
@@ -187,7 +311,7 @@ const FindTakeoffs = () => {
 
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default FindTakeoffs;
+export default FindTakeoffs
