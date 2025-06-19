@@ -1,17 +1,23 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Link, useLocation } from "react-router-dom"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ShoppingCart } from "lucide-react"
 import { useState } from "react"
+import { useCart } from "./CartContext"
+import CartDropdown from "./CartDropdown"
 
 const Header = () => {
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { getTotalItems, isOpen, setIsOpen } = useCart()
 
   const navItems = [
     { href: "/#features", label: "Features" },
     { href: "/find-takeoffs", label: "Find Takeoffs" },
     { href: "/#how-it-works", label: "How It Works" },
     { href: "/pricing", label: "Pricing" },
+    { href: "/checkout", label: "Checkout" },
     { href: "/#contact", label: "Contact" },
   ]
 
@@ -64,14 +70,26 @@ const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Link to="/login">
-              <Button variant="outline" className="text-gray-700 border-gray-300">
-                Login
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
-            </Link>
+            {/* Cart Icon */}
+            <div className="relative">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="relative p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {getTotalItems()}
+                  </span>
+                )}
+              </button>
+              <CartDropdown />
+            </div>
+
+            <Button variant="outline" className="text-gray-700 border-gray-300">
+              Login
+            </Button>
+            <Button className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -149,16 +167,31 @@ const Header = () => {
 
                 {/* Auth Buttons */}
                 <div className="p-4 border-t border-gray-200 space-y-3">
-                  <Link to="/login">
-                    <Button variant="outline" className="w-full text-gray-700 border-gray-300" onClick={closeMobileMenu}>
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/signup">
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={closeMobileMenu}>
-                      Sign Up
-                    </Button>
-                  </Link>
+                  {/* Mobile Cart Button */}
+                  <button
+                    onClick={() => {
+                      setIsOpen(!isOpen)
+                      closeMobileMenu()
+                    }}
+                    className="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center">
+                      <ShoppingCart className="h-5 w-5 mr-3" />
+                      <span className="font-medium">Cart</span>
+                    </div>
+                    {getTotalItems() > 0 && (
+                      <span className="bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {getTotalItems()}
+                      </span>
+                    )}
+                  </button>
+
+                  <Button variant="outline" className="w-full text-gray-700 border-gray-300" onClick={closeMobileMenu}>
+                    Login
+                  </Button>
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={closeMobileMenu}>
+                    Sign Up
+                  </Button>
                 </div>
               </div>
             </div>
