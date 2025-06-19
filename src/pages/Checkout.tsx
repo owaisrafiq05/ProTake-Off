@@ -26,7 +26,7 @@ import { loadStripe } from "@stripe/stripe-js"
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
 
 // Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_51234567890")
+const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY || "null")
 
 // Real Stripe CardElement component
 const StripeCardElement = ({ onChange }: { onChange: (event: any) => void }) => {
