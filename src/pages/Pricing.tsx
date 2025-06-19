@@ -1,302 +1,324 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { useState } from "react"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
+import { Button } from "@/components/ui/button"
+import { Check, Star, Zap, FileText, Clock, Shield, Award, ArrowRight, Sparkles } from "lucide-react"
 
 const Pricing = () => {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+
+  const pricingTiers = [
+    {
+      name: "Small Projects",
+      description: "Perfect for residential gardens",
+      price: 50,
+      size: "Under 5,000 sq ft",
+      popular: false,
+      color: "blue",
+      features: [
+        "Residential Gardens",
+        "Small commercial entrances",
+        "Backyard renovations",
+        "Small irrigation systems",
+        "Excel format delivery",
+        "Instant download",
+      ],
+    },
+    {
+      name: "Medium Projects",
+      description: "Most popular for contractors",
+      price: 100,
+      size: "5,000 - 15,000 sq ft",
+      popular: true,
+      color: "green",
+      features: [
+        "Residential developments",
+        "Commercial properties",
+        "HOA common areas",
+        "Medium irrigation systems",
+        "Excel format delivery",
+        "Instant download",
+      ],
+    },
+    {
+      name: "Large Projects",
+      description: "For complex commercial work",
+      price: 150,
+      size: "Over 15,000 sq ft",
+      popular: false,
+      color: "purple",
+      features: [
+        "Commercial complexes",
+        "Municipal Projects",
+        "Parks and recreation areas",
+        "Large irrigation systems",
+        "Excel format delivery",
+        "Instant download",
+      ],
+    },
+  ]
+
+  const includedFeatures = [
+    {
+      icon: FileText,
+      title: "Detailed Material Lists",
+      description: "Complete breakdown of all required materials with quantities.",
+      color: "bg-green-100 text-green-600",
+    },
+    {
+      icon: Zap,
+      title: "Excel Format",
+      description: "Easily customizable spreadsheets for adding your pricing.",
+      color: "bg-blue-100 text-blue-600",
+    },
+    {
+      icon: Clock,
+      title: "Instant Delivery",
+      description: "Immediate email delivery after purchase.",
+      color: "bg-purple-100 text-purple-600",
+    },
+    {
+      icon: Award,
+      title: "Labor Estimates",
+      description: "Estimated labor hours for project completion.",
+      color: "bg-orange-100 text-orange-600",
+    },
+    {
+      icon: Shield,
+      title: "Equipment Requirements",
+      description: "List of necessary equipment for project execution.",
+      color: "bg-indigo-100 text-indigo-600",
+    },
+    {
+      icon: Star,
+      title: "Bid Templates",
+      description: "Ready-to-use templates for submitting professional bids.",
+      color: "bg-yellow-100 text-yellow-600",
+    },
+  ]
+
+  const faqs = [
+    {
+      question: "Are there any subscription fees?",
+      answer: "No, ProTakeoff.ai operates on a pay-per-takeoff model. There are no subscriptions or recurring fees.",
+    },
+    {
+      question: "Can I purchase multiple takeoffs?",
+      answer:
+        "Yes, you can purchase as many takeoffs as you need. Each takeoff is priced individually based on project size.",
+    },
+    {
+      question: "Do you offer volume discounts?",
+      answer:
+        "Yes, for companies that regularly purchase multiple takeoffs, we offer volume discount packages. Contact our sales team for more information.",
+    },
+    {
+      question: "What payment methods do you accept?",
+      answer: "We accept all major credit cards and debit cards. Payment is processed securely through our platform.",
+    },
+  ]
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Combined Hero and Pricing Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
+      {/* Hero Section */}
+      <section className="relative bg-white py-20 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fillRule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23059669&quot; fillOpacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;7&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] bg-repeat" />
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-green-100/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-green-50/50 to-transparent rounded-full blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 mb-6">
+              <Sparkles className="h-4 w-4 mr-2" />
+              No Subscriptions Required
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Simple, <span className="text-green-600">Transparent</span> Pricing
             </h1>
-            <p className="text-xl text-gray-600">
-              Pay only for what you need. No subscriptions. No hidden fees.
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Pay only for what you need. No subscriptions. No hidden fees. Get professional takeoffs instantly.
             </p>
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Small Projects */}
-            <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Small Projects
-              </h3>
-              <p className="text-gray-600 mb-4">Under 5,000 sq ft</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-gray-900">50$</span>
-                <span className="text-gray-600"> per takeoff</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Residential Gardens</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">
-                    Small commercial entrances
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Backyard renovations</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">
-                    Small irrigation systems
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Excel format delivery</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Instant download</span>
-                </li>
-              </ul>
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                Browse Small Projects
-              </Button>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {pricingTiers.map((tier, index) => (
+              <div
+                key={index}
+                className={`relative bg-white rounded-2xl p-8 transition-all duration-300 hover:scale-105 ${
+                  tier.popular
+                    ? "border-2 border-green-500 shadow-2xl"
+                    : "border-2 border-gray-200 shadow-lg hover:border-green-300 hover:shadow-xl"
+                }`}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                {/* Popular Badge */}
+                {tier.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center">
+                      <Star className="h-4 w-4 mr-1 fill-current" />
+                      Most Popular
+                    </div>
+                  </div>
+                )}
 
-            {/* Medium Projects */}
-            <div className="bg-white rounded-lg shadow-lg p-8 border-2 border-green-600">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Medium Projects
-              </h3>
-              <p className="text-gray-600 mb-4">5,000 - 15,000 sq ft</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-gray-900">100$</span>
-                <span className="text-gray-600"> per takeoff</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">
-                    Residential developments
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Commercial properties</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">HOA common areas</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">
-                    Medium irrigation systems
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Excel format delivery</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Instant download</span>
-                </li>
-              </ul>
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                Browse Medium Projects
-              </Button>
-            </div>
+                {/* Card Header */}
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{tier.name}</h3>
+                  <p className="text-gray-600 mb-4">{tier.description}</p>
+                  <div className="text-sm text-gray-500 mb-6">{tier.size}</div>
 
-            {/* Large Projects */}
-            <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Large Projects
-              </h3>
-              <p className="text-gray-600 mb-4">Over 15,000 sq ft</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-gray-900">150$</span>
-                <span className="text-gray-600"> per takeoff</span>
+                  {/* Price */}
+                  <div className="mb-6">
+                    <span className="text-5xl font-bold text-gray-900">${tier.price}</span>
+                    <span className="text-gray-600 text-lg"> per takeoff</span>
+                  </div>
+                </div>
+
+                {/* Features List */}
+                <ul className="space-y-4 mb-8">
+                  {tier.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center">
+                      <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                        <Check className="h-3 w-3 text-green-600" />
+                      </div>
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA Button */}
+                <Button
+                  className={`w-full py-4 text-lg font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 group ${
+                    tier.popular
+                      ? "bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl"
+                      : "bg-gray-900 hover:bg-gray-800 text-white"
+                  }`}
+                >
+                  Browse {tier.name}
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+
+                {/* Hover Effect */}
+                {hoveredCard === index && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent rounded-2xl pointer-events-none" />
+                )}
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Commercial complexes</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Municipal Projects</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">
-                    Parks and recreation areas
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">
-                    Large irrigation systems
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Excel format delivery</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-600 mr-3" />
-                  <span className="text-gray-700">Instant download</span>
-                </li>
-              </ul>
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                Browse Large Projects
-              </Button>
+            ))}
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="text-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">500+</div>
+                <div className="text-sm text-gray-600">Projects Completed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">24/7</div>
+                <div className="text-sm text-gray-600">Instant Delivery</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">100%</div>
+                <div className="text-sm text-gray-600">Satisfaction Rate</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* What's Included */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            What's Included
-          </h2>
-          <p className="text-xl text-gray-600 mb-12">
-            Every takeoff includes these features, regardless of project size.
-          </p>
+      {/* What's Included Section */}
+      <section className="relative bg-white py-20 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fillRule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23059669&quot; fillOpacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;7&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] bg-repeat" />
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Detailed Material Lists
-              </h3>
-              <p className="text-gray-600">
-                Complete breakdown of all required materials with quantities.
-              </p>
-            </div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              What's <span className="text-green-600">Included</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Every takeoff includes these premium features, regardless of project size. Professional quality
+              guaranteed.
+            </p>
+          </div>
 
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Excel Format
-              </h3>
-              <p className="text-gray-600">
-                Easily customizable spreadsheets for adding your pricing.
-              </p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {includedFeatures.map((feature, index) => {
+              const IconComponent = feature.icon
+              return (
+                <div
+                  key={index}
+                  className="group bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  <div className={`w-14 h-14 ${feature.color} rounded-2xl flex items-center justify-center mb-6`}>
+                    <IconComponent className="h-7 w-7" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
 
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Instant Delivery
-              </h3>
-              <p className="text-gray-600">
-                Immediate email delivery after purchase.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Labor Estimates
-              </h3>
-              <p className="text-gray-600">
-                Estimated labor hours for project completion.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Equipment Requirements
-              </h3>
-              <p className="text-gray-600">
-                List of necessary equipment for project execution.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Bid Templates
-              </h3>
-              <p className="text-gray-600">
-                Ready-to-use templates for submitting professional bids.
-              </p>
-            </div>
+                  {/* Hover Effect */}
+                  <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-full h-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Pricing FAQ */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">
-            Pricing FAQ
-          </h2>
-          <p className="text-xl text-center text-gray-600 mb-12">
-            Common questions about our pricing model.
-          </p>
+      {/* FAQ Section */}
+      <section className="relative bg-gray-50 py-20 overflow-hidden">
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Pricing <span className="text-green-600">FAQ</span>
+            </h2>
+            <p className="text-xl text-gray-600 leading-relaxed">
+              Common questions about our transparent pricing model.
+            </p>
+          </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Are there any subscription fees?
-              </h3>
-              <p className="text-gray-600">
-                No, ProTakeoff.ai operates on a pay-per-takeoff model. There are
-                no subscriptions or recurring fees.
-              </p>
-            </div>
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-8 shadow-sm border-2 border-gray-200 hover:border-green-300 hover:shadow-lg transition-all duration-300"
+              >
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-green-600 font-bold text-sm">{index + 1}</span>
+                  </div>
+                  {faq.question}
+                </h3>
+                <p className="text-gray-600 leading-relaxed ml-11">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Can I purchase multiple takeoffs?
-              </h3>
-              <p className="text-gray-600">
-                Yes, you can purchase as many takeoffs as you need. Each takeoff
-                is priced individually based on project size.
+          {/* Contact CTA */}
+          <div className="text-center mt-16">
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 border border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Still Have Questions?</h3>
+              <p className="text-gray-600 mb-6">
+                Our team is here to help you choose the right pricing plan for your business.
               </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Do you offer volume discounts?
-              </h3>
-              <p className="text-gray-600">
-                Yes, for companies that regularly purchase multiple takeoffs, we
-                offer volume discount packages. Contact our sales team for more
-                information.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                What payment methods do you accept?
-              </h3>
-              <p className="text-gray-600">
-                We accept all major credit cards and debit cards. Payment is
-                processed securely through our platform.
-              </p>
+              <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                Contact Our Team
+              </Button>
             </div>
           </div>
         </div>
@@ -304,7 +326,7 @@ const Pricing = () => {
 
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default Pricing;
+export default Pricing
