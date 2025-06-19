@@ -6,6 +6,7 @@ import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, MapPin, Calendar, Ruler, DollarSign } from "lucide-react"
+import { Link } from "react-router-dom"
 
 interface TakeoffProject {
   id: string
@@ -288,9 +289,11 @@ const FindTakeoffs = () => {
                     </div>
 
                     {/* View Details Button */}
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105">
-                      View Details
+                      
+                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105">
+                      <Link to={`/takeoff-details`}>View Details</Link>
                     </Button>
+                    
                   </div>
                 ))}
               </div>
