@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import StripeCheckout from "./pages/StripeCheckout";
 import UserDashboard from "./pages/UserDashboard";
 import { CartProvider } from "./components/CartContext";
+import AdminPanel from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/stripe-checkout" element={<StripeCheckout />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/admin" element={<AdminPanel />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
