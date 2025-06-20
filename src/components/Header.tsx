@@ -87,9 +87,11 @@ const Header = () => {
             </div>
 
             <Button variant="outline" className="text-gray-700 border-gray-300">
-              Login
+              <Link to="/login">Login</Link>
             </Button>
-            <Button className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
+            <Button className="bg-green-600 hover:bg-green-700 text-white">
+              <Link to="/signup">Sign Up</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -187,10 +189,10 @@ const Header = () => {
                   </button>
 
                   <Button variant="outline" className="w-full text-gray-700 border-gray-300" onClick={closeMobileMenu}>
-                    Login
+                    <Link to="/login">Login</Link>
                   </Button>
                   <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={closeMobileMenu}>
-                    Sign Up
+                    <Link to="/signup">Sign Up</Link>
                   </Button>
                 </div>
               </div>

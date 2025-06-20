@@ -55,7 +55,7 @@ const CartDropdown = () => {
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-gray-900 text-sm leading-tight mb-1 truncate">{item.title}</h4>
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
                         {item.type}
                       </span>
                       <span className="text-xs text-gray-500">{item.area}</span>

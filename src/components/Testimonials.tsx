@@ -18,7 +18,7 @@ const Testimonials = () => {
       author: "Sarah Johnson",
       company: "Irrigation Experts LLC",
       location: "Dallas, TX",
-      profileImage: "https://ui-avatars.com/api/?name=Sarah+Johnson&background=3b82f6&color=fff&size=96",
+      profileImage: "https://ui-avatars.com/api/?name=Sarah+Johnson&background=22c55e&color=fff&size=96",
     },
     {
       rating: 5,
@@ -26,7 +26,7 @@ const Testimonials = () => {
       author: "Michael Rodriguez",
       company: "Texas Lawn Solutions",
       location: "Houston, TX",
-      profileImage: "https://ui-avatars.com/api/?name=Michael+Rodriguez&background=8b5cf6&color=fff&size=96",
+      profileImage: "https://ui-avatars.com/api/?name=Michael+Rodriguez&background=22c55e&color=fff&size=96",
     },
   ]
 

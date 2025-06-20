@@ -69,31 +69,31 @@ const Pricing = () => {
       icon: Zap,
       title: "Excel Format",
       description: "Easily customizable spreadsheets for adding your pricing.",
-      color: "bg-blue-100 text-blue-600",
+      color: "bg-green-100 text-green-600",
     },
     {
       icon: Clock,
       title: "Instant Delivery",
       description: "Immediate email delivery after purchase.",
-      color: "bg-purple-100 text-purple-600",
+      color: "bg-green-100 text-green-600",
     },
     {
       icon: Award,
       title: "Labor Estimates",
       description: "Estimated labor hours for project completion.",
-      color: "bg-orange-100 text-orange-600",
+      color: "bg-green-100 text-green-600",
     },
     {
       icon: Shield,
       title: "Equipment Requirements",
       description: "List of necessary equipment for project execution.",
-      color: "bg-indigo-100 text-indigo-600",
+      color: "bg-green-100 text-green-600",
     },
     {
       icon: Star,
       title: "Bid Templates",
       description: "Ready-to-use templates for submitting professional bids.",
-      color: "bg-yellow-100 text-yellow-600",
+      color: "bg-green-100 text-green-600",
     },
   ]
 

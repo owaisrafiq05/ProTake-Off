@@ -246,9 +246,7 @@ const FindTakeoffs = () => {
                     {/* Project Type Badge */}
                     <div className="flex items-center justify-between mb-4">
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          project.type === "Landscaping" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
-                        }`}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" 
                       >
                         {project.type}
                       </span>
