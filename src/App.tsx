@@ -13,6 +13,7 @@ import Signup from "./pages/SignUp";
 import TakeoffDetails from "./pages/TakeOffDetails";
 import Checkout from "./pages/Checkout";
 import StripeCheckout from "./pages/StripeCheckout";
+import UserDashboard from "./pages/UserDashboard";
 import { CartProvider } from "./components/CartContext";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/takeoff-details" element={<TakeoffDetails />} />
           <Route path="/stripe-checkout" element={<StripeCheckout />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
