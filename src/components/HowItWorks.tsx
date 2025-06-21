@@ -9,7 +9,7 @@ const HowItWorks = () => {
       title: "Enter ZIP Code & Project Size",
       description: "Search for available takeoffs in your area by entering your project details and location.",
       icon: MapPin,
-      color: "bg-blue-100 text-blue-600",
+      color: "bg-green-100 text-green-600",
     },
     {
       number: "2",
@@ -23,14 +23,14 @@ const HowItWorks = () => {
       title: "Instant Email Delivery",
       description: "Receive your Excel file takeoff immediately after purchase. No waiting, no delays.",
       icon: Mail,
-      color: "bg-purple-100 text-purple-600",
+      color: "bg-green-100 text-green-600",
     },
     {
       number: "4",
       title: "Customize & Submit",
       description: "Add your pricing and submit your bid to the general contractor. Win more projects.",
       icon: FileText,
-      color: "bg-orange-100 text-orange-600",
+      color: "bg-green-100 text-green-600",
     },
   ]
 

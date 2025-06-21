@@ -113,8 +113,8 @@ const Hero = () => {
 
               <div className="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-lg p-4 border border-gray-200 hidden md:block">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Users className="h-5 w-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Users className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-gray-900">500+</div>
