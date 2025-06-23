@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import StripeCheckout from "./pages/StripeCheckout";
 import UserDashboard from "./pages/UserDashboard";
 import { CartProvider } from "./components/CartContext";
 import AdminPanel from "./pages/AdminPanel";
+import { AuthProvider } from "@/components/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +26,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
       <CartProvider>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
@@ -40,7 +41,8 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        </CartProvider>
+        </AuthProvider>
+      </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

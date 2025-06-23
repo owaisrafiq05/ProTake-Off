@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Eye, EyeOff, Mail, Lock, User, Building, Phone, MapPin } from "lucide-react"
+import { useAuth } from "@/components/AuthContext"
 
 interface SignupFormData {
   email: string
@@ -24,6 +25,8 @@ interface SignupFormData {
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const { register: registerUser } = useAuth()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -34,12 +37,12 @@ const Signup = () => {
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true)
     try {
-      // API call would go here
-      console.log("Signup data:", data)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const res = await registerUser(data)
+      if (res.success) {
+        navigate('/login')
+      }
     } catch (error) {
-      console.error("Signup error:", error)
+      // error handled in context
     } finally {
       setIsLoading(false)
     }

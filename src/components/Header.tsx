@@ -4,12 +4,14 @@ import { Menu, X, ShoppingCart, User, ChevronDown, Settings, LogOut, ShoppingBag
 import { useState } from "react"
 import { useCart } from "../components/CartContext"
 import CartDropdown from "../components/CartDropdown"
+import { useAuth } from "./AuthContext"
 
 const Header = () => {
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { getTotalItems, isOpen, setIsOpen } = useCart()
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
+  const { user, logout, loading } = useAuth()
 
   const navItems = [
     { href: "/#features", label: "Features" },
@@ -67,7 +69,7 @@ const Header = () => {
             )}
           </nav>
 
-          {/* Desktop Auth Buttons */}
+          {/* Desktop Auth Buttons/User Dropdown */}
           <div className="hidden lg:flex items-center space-x-4">
             {/* Cart Icon */}
             <div className="relative">
@@ -85,79 +87,95 @@ const Header = () => {
               <CartDropdown />
             </div>
 
-            {/* User Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                className="flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                  <User className="h-5 w-5 text-white" />
-                </div>
-                <ChevronDown className="h-4 w-4" />
-              </button>
+            {/* User Dropdown or Auth Buttons */}
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
 
-              {/* User Dropdown Menu */}
-              {isUserDropdownOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsUserDropdownOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 py-2">
-                    {/* User Info */}
-                    <div className="px-4 py-3 border-b border-gray-200">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
-                          <User className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">John Doe</p>
-                          <p className="text-sm text-gray-500">john@example.com</p>
+                {/* User Dropdown Menu */}
+                {isUserDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsUserDropdownOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 py-2">
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-200">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                            <User className="h-6 w-6 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{user.firstName} {user.lastName}</p>
+                            <p className="text-sm text-gray-500">{user.email}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Menu Items */}
-                    <div className="py-2">
-                      <Link
-                        to="/dashboard"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsUserDropdownOpen(false)}
-                      >
-                        <User className="h-5 w-5 mr-3 text-gray-400" />
-                        <span className="font-medium">Dashboard</span>
-                      </Link>
-                      <Link
-                        to="/dashboard"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsUserDropdownOpen(false)}
-                      >
-                        <ShoppingBag className="h-5 w-5 mr-3 text-gray-400" />
-                        <span className="font-medium">Purchase History</span>
-                      </Link>
-                      <Link
-                        to="/dashboard"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsUserDropdownOpen(false)}
-                      >
-                        <Settings className="h-5 w-5 mr-3 text-gray-400" />
-                        <span className="font-medium">Settings</span>
-                      </Link>
-                      <div className="border-t border-gray-200 my-2"></div>
-                      <button
-                        className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
-                        onClick={() => {
-                          setIsUserDropdownOpen(false)
-                          // Handle logout
-                          console.log("Logout clicked")
-                        }}
-                      >
-                        <LogOut className="h-5 w-5 mr-3" />
-                        <span className="font-medium">Logout</span>
-                      </button>
+                      {/* Menu Items */}
+                      <div className="py-2">
+                        <Link
+                          to="/dashboard"
+                          className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsUserDropdownOpen(false)}
+                        >
+                          <User className="h-5 w-5 mr-3 text-gray-400" />
+                          <span className="font-medium">Dashboard</span>
+                        </Link>
+                        <Link
+                          to="/dashboard"
+                          className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsUserDropdownOpen(false)}
+                        >
+                          <ShoppingBag className="h-5 w-5 mr-3 text-gray-400" />
+                          <span className="font-medium">Purchase History</span>
+                        </Link>
+                        <Link
+                          to="/dashboard"
+                          className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsUserDropdownOpen(false)}
+                        >
+                          <Settings className="h-5 w-5 mr-3 text-gray-400" />
+                          <span className="font-medium">Settings</span>
+                        </Link>
+                        <div className="border-t border-gray-200 my-2"></div>
+                        <button
+                          className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
+                          onClick={() => {
+                            setIsUserDropdownOpen(false)
+                            logout()
+                          }}
+                        >
+                          <LogOut className="h-5 w-5 mr-3" />
+                          <span className="font-medium">Logout</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
-            </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-green-600 font-semibold border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -233,7 +251,7 @@ const Header = () => {
                   )}
                 </nav>
 
-                {/* Auth Buttons */}
+                {/* Auth Buttons/User Mobile */}
                 <div className="p-4 border-t border-gray-200 space-y-3">
                   {/* Mobile Cart Button */}
                   <button
@@ -254,26 +272,45 @@ const Header = () => {
                     )}
                   </button>
 
-                  {/* Mobile User Options */}
-                  <Link
-                    to="/dashboard"
-                    className="w-full flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={closeMobileMenu}
-                  >
-                    <User className="h-5 w-5 mr-3" />
-                    <span className="font-medium">Dashboard</span>
-                  </Link>
-
-                  <button
-                    className="w-full flex items-center p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    onClick={() => {
-                      closeMobileMenu()
-                      console.log("Logout clicked")
-                    }}
-                  >
-                    <LogOut className="h-5 w-5 mr-3" />
-                    <span className="font-medium">Logout</span>
-                  </button>
+                  {user ? (
+                    <>
+                      <Link
+                        to="/dashboard"
+                        className="w-full flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                        onClick={closeMobileMenu}
+                      >
+                        <User className="h-5 w-5 mr-3" />
+                        <span className="font-medium">Dashboard</span>
+                      </Link>
+                      <button
+                        className="w-full flex items-center p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        onClick={() => {
+                          closeMobileMenu()
+                          logout()
+                        }}
+                      >
+                        <LogOut className="h-5 w-5 mr-3" />
+                        <span className="font-medium">Logout</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className="w-full flex items-center p-3 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        onClick={closeMobileMenu}
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        to="/signup"
+                        className="w-full flex items-center p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        onClick={closeMobileMenu}
+                      >
+                        Sign Up
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
