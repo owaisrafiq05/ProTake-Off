@@ -16,6 +16,7 @@ import UserDashboard from "./pages/UserDashboard";
 import { CartProvider } from "./components/CartContext";
 import AdminPanel from "./pages/AdminPanel";
 import { AuthProvider } from "@/components/AuthContext";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
