@@ -83,4 +83,10 @@ export async function getTakeoffs(params: any = {}) {
   const res = await fetch(`${API_BASE}/takeoffs${query ? `?${query}` : ''}`);
   if (!res.ok) throw new Error('Failed to fetch takeoffs');
   return res.json();
+}
+
+export async function getPopularTakeoffs(limit = 3) {
+  const res = await fetch(`${API_BASE}/takeoffs?sort=downloads_desc&limit=${limit}`);
+  if (!res.ok) throw new Error('Failed to fetch popular takeoffs');
+  return res.json();
 } 

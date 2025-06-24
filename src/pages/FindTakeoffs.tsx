@@ -6,7 +6,7 @@ import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, MapPin, Calendar, Ruler, DollarSign } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { getTakeoffs } from "../lib/api"
 
 interface Takeoff {
@@ -39,6 +39,8 @@ const FindTakeoffs = () => {
   const [error, setError] = useState<string | null>(null)
   const observer = useRef<IntersectionObserver | null>(null)
   const lastTakeoffRef = useRef<HTMLDivElement | null>(null)
+  const [sort, setSort] = useState('newest')
+  const location = useLocation();
 
   // Fetch takeoffs with filters and pagination
   const fetchTakeoffs = async (reset = false) => {
@@ -48,6 +50,7 @@ const FindTakeoffs = () => {
       const params: any = {
         page: reset ? 1 : page,
         limit: PAGE_SIZE,
+        sort,
       }
       if (searchTerm) params.search = searchTerm
       if (zipCode) params.zipCode = zipCode
@@ -72,7 +75,7 @@ const FindTakeoffs = () => {
     setPage(1)
     fetchTakeoffs(true)
     // eslint-disable-next-line
-  }, [searchTerm, selectedSize, selectedTypes, zipCode])
+  }, [searchTerm, selectedSize, selectedTypes, zipCode, sort])
 
   // Fetch more on page change
   useEffect(() => {
@@ -95,6 +98,14 @@ const FindTakeoffs = () => {
       observer.current.observe(lastTakeoffRef.current)
     }
   }, [loading, hasMore, takeoffs])
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const zip = params.get("zipCode") || "";
+    const size = params.get("size") || "";
+    if (zip) setZipCode(zip);
+    if (size) setSelectedSize(size.charAt(0).toUpperCase() + size.slice(1));
+  }, [location.search]);
 
   const handleTypeChange = (type: string) => {
     setSelectedTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]))
@@ -228,11 +239,15 @@ const FindTakeoffs = () => {
                 <p className="text-gray-600">
                   Showing <span className="font-medium">{takeoffs.length}</span> takeoffs
                 </p>
-                <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                  <option>Sort by: Newest</option>
-                  <option>Sort by: Price (Low to High)</option>
-                  <option>Sort by: Price (High to Low)</option>
-                  <option>Sort by: Size</option>
+                <select
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  value={sort}
+                  onChange={e => setSort(e.target.value)}
+                >
+                  <option value="newest">Sort by: Newest</option>
+                  <option value="price_asc">Sort by: Price (Low to High)</option>
+                  <option value="price_desc">Sort by: Price (High to Low)</option>
+                  <option value="size">Sort by: Size</option>
                 </select>
               </div>
 
