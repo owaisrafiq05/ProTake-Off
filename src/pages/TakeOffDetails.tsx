@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Link, useParams } from "react-router-dom"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
@@ -20,12 +20,52 @@ import {
   Eye,
   TrendingUp,
 } from "lucide-react"
+import { getTakeoffById, getPopularTakeoffs } from "../lib/api"
 
 const TakeoffDetails = () => {
+  const { id } = useParams<{ id: string }>()
+  const [takeoff, setTakeoff] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [cardNumber, setCardNumber] = useState("")
   const [expiryDate, setExpiryDate] = useState("")
   const [cvc, setCvc] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
+  const [popular, setPopular] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchTakeoff() {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await getTakeoffById(id!)
+        setTakeoff(data)
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch takeoff")
+      } finally {
+        setLoading(false)
+      }
+    }
+    if (id) fetchTakeoff()
+  }, [id])
+
+  useEffect(() => {
+    async function fetchPopular() {
+      try {
+        const data = await getPopularTakeoffs(3)
+        // Exclude current takeoff
+        setPopular(data.filter((t: any) => t._id !== id))
+      } catch {}
+    }
+    fetchPopular()
+  }, [id])
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-500">Loading...</div>
+  if (error) return <div className="min-h-screen flex items-center justify-center text-red-500">{error}</div>
+  if (!takeoff) return <div className="min-h-screen flex items-center justify-center text-gray-400">No takeoff found.</div>
+
+  // Helper: format date
+  const formatDate = (dateStr: string) => dateStr ? new Date(dateStr).toLocaleDateString() : "-"
 
   const handlePurchase = async () => {
     setIsProcessing(true)
@@ -127,116 +167,127 @@ const TakeoffDetails = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
-                {projectTags.map((tag, index) => (
-                  <span key={index} className={`px-3 py-1 rounded-full text-xs font-medium ${tag.color}`}>
-                    {tag.label}
+                {takeoff.tags?.map((tag: string, index: number) => (
+                  <span key={index} className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {tag}
                   </span>
                 ))}
+                {takeoff.projectType && (
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {takeoff.projectType.charAt(0).toUpperCase() + takeoff.projectType.slice(1)}
+                  </span>
+                )}
+                {takeoff.projectSize && (
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    {takeoff.projectSize.charAt(0).toUpperCase() + takeoff.projectSize.slice(1)}
+                  </span>
+                )}
+                {takeoff.specifications?.complexity && (
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    {takeoff.specifications.complexity.charAt(0).toUpperCase() + takeoff.specifications.complexity.slice(1)}
+                  </span>
+                )}
               </div>
 
               {/* Title and Description */}
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Residential Landscaping - 2,500 sq ft
+                {takeoff.title}
               </h1>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Complete landscaping takeoff including material quantities, labor estimates, and pricing guidelines for
-                a beautiful residential property transformation.
+                {takeoff.description}
               </p>
 
               {/* Project Stats */}
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
-                  ZIP 75501
+                  ZIP {takeoff.zipCode}
                 </div>
                 <div className="flex items-center">
                   <Download className="h-4 w-4 mr-1" />
-                  45 downloads
+                  {takeoff.downloadCount || 0} downloads
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  Added 6/10/2025
+                  Expires {formatDate(takeoff.expirationDate)}
                 </div>
               </div>
             </div>
 
             {/* Project Images */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Visualization</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="relative group overflow-hidden rounded-xl">
-                  <img
-                    src="/placeholder.svg?height=300&width=400"
-                    alt="Residential landscaping before"
-                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Eye className="h-8 w-8 text-white" />
-                  </div>
-                </div>
-                <div className="relative group overflow-hidden rounded-xl">
-                  <img
-                    src="/placeholder.svg?height=300&width=400"
-                    alt="Residential landscaping after"
-                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Eye className="h-8 w-8 text-white" />
-                  </div>
+            {takeoff.images && takeoff.images.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Visualization</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {takeoff.images.map((img: any, idx: number) => (
+                    <div key={idx} className="relative group overflow-hidden rounded-xl">
+                      <img
+                        src={img.cloudinaryUrl}
+                        alt={`Project image ${idx + 1}`}
+                        className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Eye className="h-8 w-8 text-white" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Project Specifications */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Specifications</h2>
               <p className="text-gray-600 mb-6">Detailed specifications and requirements for this project</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {specifications.map((spec, index) => (
-                  <div key={index} className="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span className="font-medium text-gray-700">{spec.label}:</span>
-                    <span className="text-gray-900 font-semibold">{spec.value}</span>
-                  </div>
-                ))}
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="font-medium text-gray-700">Project Area:</span>
+                  <span className="text-gray-900 font-semibold">{takeoff.specifications?.area ? `${takeoff.specifications.area} sq ft` : '-'}</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="font-medium text-gray-700">Complexity Level:</span>
+                  <span className="text-gray-900 font-semibold">{takeoff.specifications?.complexity || '-'}</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="font-medium text-gray-700">Estimated Hours:</span>
+                  <span className="text-gray-900 font-semibold">{takeoff.specifications?.estimatedHours ? `${takeoff.specifications.estimatedHours} hours` : '-'}</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="font-medium text-gray-700">Materials Included:</span>
+                  <span className="text-gray-900 font-semibold">{takeoff.specifications?.materials?.join(', ') || '-'}</span>
+                </div>
               </div>
             </div>
 
-            {/* What's Included */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">What's Included in This Project</h2>
-              <p className="text-gray-600 mb-6">Detailed breakdown of all components and deliverables</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {includedItems.map((item, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                      <Check className="h-3 w-3 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">{item}</span>
-                  </div>
-                ))}
+            {/* Features */}
+            {takeoff.features && takeoff.features.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Features</h2>
+                <ul className="list-disc pl-6 text-gray-700 space-y-2">
+                  {takeoff.features.map((feature: string, idx: number) => (
+                    <li key={idx}>{feature}</li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            )}
 
-            {/* Delivery Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Delivery Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {deliveryFeatures.map((feature, index) => {
-                  const IconComponent = feature.icon
-                  return (
-                    <div key={index} className="text-center">
-                      <div
-                        className={`w-16 h-16 ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}
-                      >
-                        <IconComponent className="h-8 w-8" />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
-                    </div>
-                  )
-                })}
+            {/* Files/Blueprints */}
+            {/* {takeoff.files && takeoff.files.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Blueprints & Files</h2>
+                <ul className="space-y-3">
+                  {takeoff.files.map((file: any, idx: number) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <FileSpreadsheet className="h-5 w-5 text-green-600" />
+                      <a href={file.cloudinaryUrl} target="_blank" rel="noopener noreferrer" className="text-green-700 hover:underline">
+                        {file.originalName || file.filename}
+                      </a>
+                      <span className="text-xs text-gray-400">{(file.size / 1024).toFixed(1)} KB</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            )} */}
           </div>
 
           {/* Sidebar */}
@@ -245,88 +296,44 @@ const TakeoffDetails = () => {
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 top-6 z-20">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Purchase Takeoff</h3>
               <p className="text-gray-600 mb-6">Get access to this professional takeoff instantly</p>
-
               {/* Project Details */}
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Project Area:</span>
-                  <span className="font-semibold">2,500 sq ft</span>
+                  <span className="font-semibold">{takeoff.specifications?.area ? `${takeoff.specifications.area} sq ft` : '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Estimated Hours:</span>
-                  <span className="font-semibold">32 hours</span>
+                  <span className="font-semibold">{takeoff.specifications?.estimatedHours ? `${takeoff.specifications.estimatedHours} hours` : '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Format:</span>
                   <div className="flex items-center">
                     <FileSpreadsheet className="h-4 w-4 mr-1 text-green-600" />
-                    <span className="font-semibold">Excel Spreadsheet</span>
+                    <span className="font-semibold">Downloadable Files (after purchase)</span>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Delivery:</span>
                   <div className="flex items-center text-green-600">
                     <Zap className="h-4 w-4 mr-1" />
-                    <span className="font-semibold">Instant</span>
+                    <span className="font-semibold">Instant (after purchase)</span>
                   </div>
                 </div>
               </div>
-
-              {/* Benefits */}
-              <div className="bg-green-50 rounded-xl p-4 mb-6">
-                <div className="flex items-center text-green-700 mb-2">
-                  <Download className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Instant download after purchase</span>
-                </div>
-                <div className="flex items-center text-green-700">
-                  <Users className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Use for multiple project bids</span>
-                </div>
-              </div>
-
-              {/* Payment Form */}
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
-                  <div className="relative">
-                    <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="1234 5678 9012 3456"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
-                    <Input placeholder="MM/YY" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">CVC</label>
-                    <Input placeholder="123" value={cvc} onChange={(e) => setCvc(e.target.value)} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Purchase Button */}
+              {/* Add to Cart Button */}
               <Button
-                onClick={handlePurchase}
-                disabled={isProcessing}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                {isProcessing ? "Processing..." : "Pay $99"}
+                Add to Cart (${takeoff.price})
               </Button>
-
               {/* Security Notice */}
               <div className="flex items-center justify-center text-xs text-gray-500 mt-4">
                 <Shield className="h-3 w-3 mr-1" />
-                <span>Secure payment processing</span>
+                <span>Secure checkout after adding to cart</span>
               </div>
-
               <p className="text-xs text-gray-500 mt-4 text-center">
-                By purchasing this takeoff, you agree to our{" "}
+                By adding this takeoff to your cart, you agree to our{" "}
                 <a href="#" className="text-green-600 hover:underline">
                   Terms of Service
                 </a>{" "}
@@ -344,13 +351,15 @@ const TakeoffDetails = () => {
                 <h3 className="text-lg font-bold text-gray-900">Popular This Week</h3>
               </div>
               <div className="space-y-4">
-                {popularProjects.map((project, index) => (
+                {popular.length === 0 && <div className="text-gray-400 text-sm">No popular takeoffs yet.</div>}
+                {popular.map((project, index) => (
+                  <Link to={`/takeoff-details/${project._id}`} key={project._id}>
                   <div
-                    key={index}
+                    key={project._id}
                     className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     <img
-                      src={project.image || "/placeholder.svg"}
+                      src={project.images && project.images[0]?.cloudinaryUrl ? project.images[0].cloudinaryUrl : "/placeholder.svg"}
                       alt={project.title}
                       className="w-12 h-12 rounded-lg object-cover"
                     />
@@ -358,10 +367,11 @@ const TakeoffDetails = () => {
                       <h4 className="font-medium text-gray-900 text-sm">{project.title}</h4>
                       <div className="flex items-center justify-between text-xs text-gray-500">
                         <span>${project.price}</span>
-                        <span>{project.downloads} downloads</span>
+                        <span>{project.downloadCount || 0} downloads</span>
                       </div>
                     </div>
                   </div>
+                  </Link>
                 ))}
               </div>
             </div>

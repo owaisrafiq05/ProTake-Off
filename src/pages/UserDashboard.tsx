@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
@@ -25,31 +25,56 @@ import {
   Search,
   ExternalLink,
 } from "lucide-react"
+import { useAuth } from "@/components/AuthContext"
+
+type UserProfile = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  company: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  avatar?: string;
+  memberSince?: string;
+  totalPurchases?: number;
+  totalSpent?: number;
+};
 
 const UserDashboard = () => {
+  const { user, updateProfile, loading } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
   const [isEditing, setIsEditing] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [profileUpdates, setProfileUpdates] = useState<Partial<UserProfile>>({})
 
-  // Mock user data
-  const [userProfile, setUserProfile] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    company: "Green Landscapes Inc",
-    address: {
-      street: "123 Main Street",
-      city: "Austin",
-      state: "TX",
-      zipCode: "78701",
-    },
-    avatar: "https://ui-avatars.com/api/?name=John+Doe&background=22c55e&color=fff&size=128",
-    memberSince: "January 2024",
-    totalPurchases: 12,
-    totalSpent: 1248,
-  })
+  const {
+    firstName = '',
+    lastName = '',
+    email = '',
+    phone = '',
+    company = '',
+    address: updatesAddress = {},
+  } = profileUpdates;
+  const {
+    street = '',
+    city = '',
+    state = '',
+  } = updatesAddress;
+
+  useEffect(() => {
+    if (user) setUserProfile(user)
+  }, [user])
+
+  if (loading || !userProfile) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  }
 
   // Mock purchase history
   const purchaseHistory = [
@@ -102,10 +127,12 @@ const UserDashboard = () => {
     { id: "settings", label: "Settings", icon: Settings },
   ]
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     setIsEditing(false)
-    // Here you would typically save to backend
-    console.log("Profile saved:", userProfile)
+    const res = await updateProfile(profileUpdates)
+    if (res.success) {
+      setUserProfile({ ...userProfile, ...profileUpdates })
+    }
   }
 
   const filteredPurchases = purchaseHistory.filter((purchase) => {
@@ -384,8 +411,8 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
             <Input
-              value={userProfile.firstName}
-              onChange={(e) => setUserProfile({ ...userProfile, firstName: e.target.value })}
+              value={isEditing ? firstName || userProfile.firstName : userProfile.firstName}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, firstName: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
@@ -393,8 +420,8 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
             <Input
-              value={userProfile.lastName}
-              onChange={(e) => setUserProfile({ ...userProfile, lastName: e.target.value })}
+              value={isEditing ? lastName || userProfile.lastName : userProfile.lastName}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, lastName: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
@@ -402,8 +429,8 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
             <Input
-              value={userProfile.email}
-              onChange={(e) => setUserProfile({ ...userProfile, email: e.target.value })}
+              value={isEditing ? email || userProfile.email : userProfile.email}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, email: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
@@ -411,8 +438,8 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
             <Input
-              value={userProfile.phone}
-              onChange={(e) => setUserProfile({ ...userProfile, phone: e.target.value })}
+              value={isEditing ? phone || userProfile.phone : userProfile.phone}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, phone: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
@@ -420,8 +447,8 @@ const UserDashboard = () => {
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
             <Input
-              value={userProfile.company}
-              onChange={(e) => setUserProfile({ ...userProfile, company: e.target.value })}
+              value={isEditing ? company || userProfile.company : userProfile.company}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, company: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
@@ -429,13 +456,8 @@ const UserDashboard = () => {
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
             <Input
-              value={userProfile.address.street}
-              onChange={(e) =>
-                setUserProfile({
-                  ...userProfile,
-                  address: { ...userProfile.address, street: e.target.value },
-                })
-              }
+              value={isEditing ? street || userProfile.address.street : userProfile.address.street}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, address: { ...userProfile.address, ...profileUpdates.address, street: e.target.value } })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
               placeholder="Street Address"
@@ -444,13 +466,8 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
             <Input
-              value={userProfile.address.city}
-              onChange={(e) =>
-                setUserProfile({
-                  ...userProfile,
-                  address: { ...userProfile.address, city: e.target.value },
-                })
-              }
+              value={isEditing ? city || userProfile.address.city : userProfile.address.city}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, address: { ...userProfile.address, ...profileUpdates.address, city: e.target.value } })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
@@ -458,13 +475,8 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
             <Input
-              value={userProfile.address.state}
-              onChange={(e) =>
-                setUserProfile({
-                  ...userProfile,
-                  address: { ...userProfile.address, state: e.target.value },
-                })
-              }
+              value={isEditing ? state || userProfile.address.state : userProfile.address.state}
+              onChange={(e) => setProfileUpdates({ ...profileUpdates, address: { ...userProfile.address, ...profileUpdates.address, state: e.target.value } })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />

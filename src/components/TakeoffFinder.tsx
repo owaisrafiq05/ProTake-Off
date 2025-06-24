@@ -5,10 +5,27 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, Search, ArrowRight, Zap } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 const TakeoffFinder = () => {
   const [zipCode, setZipCode] = useState("")
   const [projectSize, setProjectSize] = useState("")
+  const navigate = useNavigate()
+  const [error, setError] = useState("")
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    if (!zipCode || !/^[0-9]{5}$/.test(zipCode)) {
+      setError("Please enter a valid 5-digit ZIP code.")
+      return
+    }
+    if (!projectSize) {
+      setError("Please select a project size.")
+      return
+    }
+    navigate(`/find-takeoffs?zipCode=${zipCode}&size=${projectSize}`)
+  }
 
   return (
     <section id="find-takeoffs" className="relative bg-white py-20 overflow-hidden">
@@ -38,7 +55,7 @@ const TakeoffFinder = () => {
         </div>
 
         {/* Search Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-lg mx-auto relative">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-lg mx-auto relative">
           {/* Form Header */}
           <div className="flex items-center justify-center mb-6">
             <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -98,10 +115,11 @@ const TakeoffFinder = () => {
             </div>
 
             {/* Submit Button */}
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group">
+            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group">
               Find Available Takeoffs
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
+            {error && <div className="text-red-500 text-sm text-left pt-2">{error}</div>}
           </div>
 
           {/* Trust Indicator */}
@@ -111,7 +129,7 @@ const TakeoffFinder = () => {
               estimates
             </p>
           </div>
-        </div>
+        </form>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">

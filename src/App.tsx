@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,8 @@ import StripeCheckout from "./pages/StripeCheckout";
 import UserDashboard from "./pages/UserDashboard";
 import { CartProvider } from "./components/CartContext";
 import AdminPanel from "./pages/AdminPanel";
+import { AuthProvider } from "@/components/AuthContext";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const queryClient = new QueryClient();
 
@@ -26,21 +27,24 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
       <CartProvider>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/find-takeoffs" element={<FindTakeoffs />} />
-          <Route path="/takeoff-details" element={<TakeoffDetails />} />
+          <Route path="/takeoff-details/:id" element={<TakeoffDetails />} />
           <Route path="/stripe-checkout" element={<StripeCheckout />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        </CartProvider>
+        </AuthProvider>
+      </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

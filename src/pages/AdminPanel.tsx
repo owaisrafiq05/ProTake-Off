@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
@@ -30,6 +30,8 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react"
+import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff } from "../lib/api"
+import { Toaster, toast } from "../components/ui/sonner"
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("add-new")
@@ -37,6 +39,8 @@ const AdminPanel = () => {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Form state for adding/editing takeoffs
   const [formData, setFormData] = useState({
@@ -53,68 +57,37 @@ const AdminPanel = () => {
       corporate: false,
     },
     address: "",
+    zipCode: "",
     description: "",
-    bidExpirationDate: "",
+    expirationDate: "",
     price: "",
-    jobId: "",
     imageIcon: null as File | null,
     blueprint: null as File | null,
+    features: "",
+    area: "",
+    complexity: "",
+    materials: "",
+    estimatedHours: "",
+    tags: "",
   })
 
-  // Mock data for existing takeoffs
-  const [takeoffs, setTakeoffs] = useState([
-    {
-      id: "TO-001",
-      takeoffName: "Residential Landscaping - 2,500 sq ft",
-      categories: ["Landscaping"],
-      sizes: ["Medium"],
-      address: "Austin, TX 78701",
-      description: "Complete front and backyard landscaping design with native plants",
-      bidExpirationDate: "2025-02-15",
-      price: 99,
-      jobId: "JOB-2025-001",
-      status: "active",
-      dateCreated: "2025-01-10",
-      downloads: 45,
-      revenue: 4455,
-      imageIcon: "/placeholder.svg?height=100&width=100",
-      blueprint: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "TO-002",
-      takeoffName: "Commercial Irrigation System",
-      categories: ["Irrigation"],
-      sizes: ["Large"],
-      address: "Dallas, TX 75201",
-      description: "Multi-zone irrigation system for office complex",
-      bidExpirationDate: "2025-01-20",
-      price: 149,
-      jobId: "JOB-2025-002",
-      status: "expired",
-      dateCreated: "2024-12-15",
-      downloads: 18,
-      revenue: 2682,
-      imageIcon: "/placeholder.svg?height=100&width=100",
-      blueprint: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "TO-003",
-      takeoffName: "Small Garden Design",
-      categories: ["Landscaping"],
-      sizes: ["Small"],
-      address: "Houston, TX 77001",
-      description: "Intimate garden space with seasonal flowers",
-      bidExpirationDate: "2025-03-01",
-      price: 49,
-      jobId: "JOB-2025-003",
-      status: "active",
-      dateCreated: "2025-01-05",
-      downloads: 23,
-      revenue: 1127,
-      imageIcon: "/placeholder.svg?height=100&width=100",
-      blueprint: "/placeholder.svg?height=200&width=300",
-    },
-  ])
+  // Fetch takeoffs from API
+  const [takeoffs, setTakeoffs] = useState([])
+  const fetchTakeoffs = async () => {
+    setLoading(true)
+    try {
+      const data = await getAllTakeoffs()
+      setTakeoffs(data)
+    } catch {
+      setError("Failed to fetch takeoffs")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTakeoffs()
+  }, [])
 
   const tabs = [
     { id: "add-new", label: "Add New", icon: Plus },
@@ -123,7 +96,7 @@ const AdminPanel = () => {
     { id: "admin", label: "Admin", icon: Settings },
   ]
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
 
     if (type === "checkbox") {
@@ -155,98 +128,156 @@ const AdminPanel = () => {
     }
   }
 
-  const generateJobId = () => {
-    const timestamp = Date.now()
-    const jobId = `JOB-2025-${String(timestamp).slice(-6)}`
-    setFormData((prev) => ({
-      ...prev,
-      jobId,
-    }))
+  const validateForm = () => {
+    const requiredFields = [
+      "takeoffName", "address", "zipCode", "description", "expirationDate", "price", "features", "area", "complexity", "materials", "estimatedHours", "tags"
+    ];
+    for (const field of requiredFields) {
+      if (!formData[field] || (typeof formData[field] === "string" && formData[field].trim() === "")) {
+        toast.error(`Please fill the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
+        return false;
+      }
+    }
+    const hasCategory = Object.values(formData.categories).some(Boolean);
+    if (!hasCategory) {
+      toast.error("Please select at least one category.");
+      return false;
+    }
+    const hasSize = Object.values(formData.sizes).some(Boolean);
+    if (!hasSize) {
+      toast.error("Please select at least one project size.");
+      return false;
+    }
+    // Only require uploads on create
+    if (!isEditing) {
+      if (!formData.imageIcon) {
+        toast.error("Please upload an image icon.");
+        return false;
+      }
+      if (!formData.blueprint) {
+        toast.error("Please upload a blueprint file.");
+        return false;
+      }
+    }
+    return true;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    const selectedCategories = Object.entries(formData.categories)
-      .filter(([_, selected]) => selected)
-      .map(([category, _]) => category.charAt(0).toUpperCase() + category.slice(1))
-
-    const selectedSizes = Object.entries(formData.sizes)
-      .filter(([_, selected]) => selected)
-      .map(([size, _]) => size.charAt(0).toUpperCase() + size.slice(1))
-
-    const newTakeoff = {
-      id: `TO-${String(Date.now()).slice(-3)}`,
-      takeoffName: formData.takeoffName,
-      categories: selectedCategories,
-      sizes: selectedSizes,
-      address: formData.address,
-      description: formData.description,
-      bidExpirationDate: formData.bidExpirationDate,
-      price: Number.parseFloat(formData.price),
-      jobId: formData.jobId || `JOB-2025-${String(Date.now()).slice(-6)}`,
-      status: "active",
-      dateCreated: new Date().toISOString().split("T")[0],
-      downloads: 0,
-      revenue: 0,
-      imageIcon: "/placeholder.svg?height=100&width=100",
-      blueprint: "/placeholder.svg?height=200&width=300",
-    }
-
-    if (isEditing && editingId) {
-      setTakeoffs((prev) =>
-        prev.map((takeoff) => (takeoff.id === editingId ? { ...takeoff, ...newTakeoff, id: editingId } : takeoff)),
-      )
+    if (!validateForm()) return
+    setLoading(true)
+    setError(null)
+    try {
+      const selectedCategories = Object.entries(formData.categories)
+        .filter(([_, selected]) => selected)
+        .map(([category, _]) => category)
+      const selectedSizes = Object.entries(formData.sizes)
+        .filter(([_, selected]) => selected)
+        .map(([size, _]) => size)
+      const payload: any = {
+        title: formData.takeoffName,
+        description: formData.description,
+        projectType: selectedCategories.length === 2 ? "both" : selectedCategories[0] || "landscaping",
+        projectSize: selectedSizes[0] || "small",
+        zipCode: formData.zipCode,
+        address: formData.address,
+        price: Number(formData.price),
+        features: formData.features.split(",").map(f => f.trim()).filter(Boolean),
+        specifications: {
+          area: Number(formData.area),
+          complexity: formData.complexity,
+          materials: formData.materials.split(",").map(m => m.trim()).filter(Boolean),
+          estimatedHours: Number(formData.estimatedHours)
+        },
+        expirationDate: formData.expirationDate,
+        tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
+        isActive: true,
+        files: formData.blueprint ? [formData.blueprint] : [],
+        images: formData.imageIcon ? [formData.imageIcon] : [],
+      }
+      let result
+      if (isEditing && editingId) {
+        await updateTakeoff(editingId, payload)
+        toast.success("Takeoff updated successfully!")
+      } else {
+        result = await createTakeoff(payload)
+        toast.success("Takeoff created successfully!")
+      }
+      await fetchTakeoffs()
+      setFormData({
+        takeoffName: "",
+        categories: { landscaping: false, irrigation: false, bundle: false },
+        sizes: { small: false, medium: false, large: false, corporate: false },
+        address: "",
+        zipCode: "",
+        description: "",
+        expirationDate: "",
+        price: "",
+        imageIcon: null,
+        blueprint: null,
+        features: "",
+        area: "",
+        complexity: "",
+        materials: "",
+        estimatedHours: "",
+        tags: "",
+      })
       setIsEditing(false)
       setEditingId(null)
-    } else {
-      setTakeoffs((prev) => [...prev, newTakeoff])
+    } catch (err: any) {
+      setError(err.message || "Failed to save takeoff")
+      toast.error(err.message || "Failed to save takeoff")
+    } finally {
+      setLoading(false)
     }
-
-    // Reset form
-    setFormData({
-      takeoffName: "",
-      categories: { landscaping: false, irrigation: false, bundle: false },
-      sizes: { small: false, medium: false, large: false, corporate: false },
-      address: "",
-      description: "",
-      bidExpirationDate: "",
-      price: "",
-      jobId: "",
-      imageIcon: null,
-      blueprint: null,
-    })
   }
 
   const handleEdit = (takeoff: any) => {
     setFormData({
-      takeoffName: takeoff.takeoffName,
+      takeoffName: takeoff.title ?? takeoff.takeoffName ?? "",
       categories: {
-        landscaping: takeoff.categories.includes("Landscaping"),
-        irrigation: takeoff.categories.includes("Irrigation"),
-        bundle: takeoff.categories.includes("Bundle"),
+        landscaping: (takeoff.projectType === "landscaping" || (Array.isArray(takeoff.categories) && takeoff.categories.includes("Landscaping"))),
+        irrigation: (takeoff.projectType === "irrigation" || (Array.isArray(takeoff.categories) && takeoff.categories.includes("Irrigation"))),
+        bundle: (Array.isArray(takeoff.categories) && takeoff.categories.includes("Bundle")),
       },
       sizes: {
-        small: takeoff.sizes.includes("Small"),
-        medium: takeoff.sizes.includes("Medium"),
-        large: takeoff.sizes.includes("Large"),
-        corporate: takeoff.sizes.includes("Corporate"),
+        small: (takeoff.projectSize === "small" || (Array.isArray(takeoff.sizes) && takeoff.sizes.includes("Small"))),
+        medium: (takeoff.projectSize === "medium" || (Array.isArray(takeoff.sizes) && takeoff.sizes.includes("Medium"))),
+        large: (takeoff.projectSize === "large" || (Array.isArray(takeoff.sizes) && takeoff.sizes.includes("Large"))),
+        corporate: (Array.isArray(takeoff.sizes) && takeoff.sizes.includes("Corporate")),
       },
-      address: takeoff.address,
-      description: takeoff.description,
-      bidExpirationDate: takeoff.bidExpirationDate,
-      price: takeoff.price.toString(),
-      jobId: takeoff.jobId,
+      address: takeoff.address ?? "",
+      zipCode: takeoff.zipCode ?? "",
+      description: takeoff.description ?? "",
+      expirationDate: takeoff.expirationDate ? takeoff.expirationDate.slice(0, 10) : "",
+      price: takeoff.price?.toString() ?? "",
       imageIcon: null,
       blueprint: null,
+      features: takeoff.features ? takeoff.features.join(", ") : "",
+      area: takeoff.specifications?.area?.toString() ?? "",
+      complexity: takeoff.specifications?.complexity ?? "",
+      materials: takeoff.specifications?.materials?.join(", ") ?? "",
+      estimatedHours: takeoff.specifications?.estimatedHours?.toString() ?? "",
+      tags: takeoff.tags ? takeoff.tags.join(", ") : "",
     })
     setIsEditing(true)
-    setEditingId(takeoff.id)
+    setEditingId(takeoff._id || takeoff.id)
     setActiveTab("add-new")
   }
 
-  const handleDelete = (id: string) => {
-    setTakeoffs((prev) => prev.filter((takeoff) => takeoff.id !== id))
+  const handleDelete = async (id: string) => {
+    setLoading(true)
+    setError(null)
+    try {
+      await apiDeleteTakeoff(id)
+      toast.success("Takeoff deleted successfully!")
+      await fetchTakeoffs()
+    } catch (err: any) {
+      setError(err.message || "Failed to delete takeoff")
+      toast.error(err.message || "Failed to delete takeoff")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const toggleStatus = (id: string) => {
@@ -257,25 +288,32 @@ const AdminPanel = () => {
     )
   }
 
-  const filteredTakeoffs = takeoffs.filter((takeoff) => {
-    const matchesSearch =
-      takeoff.takeoffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      takeoff.address.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filtering for active/expired takeoffs
+  const now = new Date();
+  const isExpired = (takeoff: any) => takeoff.bidExpirationDate && new Date(takeoff.bidExpirationDate) < now;
+  const isActive = (takeoff: any) => takeoff.isActive && !isExpired(takeoff);
 
-    let matchesFilter = true
+  const filteredTakeoffs = takeoffs.filter((takeoff) => {
+    const name = takeoff.title ?? takeoff.takeoffName ?? "";
+    const address = takeoff.zipCode ?? takeoff.address ?? "";
+    const matchesSearch =
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      address.toLowerCase().includes(searchTerm.toLowerCase());
+
+    let matchesFilter = true;
     if (activeTab === "active-log") {
-      matchesFilter = takeoff.status === "active"
+      matchesFilter = isActive(takeoff);
     } else if (activeTab === "expired-takeoffs") {
-      matchesFilter = takeoff.status === "expired" || new Date(takeoff.bidExpirationDate) < new Date()
+      matchesFilter = isExpired(takeoff);
     }
 
-    return matchesSearch && matchesFilter
-  })
+    return matchesSearch && matchesFilter;
+  });
 
   const renderAddNew = () => (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+    <div className={`bg-white rounded-2xl shadow-sm border ${isEditing ? 'border-green-400' : 'border-gray-200'} p-8`}> 
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">{isEditing ? "Edit Takeoff" : "Add New Takeoff"}</h2>
+        <h2 className={`text-2xl font-bold ${isEditing ? 'text-green-700' : 'text-gray-900'}`}>{isEditing ? "Edit Takeoff" : "Add New Takeoff"}</h2>
         {isEditing && (
           <Button
             onClick={() => {
@@ -286,12 +324,18 @@ const AdminPanel = () => {
                 categories: { landscaping: false, irrigation: false, bundle: false },
                 sizes: { small: false, medium: false, large: false, corporate: false },
                 address: "",
+                zipCode: "",
                 description: "",
-                bidExpirationDate: "",
+                expirationDate: "",
                 price: "",
-                jobId: "",
                 imageIcon: null,
                 blueprint: null,
+                features: "",
+                area: "",
+                complexity: "",
+                materials: "",
+                estimatedHours: "",
+                tags: "",
               })
             }}
             variant="outline"
@@ -302,151 +346,62 @@ const AdminPanel = () => {
           </Button>
         )}
       </div>
-
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column */}
-        <div className="space-y-6">
-          {/* Takeoff Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Takeoff Name</label>
-            <Input
-              name="takeoffName"
-              value={formData.takeoffName}
-              onChange={handleInputChange}
-              placeholder="Enter takeoff name"
-              className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          {/* Categories */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Categories</label>
-            <div className="grid grid-cols-2 gap-4">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="categories.landscaping"
-                  checked={formData.categories.landscaping}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="text-gray-700">Landscaping</span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="categories.irrigation"
-                  checked={formData.categories.irrigation}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="text-gray-700">Irrigation</span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="categories.bundle"
-                  checked={formData.categories.bundle}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="text-gray-700">Bundle</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Sizes */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Project Sizes</label>
-            <div className="grid grid-cols-2 gap-4">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="sizes.small"
-                  checked={formData.sizes.small}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="text-gray-700">Small</span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="sizes.medium"
-                  checked={formData.sizes.medium}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="text-gray-700">Medium</span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="sizes.large"
-                  checked={formData.sizes.large}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="text-gray-700">Large</span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="sizes.corporate"
-                  checked={formData.sizes.corporate}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="text-gray-700">Corporate</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Address */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-            <Input
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              placeholder="Enter project address"
-              className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Takeoff Description</label>
-            <Textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Enter detailed description"
-              rows={4}
-              className="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none"
-              required
-            />
-          </div>
-
-          {/* Bid Expiration Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Bid Expiration Date</label>
-            <Input
-              type="date"
-              name="bidExpirationDate"
-              value={formData.bidExpirationDate}
-              onChange={handleInputChange}
-              className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          {/* Price and Job ID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-10">
+        {/* Project Info Section */}
+        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-green-700">Project Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Takeoff Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Takeoff Name <span className="text-red-500">*</span></label>
+              <Input
+                name="takeoffName"
+                value={formData.takeoffName}
+                onChange={handleInputChange}
+                placeholder="Enter takeoff name"
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                required
+              />
+            </div>
+            {/* Address */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Address <span className="text-red-500">*</span></label>
+              <Input
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                placeholder="Enter project address"
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                required
+              />
+            </div>
+            {/* Zip Code */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code <span className="text-red-500">*</span></label>
+              <Input
+                name="zipCode"
+                value={formData.zipCode}
+                onChange={handleInputChange}
+                placeholder="Enter zip code"
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                required
+              />
+            </div>
+            {/* Expiration Date */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Expiration Date <span className="text-red-500">*</span></label>
+              <Input
+                type="date"
+                name="expirationDate"
+                value={formData.expirationDate}
+                onChange={handleInputChange}
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                required
+              />
+            </div>
+            {/* Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price ($) <span className="text-red-500">*</span></label>
               <Input
                 type="number"
                 name="price"
@@ -459,91 +414,265 @@ const AdminPanel = () => {
                 required
               />
             </div>
+          </div>
+        </div>
+        {/* Categories & Sizes Section */}
+        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-green-700">Categories & Project Size</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Categories */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Job ID #</label>
-              <div className="flex space-x-2">
-                <Input
-                  name="jobId"
-                  value={formData.jobId}
-                  onChange={handleInputChange}
-                  placeholder="Autogenerate"
-                  className="flex-1 py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                />
-                <Button
-                  type="button"
-                  onClick={generateJobId}
-                  variant="outline"
-                  className="border-gray-300 text-gray-700 px-4"
-                >
-                  Generate
-                </Button>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Categories <span className="text-red-500">*</span></label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="categories.landscaping"
+                    checked={formData.categories.landscaping}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">Landscaping</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="categories.irrigation"
+                    checked={formData.categories.irrigation}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">Irrigation</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="categories.bundle"
+                    checked={formData.categories.bundle}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">Bundle</span>
+                </label>
+              </div>
+            </div>
+            {/* Sizes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Project Sizes <span className="text-red-500">*</span></label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="sizes.small"
+                    checked={formData.sizes.small}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">Small</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="sizes.medium"
+                    checked={formData.sizes.medium}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">Medium</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="sizes.large"
+                    checked={formData.sizes.large}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">Large</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="sizes.corporate"
+                    checked={formData.sizes.corporate}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">Corporate</span>
+                </label>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          {/* Add Image Icon */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Add Image Icon</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                <ImageIcon className="h-8 w-8 text-gray-400" />
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileUpload(e, "imageIcon")}
-                className="hidden"
-                id="image-upload"
+        {/* Description & Features Section */}
+        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-green-700">Description & Features</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Takeoff Description <span className="text-red-500">*</span></label>
+              <Textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Enter detailed description"
+                rows={4}
+                className="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none"
+                required
               />
-              <label
-                htmlFor="image-upload"
-                className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Upload
-              </label>
-              {formData.imageIcon && <p className="mt-2 text-sm text-green-600">{formData.imageIcon.name}</p>}
+            </div>
+            {/* Features */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Features (comma separated) <span className="text-red-500">*</span></label>
+              <Textarea
+                name="features"
+                value={formData.features}
+                onChange={handleInputChange}
+                placeholder="e.g. Fast, Reliable, Eco-friendly"
+                rows={2}
+                className="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none"
+                required
+              />
             </div>
           </div>
-
-          {/* Add Blueprint */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Add Blueprint</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                <FileText className="h-8 w-8 text-gray-400" />
-              </div>
-              <input
-                type="file"
-                accept=".pdf,.dwg,.jpg,.jpeg,.png"
-                onChange={(e) => handleFileUpload(e, "blueprint")}
-                className="hidden"
-                id="blueprint-upload"
+        </div>
+        {/* Specifications Section */}
+        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-green-700">Specifications</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Area (sq ft) <span className="text-red-500">*</span></label>
+              <Input
+                name="area"
+                value={formData.area}
+                onChange={handleInputChange}
+                placeholder="e.g. 1000"
+                type="number"
+                min="0"
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                required
               />
-              <label
-                htmlFor="blueprint-upload"
-                className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Complexity <span className="text-red-500">*</span></label>
+              <select
+                name="complexity"
+                value={formData.complexity}
+                onChange={handleInputChange}
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                required
               >
-                <Upload className="h-4 w-4 mr-2" />
-                Upload
-              </label>
-              {formData.blueprint && <p className="mt-2 text-sm text-green-600">{formData.blueprint.name}</p>}
+                <option value="">Select complexity</option>
+                <option value="basic">Basic</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Materials (comma separated) <span className="text-red-500">*</span></label>
+              <Textarea
+                name="materials"
+                value={formData.materials}
+                onChange={handleInputChange}
+                placeholder="e.g. wood, stone, steel"
+                rows={2}
+                className="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Estimated Hours <span className="text-red-500">*</span></label>
+              <Input
+                name="estimatedHours"
+                value={formData.estimatedHours}
+                onChange={handleInputChange}
+                placeholder="e.g. 10"
+                type="number"
+                min="0"
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                required
+              />
             </div>
           </div>
-
-          {/* Submit Button */}
-          <div className="pt-6">
-            <Button
-              type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              <Save className="h-5 w-5 mr-2" />
-              {isEditing ? "Update Listing" : "Create Listing"}
-            </Button>
+        </div>
+        {/* Tags Section */}
+        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-green-700">Tags</h3>
+          <Textarea
+            name="tags"
+            value={formData.tags}
+            onChange={handleInputChange}
+            placeholder="e.g. Residential, Commercial, Garden"
+            rows={2}
+            className="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none"
+            required
+          />
+        </div>
+        {/* Uploads Section (only for create) */}
+        {!isEditing && (
+          <div className=" rounded-xl p-6 border border-gray-200 mb-6">
+            <h3 className="text-lg font-semibold mb-4 text-green-700">Uploads</h3>
+            <div className="space-y-6">
+              {/* Add Image Icon */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Add Image Icon <span className="text-red-500">*</span></label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <ImageIcon className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, "imageIcon")}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover: transition-colors"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </label>
+                  {formData.imageIcon && <p className="mt-2 text-sm text-green-600">{formData.imageIcon.name}</p>}
+                </div>
+              </div>
+              {/* Add Blueprint */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Add Blueprint <span className="text-red-500">*</span></label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <FileText className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <input
+                    type="file"
+                    accept=".pdf,.dwg,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload(e, "blueprint")}
+                    className="hidden"
+                    id="blueprint-upload"
+                  />
+                  <label
+                    htmlFor="blueprint-upload"
+                    className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover: transition-colors"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </label>
+                  {formData.blueprint && <p className="mt-2 text-sm text-green-600">{formData.blueprint.name}</p>}
+                </div>
+              </div>
+            </div>
           </div>
+        )}
+        {/* Submit Button */}
+        <div className="pt-6">
+          <Button
+            type="submit"
+            className={`w-full ${isEditing ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl`}
+          >
+            <Save className="h-5 w-5 mr-2" />
+            {isEditing ? "Update Listing" : "Create Listing"}
+          </Button>
         </div>
       </form>
     </div>
@@ -571,15 +700,15 @@ const AdminPanel = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredTakeoffs.map((takeoff) => (
           <div
-            key={takeoff.id}
+            key={takeoff._id || takeoff.id}
             className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
           >
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{takeoff.takeoffName}</h3>
+                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{takeoff.title ?? takeoff.takeoffName ?? ""}</h3>
                 <div className="flex flex-wrap gap-2 mb-2">
-                  {takeoff.categories.map((category) => (
+                  {(Array.isArray(takeoff.categories) ? takeoff.categories : []).map((category) => (
                     <span
                       key={category}
                       className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"
@@ -587,7 +716,7 @@ const AdminPanel = () => {
                       {category}
                     </span>
                   ))}
-                  {takeoff.sizes.map((size) => (
+                  {(Array.isArray(takeoff.sizes) ? takeoff.sizes : []).map((size) => (
                     <span key={size} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
                       {size}
                     </span>
@@ -595,7 +724,7 @@ const AdminPanel = () => {
                 </div>
               </div>
               <button onClick={() => toggleStatus(takeoff.id)} className="ml-2">
-                {takeoff.status === "active" ? (
+                {isActive(takeoff) ? (
                   <ToggleRight className="h-6 w-6 text-green-600" />
                 ) : (
                   <ToggleLeft className="h-6 w-6 text-gray-400" />
@@ -611,7 +740,7 @@ const AdminPanel = () => {
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <Calendar className="h-4 w-4 mr-2" />
-                <span>Expires: {takeoff.bidExpirationDate}</span>
+                <span>Expires: {takeoff.expirationDate}</span>
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <DollarSign className="h-4 w-4 mr-2" />
@@ -620,13 +749,13 @@ const AdminPanel = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-2 gap-4 mb-4 p-3  rounded-lg">
               <div className="text-center">
-                <p className="text-lg font-bold text-gray-900">{takeoff.downloads}</p>
+                <p className="text-lg font-bold text-gray-900">{takeoff.downloadCount}</p>
                 <p className="text-xs text-gray-500">Downloads</p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-gray-900">${takeoff.revenue}</p>
+                <p className="text-lg font-bold text-gray-900">${(takeoff.downloadCount * takeoff.price).toFixed(2)}</p>
                 <p className="text-xs text-gray-500">Revenue</p>
               </div>
             </div>
@@ -635,21 +764,21 @@ const AdminPanel = () => {
             <div className="flex items-center justify-between mb-4">
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  takeoff.status === "active"
+                  isActive(takeoff)
                     ? "bg-green-100 text-green-800"
-                    : takeoff.status === "expired"
+                    : isExpired(takeoff)
                       ? "bg-red-100 text-red-800"
                       : "bg-gray-100 text-gray-800"
                 }`}
               >
-                {takeoff.status === "active" ? (
+                {isActive(takeoff) ? (
                   <CheckCircle className="h-3 w-3 mr-1 inline" />
                 ) : (
                   <AlertCircle className="h-3 w-3 mr-1 inline" />
                 )}
-                {takeoff.status.charAt(0).toUpperCase() + takeoff.status.slice(1)}
+                {isActive(takeoff) ? "Active" : isExpired(takeoff) ? "Expired" : "Inactive"}
               </span>
-              <span className="text-xs text-gray-500">ID: {takeoff.jobId}</span>
+              <span className="text-xs text-gray-500">ID: {takeoff._id}</span>
             </div>
 
             {/* Actions */}
@@ -664,7 +793,7 @@ const AdminPanel = () => {
                 Edit
               </Button>
               <Button
-                onClick={() => handleDelete(takeoff.id)}
+                onClick={() => handleDelete(takeoff._id || takeoff.id)}
                 variant="outline"
                 size="sm"
                 className="border-red-300 text-red-600 hover:bg-red-50"
@@ -699,25 +828,25 @@ const AdminPanel = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center p-6 bg-green-50 rounded-xl">
             <div className="text-3xl font-bold text-green-600 mb-2">
-              {takeoffs.filter((t) => t.status === "active").length}
+              {takeoffs.filter(isActive).length}
             </div>
             <div className="text-sm text-gray-600">Active Takeoffs</div>
           </div>
           <div className="text-center p-6 bg-blue-50 rounded-xl">
             <div className="text-3xl font-bold text-blue-600 mb-2">
-              {takeoffs.reduce((sum, t) => sum + t.downloads, 0)}
+              {takeoffs.reduce((sum, t) => sum + (t.downloadCount || 0), 0)}
             </div>
             <div className="text-sm text-gray-600">Total Downloads</div>
           </div>
           <div className="text-center p-6 bg-purple-50 rounded-xl">
             <div className="text-3xl font-bold text-purple-600 mb-2">
-              ${takeoffs.reduce((sum, t) => sum + t.revenue, 0).toLocaleString()}
+              ${takeoffs.reduce((sum, t) => sum + ((t.price || 0) * (t.downloadCount || 0)), 0).toLocaleString()}
             </div>
             <div className="text-sm text-gray-600">Total Revenue</div>
           </div>
           <div className="text-center p-6 bg-orange-50 rounded-xl">
             <div className="text-3xl font-bold text-orange-600 mb-2">
-              {takeoffs.filter((t) => new Date(t.bidExpirationDate) < new Date()).length}
+              {takeoffs.filter(isExpired).length}
             </div>
             <div className="text-sm text-gray-600">Expired Takeoffs</div>
           </div>
@@ -729,7 +858,7 @@ const AdminPanel = () => {
         <h3 className="text-xl font-bold text-gray-900 mb-6">System Settings</h3>
 
         <div className="space-y-6">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+          <div className="flex items-center justify-between p-4  rounded-xl">
             <div>
               <h4 className="font-medium text-gray-900">Auto-expire takeoffs</h4>
               <p className="text-sm text-gray-500">Automatically mark takeoffs as expired after bid date</p>
@@ -737,7 +866,7 @@ const AdminPanel = () => {
             <ToggleRight className="h-6 w-6 text-green-600" />
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+          <div className="flex items-center justify-between p-4  rounded-xl">
             <div>
               <h4 className="font-medium text-gray-900">Email notifications</h4>
               <p className="text-sm text-gray-500">Send notifications for new purchases and downloads</p>
@@ -745,7 +874,7 @@ const AdminPanel = () => {
             <ToggleRight className="h-6 w-6 text-green-600" />
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+          <div className="flex items-center justify-between p-4  rounded-xl">
             <div>
               <h4 className="font-medium text-gray-900">Backup data daily</h4>
               <p className="text-sm text-gray-500">Automatically backup takeoff data and files</p>
@@ -783,7 +912,7 @@ const AdminPanel = () => {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -827,6 +956,7 @@ const AdminPanel = () => {
       </div>
 
       <Footer />
+      <Toaster />
     </div>
   )
 }
