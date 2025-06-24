@@ -76,4 +76,11 @@ export async function deleteTakeoff(id: string) {
   });
   if (!res.ok) throw new Error('Failed to delete takeoff');
   return res.json();
+}
+
+export async function getTakeoffs(params: any = {}) {
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${API_BASE}/takeoffs${query ? `?${query}` : ''}`);
+  if (!res.ok) throw new Error('Failed to fetch takeoffs');
+  return res.json();
 } 

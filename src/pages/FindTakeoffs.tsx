@@ -1,100 +1,100 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, MapPin, Calendar, Ruler, DollarSign } from "lucide-react"
 import { Link } from "react-router-dom"
+import { getTakeoffs } from "../lib/api"
 
-interface TakeoffProject {
-  id: string
+interface Takeoff {
+  _id: string
   title: string
-  type: "Landscaping" | "Irrigation"
+  projectType: string
   zipCode: string
-  size: "Small" | "Medium" | "Large"
+  projectSize: string
   price: number
-  dateAdded: string
   description: string
-  sqft: string
+  expirationDate?: string
+  features?: string[]
+  specifications?: any
+  tags?: string[]
+  images?: any[]
+  files?: any[]
 }
+
+const PAGE_SIZE = 9
 
 const FindTakeoffs = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSize, setSelectedSize] = useState("")
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [zipCode, setZipCode] = useState("")
+  const [takeoffs, setTakeoffs] = useState<Takeoff[]>([])
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const observer = useRef<IntersectionObserver | null>(null)
+  const lastTakeoffRef = useRef<HTMLDivElement | null>(null)
 
-  // Sample takeoff data
-  const takeoffProjects: TakeoffProject[] = [
-    {
-      id: "1",
-      title: "Residential Landscape Project",
-      type: "Landscaping",
-      zipCode: "75001",
-      size: "Medium",
-      price: 99,
-      dateAdded: "6/10/2025",
-      description: "Complete front and backyard landscaping design",
-      sqft: "8,500 sq ft",
-    },
-    {
-      id: "2",
-      title: "Commercial Irrigation System",
-      type: "Irrigation",
-      zipCode: "75002",
-      size: "Large",
-      price: 149,
-      dateAdded: "5/11/2025",
-      description: "Multi-zone irrigation system for office complex",
-      sqft: "25,000 sq ft",
-    },
-    {
-      id: "3",
-      title: "Small Garden Design",
-      type: "Landscaping",
-      zipCode: "75003",
-      size: "Small",
-      price: 49,
-      dateAdded: "6/10/2025",
-      description: "Intimate garden space with native plants",
-      sqft: "2,500 sq ft",
-    },
-    {
-      id: "4",
-      title: "Residential Landscape Project",
-      type: "Landscaping",
-      zipCode: "75001",
-      size: "Medium",
-      price: 89,
-      dateAdded: "6/10/2025",
-      description: "Modern landscape design with drought-resistant plants",
-      sqft: "7,200 sq ft",
-    },
-    {
-      id: "5",
-      title: "Residential Landscape Project",
-      type: "Landscaping",
-      zipCode: "75001",
-      size: "Medium",
-      price: 99,
-      dateAdded: "6/10/2025",
-      description: "Traditional landscape with seasonal flower beds",
-      sqft: "9,100 sq ft",
-    },
-    {
-      id: "6",
-      title: "Residential Landscape Project",
-      type: "Landscaping",
-      zipCode: "75001",
-      size: "Medium",
-      price: 99,
-      dateAdded: "6/10/2025",
-      description: "Contemporary outdoor living space design",
-      sqft: "8,800 sq ft",
-    },
-  ]
+  // Fetch takeoffs with filters and pagination
+  const fetchTakeoffs = async (reset = false) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const params: any = {
+        page: reset ? 1 : page,
+        limit: PAGE_SIZE,
+      }
+      if (searchTerm) params.search = searchTerm
+      if (zipCode) params.zipCode = zipCode
+      if (selectedSize) params.size = selectedSize.toLowerCase()
+      if (selectedTypes.length > 0) params.type = selectedTypes.join(",").toLowerCase()
+      const data = await getTakeoffs(params)
+      if (reset) {
+        setTakeoffs(data)
+      } else {
+        setTakeoffs((prev) => [...prev, ...data])
+      }
+      setHasMore(data.length === PAGE_SIZE)
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch takeoffs")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Initial fetch and on filter/search change
+  useEffect(() => {
+    setPage(1)
+    fetchTakeoffs(true)
+    // eslint-disable-next-line
+  }, [searchTerm, selectedSize, selectedTypes, zipCode])
+
+  // Fetch more on page change
+  useEffect(() => {
+    if (page === 1) return
+    fetchTakeoffs()
+    // eslint-disable-next-line
+  }, [page])
+
+  // Infinite scroll observer
+  useEffect(() => {
+    if (loading) return
+    if (!hasMore) return
+    if (observer.current) observer.current.disconnect()
+    observer.current = new window.IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prev) => prev + 1)
+      }
+    })
+    if (lastTakeoffRef.current) {
+      observer.current.observe(lastTakeoffRef.current)
+    }
+  }, [loading, hasMore, takeoffs])
 
   const handleTypeChange = (type: string) => {
     setSelectedTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]))
@@ -226,7 +226,7 @@ const FindTakeoffs = () => {
               {/* Results Header */}
               <div className="flex items-center justify-between mb-6">
                 <p className="text-gray-600">
-                  Showing <span className="font-medium">{takeoffProjects.length}</span> takeoffs
+                  Showing <span className="font-medium">{takeoffs.length}</span> takeoffs
                 </p>
                 <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
                   <option>Sort by: Newest</option>
@@ -238,9 +238,10 @@ const FindTakeoffs = () => {
 
               {/* Project Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {takeoffProjects.map((project) => (
+                {takeoffs.map((project, idx) => (
                   <div
-                    key={project.id}
+                    key={project._id}
+                    ref={idx === takeoffs.length - 1 ? lastTakeoffRef : null}
                     className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 group"
                   >
                     {/* Project Type Badge */}
@@ -248,7 +249,7 @@ const FindTakeoffs = () => {
                       <span
                         className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" 
                       >
-                        {project.type}
+                        {project.projectType.charAt(0).toUpperCase() + project.projectType.slice(1)}
                       </span>
                       <span className="text-xs text-gray-500 font-medium">${project.price}</span>
                     </div>
@@ -266,45 +267,30 @@ const FindTakeoffs = () => {
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <Ruler className="h-4 w-4 mr-2 text-gray-400" />
-                        <span>Size: {project.size}</span>
+                        <span>Size: {project.projectSize?.charAt(0).toUpperCase() + project.projectSize?.slice(1)}</span>
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                        <span>Date Added: {project.dateAdded}</span>
+                        <span>Expires: {project.expirationDate ? project.expirationDate.slice(0, 10) : "-"}</span>
                       </div>
                     </div>
 
                     {/* Project Description */}
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p>
 
-                    {/* Square Footage */}
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-gray-500">{project.sqft}</span>
-                      <div className="flex items-center text-lg font-bold text-gray-900">
-                        <DollarSign className="h-5 w-5 mr-1" />
-                        {project.price}
-                      </div>
-                    </div>
-
                     {/* View Details Button */}
-                      
-                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105">
-                      <Link to={`/takeoff-details`}>View Details</Link>
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105">
+                      <Link to={`/takeoff-details/${project._id}`}>View Details</Link>
                     </Button>
-                    
                   </div>
                 ))}
               </div>
 
-              {/* Load More */}
-              <div className="text-center mt-12">
-                <Button
-                  variant="outline"
-                  className="px-8 py-3 border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
-                >
-                  Load More Projects
-                </Button>
-              </div>
+              {loading && <div className="text-center py-8 text-gray-500">Loading...</div>}
+              {error && <div className="text-center py-8 text-red-500">{error}</div>}
+              {!loading && !hasMore && takeoffs.length > 0 && (
+                <div className="text-center py-8 text-gray-400">No more takeoffs to load.</div>
+              )}
             </div>
           </div>
         </div>
