@@ -3,11 +3,7 @@ import Cookies from 'js-cookie';
 import { Button } from './ui/button';
 
 const navLinks = [
-  { to: '/admin', label: 'Dashboard' },
-  { to: '/admin?tab=add-new', label: 'Add New' },
-  { to: '/admin?tab=active-log', label: 'Active Log' },
-  { to: '/admin?tab=expired-takeoffs', label: 'Expired Takeoffs' },
-  { to: '/admin?tab=admin', label: 'Settings' },
+  { to: '/admin', label: 'Dashboard' }
 ];
 
 const AdminHeader = () => {
