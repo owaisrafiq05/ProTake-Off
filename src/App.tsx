@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import Pricing from "./pages/Pricing";
 import FindTakeoffs from "./pages/FindTakeoffs";
@@ -17,8 +17,20 @@ import { CartProvider } from "./components/CartContext";
 import AdminPanel from "./pages/AdminPanel";
 import { AuthProvider } from "@/components/AuthContext";
 import VerifyEmail from "./pages/VerifyEmail";
+import AdminLogin from "./pages/AdminLogin";
+import { useEffect } from "react";
+import Cookies from 'js-cookie';
 
 const queryClient = new QueryClient();
+
+function ProtectedAdminRoute({ children }: { children: JSX.Element }) {
+  const token = typeof window !== 'undefined' ? Cookies.get('adminToken') : null;
+  const location = useLocation();
+  if (!token) {
+    return <Navigate to="/admin-login" state={{ from: location }} replace />;
+  }
+  return children;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -38,7 +50,8 @@ const App = () => (
           <Route path="/stripe-checkout" element={<StripeCheckout />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin" element={<ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,6 +31,7 @@ import {
 } from "lucide-react"
 import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff } from "../lib/api"
 import { Toaster, toast } from "../components/ui/sonner"
+import AdminHeader from "@/components/AdminHeader"
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("add-new")
@@ -913,7 +913,7 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen ">
-      <Header />
+      <AdminHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}

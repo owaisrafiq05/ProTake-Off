@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -10,7 +11,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(Cookies.get('token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,12 +25,12 @@ export const AuthProvider = ({ children }) => {
 
   const saveToken = (token) => {
     setToken(token);
-    localStorage.setItem('token', token);
+    Cookies.set('token', token, { expires: 30 });
   };
 
   const removeToken = () => {
     setToken(null);
-    localStorage.removeItem('token');
+    Cookies.remove('token');
   };
 
   const login = async (email, password) => {

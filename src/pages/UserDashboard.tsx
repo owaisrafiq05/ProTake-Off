@@ -46,7 +46,7 @@ type UserProfile = {
 };
 
 const UserDashboard = () => {
-  const { user, updateProfile, loading } = useAuth()
+  const { user, updateProfile, loading, logout } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
   const [isEditing, setIsEditing] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
