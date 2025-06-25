@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, useContext, useState, type ReactNode, useEffect } from "react"
 
 interface CartItem {
   id: string
@@ -37,28 +37,15 @@ export const useCart = () => {
 }
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>([
-    // Sample cart items for demo
-    {
-      id: "1",
-      title: "Residential Landscaping - 2,500 sq ft",
-      type: "Medium Project",
-      area: "2,500 sq ft",
-      price: 99,
-      image: "/placeholder.svg?height=60&width=80",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      title: "Small Garden Design",
-      type: "Small Project",
-      area: "1,200 sq ft",
-      price: 49,
-      image: "/placeholder.svg?height=60&width=80",
-      quantity: 1,
-    },
-  ])
+  const [items, setItems] = useState<CartItem[]>(() => {
+    const stored = localStorage.getItem('cart');
+    return stored ? JSON.parse(stored) : [];
+  });
   const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(items));
+  }, [items]);
 
   const addItem = (newItem: Omit<CartItem, "quantity">) => {
     setItems((prevItems) => {

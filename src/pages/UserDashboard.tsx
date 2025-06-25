@@ -53,6 +53,7 @@ const UserDashboard = () => {
   const [filterStatus, setFilterStatus] = useState("all")
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [profileUpdates, setProfileUpdates] = useState<Partial<UserProfile>>({})
+  const [orders, setOrders] = useState<any[]>([]);
 
   const {
     firstName = '',
@@ -72,53 +73,20 @@ const UserDashboard = () => {
     if (user) setUserProfile(user)
   }, [user])
 
+  useEffect(() => {
+    async function fetchOrders() {
+      if (user?.email) {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/cart/orders/user/${user.email}`);
+        const data = await res.json();
+        if (data.success) setOrders(data.orders);
+      }
+    }
+    fetchOrders();
+  }, [user]);
+
   if (loading || !userProfile) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>
   }
-
-  // Mock purchase history
-  const purchaseHistory = [
-    {
-      id: "PO-001",
-      title: "Residential Landscaping - 2,500 sq ft",
-      type: "Medium Project",
-      price: 99,
-      date: "2025-01-15",
-      status: "completed",
-      downloadUrl: "#",
-      image: "/placeholder.svg?height=60&width=80",
-    },
-    {
-      id: "PO-002",
-      title: "Commercial Irrigation System",
-      type: "Large Project",
-      price: 149,
-      date: "2025-01-10",
-      status: "completed",
-      downloadUrl: "#",
-      image: "/placeholder.svg?height=60&width=80",
-    },
-    {
-      id: "PO-003",
-      title: "Small Garden Design",
-      type: "Small Project",
-      price: 49,
-      date: "2025-01-05",
-      status: "completed",
-      downloadUrl: "#",
-      image: "/placeholder.svg?height=60&width=80",
-    },
-    {
-      id: "PO-004",
-      title: "Backyard Renovation",
-      type: "Medium Project",
-      price: 89,
-      date: "2024-12-28",
-      status: "processing",
-      downloadUrl: null,
-      image: "/placeholder.svg?height=60&width=80",
-    },
-  ]
 
   const tabs = [
     { id: "overview", label: "Overview", icon: User },
@@ -135,11 +103,11 @@ const UserDashboard = () => {
     }
   }
 
-  const filteredPurchases = purchaseHistory.filter((purchase) => {
-    const matchesSearch = purchase.title.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesFilter = filterStatus === "all" || purchase.status === filterStatus
-    return matchesSearch && matchesFilter
-  })
+  const filteredPurchases = orders.filter((order) => {
+    return order.items.some((item: any) =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   const renderOverview = () => (
     <div className="space-y-6">
@@ -198,7 +166,7 @@ const UserDashboard = () => {
             <div>
               <p className="text-sm text-gray-600">Available Downloads</p>
               <p className="text-2xl font-bold text-gray-900">
-                {purchaseHistory.filter((p) => p.status === "completed").length}
+                {orders.flatMap(order => order.items).length}
               </p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -221,28 +189,21 @@ const UserDashboard = () => {
           </Button>
         </div>
         <div className="space-y-4">
-          {purchaseHistory.slice(0, 3).map((purchase) => (
-            <div key={purchase.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+          {orders.slice(0, 3).map((order) => (
+            <div key={order._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
               <div className="flex items-center space-x-4">
                 <img
-                  src={purchase.image || "/placeholder.svg"}
-                  alt={purchase.title}
+                  src={order.items[0].image || "/placeholder.svg"}
+                  alt={order.items[0].title}
                   className="w-12 h-12 rounded-lg object-cover"
                 />
                 <div>
-                  <h4 className="font-semibold text-gray-900">{purchase.title}</h4>
-                  <p className="text-sm text-gray-500">{purchase.date}</p>
+                  <h4 className="font-semibold text-gray-900">{order.items[0].title}</h4>
+                  <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <span className="font-bold text-gray-900">${purchase.price}</span>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    purchase.status === "completed" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {purchase.status}
-                </span>
+                <span className="font-bold text-gray-900">${order.items[0].price}</span>
               </div>
             </div>
           ))}
@@ -253,132 +214,76 @@ const UserDashboard = () => {
 
   const renderPurchases = () => (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Purchase History</h2>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search purchases..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-64"
-            />
-          </div>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          >
-            <option value="all">All Status</option>
-            <option value="completed">Completed</option>
-            <option value="processing">Processing</option>
-          </select>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search purchases..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 w-64"
+          />
         </div>
       </div>
-
-      {/* Purchase List */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="divide-y divide-gray-200">
-          {filteredPurchases.map((purchase) => (
-            <div key={purchase.id} className="p-6 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={purchase.image || "/placeholder.svg"}
-                    alt={purchase.title}
-                    className="w-16 h-16 rounded-lg object-cover"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{purchase.title}</h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {purchase.date}
-                      </span>
-                      <span className="flex items-center">
-                        <FileSpreadsheet className="h-4 w-4 mr-1" />
-                        {purchase.type}
-                      </span>
-                      <span>Order #{purchase.id}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="text-right">
-                    <p className="font-bold text-gray-900">${purchase.price}</p>
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        purchase.status === "completed"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {purchase.status === "completed" ? (
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                      ) : (
-                        <Clock className="h-3 w-3 mr-1" />
-                      )}
-                      {purchase.status}
-                    </span>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700">
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    {purchase.status === "completed" && (
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    )}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {filteredPurchases.map((order) => (
+          order.items.map((item: any) => (
+            <div key={item.takeoffId + order._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center mb-4">
+                <img src={item.image || "/placeholder.svg"} alt={item.title} className="w-16 h-12 rounded-lg object-cover mr-4" />
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
+                  <div className="flex items-center text-xs text-gray-500">
+                    <span>${item.price}</span>
                   </div>
                 </div>
               </div>
+              <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                <span>Order ID: {order._id}</span>
+                <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center space-x-2 mt-2">
+                <a href={item.blueprintUrl} target="_blank" rel="noopener noreferrer">
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Download</Button>
+                </a>
+              </div>
             </div>
-          ))}
-        </div>
+          ))
+        ))}
       </div>
+      {filteredPurchases.length === 0 && (
+        <div className="text-center py-12 text-gray-500">No purchases found.</div>
+      )}
     </div>
   )
 
   const renderDownloads = () => (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Available Downloads</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {purchaseHistory
-          .filter((purchase) => purchase.status === "completed")
-          .map((purchase) => (
-            <div
-              key={purchase.id}
-              className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <img
-                src={purchase.image || "/placeholder.svg"}
-                alt={purchase.title}
-                className="w-full h-32 rounded-lg object-cover mb-4"
-              />
-              <h3 className="font-semibold text-gray-900 mb-2">{purchase.title}</h3>
-              <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>{purchase.type}</span>
-                <span>{purchase.date}</span>
-              </div>
-              <div className="space-y-2">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Excel
-                </Button>
-                <Button variant="outline" className="w-full border-gray-300 text-gray-700">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  View Details
-                </Button>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Downloads</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {orders.flatMap(order => order.items).map((item: any) => (
+          <div key={item.takeoffId + item.blueprintUrl} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center mb-4">
+              <img src={item.image || "/placeholder.svg"} alt={item.title} className="w-16 h-12 rounded-lg object-cover mr-4" />
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
+                <div className="flex items-center text-xs text-gray-500">
+                  <span>Order</span>
+                </div>
               </div>
             </div>
-          ))}
+            <div className="flex items-center space-x-2 mt-2">
+              <a href={item.blueprintUrl} target="_blank" rel="noopener noreferrer">
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Download</Button>
+              </a>
+            </div>
+          </div>
+        ))}
       </div>
+      {orders.length === 0 && (
+        <div className="text-center py-12 text-gray-500">No downloads found.</div>
+      )}
     </div>
   )
 

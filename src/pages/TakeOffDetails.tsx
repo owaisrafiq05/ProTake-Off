@@ -21,6 +21,8 @@ import {
   TrendingUp,
 } from "lucide-react"
 import { getTakeoffById, getPopularTakeoffs } from "../lib/api"
+import { useCart } from "../components/CartContext"
+import { toast } from "sonner"
 
 const TakeoffDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -32,6 +34,7 @@ const TakeoffDetails = () => {
   const [cvc, setCvc] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [popular, setPopular] = useState<any[]>([])
+  const { addItem } = useCart();
 
   useEffect(() => {
     async function fetchTakeoff() {
@@ -143,6 +146,21 @@ const TakeoffDetails = () => {
       image: "/placeholder.svg?height=60&width=80",
     },
   ]
+
+  // Add to Cart handler
+  const handleAddToCart = () => {
+    if (!takeoff) return;
+    addItem({
+      id: takeoff._id,
+      title: takeoff.title,
+      type: takeoff.projectType,
+      area: takeoff.specifications?.area ? `${takeoff.specifications.area} sq ft` : '',
+      price: takeoff.price,
+      image: takeoff.images && takeoff.images[0]?.cloudinaryUrl ? takeoff.images[0].cloudinaryUrl : "/placeholder.svg",
+    });
+    // Optionally show a toast or feedback
+    toast.success('Added to cart!');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -324,6 +342,7 @@ const TakeoffDetails = () => {
               {/* Add to Cart Button */}
               <Button
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                onClick={handleAddToCart}
               >
                 Add to Cart (${takeoff.price})
               </Button>
