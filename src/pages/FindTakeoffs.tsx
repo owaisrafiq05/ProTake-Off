@@ -6,8 +6,10 @@ import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, MapPin, Calendar, Ruler, DollarSign } from "lucide-react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { getTakeoffs } from "../lib/api"
+import { useAuth } from "../components/AuthContext"
+import { toast } from "sonner"
 
 interface Takeoff {
   _id: string
@@ -41,6 +43,8 @@ const FindTakeoffs = () => {
   const lastTakeoffRef = useRef<HTMLDivElement | null>(null)
   const [sort, setSort] = useState('newest')
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Fetch takeoffs with filters and pagination
   const fetchTakeoffs = async (reset = false) => {
@@ -116,6 +120,15 @@ const FindTakeoffs = () => {
     setSelectedSize("")
     setSelectedTypes([])
     setZipCode("")
+  }
+
+  const handleViewDetails = (projectId: string) => {
+    if (!user) {
+      toast.error("To complete access please login");
+      navigate("/login");
+      return;
+    }
+    navigate(`/takeoff-details/${projectId}`);
   }
 
   return (
@@ -266,7 +279,9 @@ const FindTakeoffs = () => {
                       >
                         {project.projectType.charAt(0).toUpperCase() + project.projectType.slice(1)}
                       </span>
-                      <span className="text-xs text-gray-500 font-medium">${project.price}</span>
+                      <span className={`text-xs text-gray-500 font-medium ${!user ? 'blur-sm select-none' : ''}`}>
+                        ${project.price}
+                      </span>
                     </div>
 
                     {/* Project Title */}
@@ -294,8 +309,11 @@ const FindTakeoffs = () => {
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p>
 
                     {/* View Details Button */}
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105">
-                      <Link to={`/takeoff-details/${project._id}`}>View Details</Link>
+                    <Button 
+                      onClick={() => handleViewDetails(project._id)}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105"
+                    >
+                      View Details
                     </Button>
                   </div>
                 ))}

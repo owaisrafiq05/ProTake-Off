@@ -141,7 +141,7 @@ const UserDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Purchases</p>
-              <p className="text-2xl font-bold text-gray-900">{userProfile.totalPurchases}</p>
+              <p className="text-2xl font-bold text-gray-900">{orders.flatMap(order => order.items).length}</p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <ShoppingBag className="h-6 w-6 text-green-600" />
@@ -153,7 +153,7 @@ const UserDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-900">${userProfile.totalSpent}</p>
+              <p className="text-2xl font-bold text-gray-900">${orders.flatMap(order => order.items).reduce((acc, item) => acc + item.price, 0)}</p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <CreditCard className="h-6 w-6 text-green-600" />
