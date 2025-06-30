@@ -29,12 +29,44 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react"
-import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff } from "../lib/api"
+import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions } from "../lib/api"
 import { Toaster, toast } from "../components/ui/sonner"
 import AdminHeader from "@/components/AdminHeader"
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("add-new")
+  // Admin User Management & Transaction History
+  const [users, setUsers] = useState<any[]>([])
+  const [userTransactions, setUserTransactions] = useState<any[]>([])
+  const [userSearch, setUserSearch] = useState("")
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+
+  // Fetch all users
+  const fetchUsers = async () => {
+    try {
+      const res = await getAllUsers()
+      setUsers(res.data.users || [])
+    } catch (err: any) {
+      toast.error("Failed to fetch users")
+    }
+  }
+
+  // Fetch all user transactions
+  const fetchUserTransactions = async () => {
+    try {
+      const res = await getAllUserTransactions()
+      setUserTransactions(res.data || [])
+    } catch (err: any) {
+      toast.error("Failed to fetch user transactions")
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === "user-management") {
+      fetchUsers()
+      fetchUserTransactions()
+    }
+  }, [activeTab])
   const [isEditing, setIsEditing] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -93,8 +125,116 @@ const AdminPanel = () => {
     { id: "add-new", label: "Add New", icon: Plus },
     { id: "active-log", label: "Active Log", icon: Activity },
     { id: "expired-takeoffs", label: "Expired Takeoffs", icon: Archive },
+    { id: "user-management", label: "User Management", icon: Settings },
     { id: "admin", label: "Admin", icon: Settings },
   ]
+  // Admin User Management & Transaction History View
+  const renderUserManagement = () => {
+    // Filter users by search
+    const filteredUsers = users.filter(user => {
+      const name = `${user.firstName} ${user.lastName}`.toLowerCase()
+      const email = user.email.toLowerCase()
+      return (
+        name.includes(userSearch.toLowerCase()) ||
+        email.includes(userSearch.toLowerCase())
+      )
+    })
+
+    // Find transactions for selected user
+    const selectedUserTx = userTransactions.find((utx: any) => utx.user._id === selectedUserId)
+
+    return (
+      <div className="space-y-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">User Management</h2>
+          <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <Input
+              placeholder="Search users by name or email..."
+              value={userSearch}
+              onChange={e => setUserSearch(e.target.value)}
+              className="w-full md:w-80"
+            />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Last Login</th>
+                  <th className="px-4 py-2"></th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {filteredUsers.map(user => (
+                  <tr key={user._id} className={selectedUserId === user._id ? "bg-green-50" : ""}>
+                    <td className="px-4 py-2 whitespace-nowrap">{user.firstName} {user.lastName}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{user.email}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{user.company}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "-"}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      <Button
+                        size="sm"
+                        variant={selectedUserId === user._id ? "default" : "outline"}
+                        onClick={() => setSelectedUserId(user._id)}
+                      >
+                        View Transactions
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Transaction History for selected user */}
+        {selectedUserId && selectedUserTx && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Transaction History for {selectedUserTx.user.firstName} {selectedUserTx.user.lastName}</h3>
+            {selectedUserTx.transactions.length === 0 ? (
+              <div className="text-gray-500">No transactions found for this user.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-100">
+                    {selectedUserTx.transactions.map((tx: any) => (
+                      <tr key={tx._id}>
+                        <td className="px-4 py-2 whitespace-nowrap">{new Date(tx.createdAt).toLocaleString()}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">${tx.amount?.toFixed(2)}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{tx.status}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          <ul className="list-disc pl-4">
+                            {tx.items.map((item: any, idx: number) => (
+                              <li key={idx}>{item.title} (${item.price})</li>
+                            ))}
+                          </ul>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <div className="mt-4">
+              <Button variant="outline" onClick={() => setSelectedUserId(null)}>Back to Users</Button>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
@@ -950,6 +1090,7 @@ const AdminPanel = () => {
             {activeTab === "add-new" && renderAddNew()}
             {activeTab === "active-log" && renderTakeoffsList("Active Takeoffs")}
             {activeTab === "expired-takeoffs" && renderTakeoffsList("Expired Takeoffs", true)}
+            {activeTab === "user-management" && renderUserManagement()}
             {activeTab === "admin" && renderAdmin()}
           </div>
         </div>
