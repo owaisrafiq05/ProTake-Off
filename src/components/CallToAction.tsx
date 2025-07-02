@@ -34,7 +34,7 @@ const CallToAction = () => {
             </h2>
 
             <p className="text-xl text-green-100 mb-8 leading-relaxed">
-              Join ProTakeoff.ai today and start bidding on more projects with confidence. Transform your business with
+              Join Protakeoffs.ai today and start bidding on more projects with confidence. Transform your business with
               AI-powered takeoffs.
             </p>
 

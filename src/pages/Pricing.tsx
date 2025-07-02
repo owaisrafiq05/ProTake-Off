@@ -10,16 +10,16 @@ const Pricing = () => {
   const pricingTiers = [
     {
       name: "Small Projects",
-      description: "Perfect for residential gardens",
+      description: "Perfect for residential or small commercial jobs",
       price: 50,
       size: "Under 5,000 sq ft",
       popular: false,
       color: "blue",
       features: [
-        "Residential Gardens",
-        "Small commercial entrances",
+        "Residential Properties",
+        "Small commercial projects",
         "Backyard renovations",
-        "Small irrigation systems",
+        "Small irrigation system installations",
         "Excel format delivery",
         "Instant download",
       ],
@@ -100,7 +100,7 @@ const Pricing = () => {
   const faqs = [
     {
       question: "Are there any subscription fees?",
-      answer: "No, ProTakeoff.ai operates on a pay-per-takeoff model. There are no subscriptions or recurring fees.",
+      answer: "No, Protakeoffs.ai operates on a pay-per-takeoff model. There are no subscriptions or recurring fees.",
     },
     {
       question: "Can I purchase multiple takeoffs?",
@@ -143,7 +143,7 @@ const Pricing = () => {
               Simple, <span className="text-green-600">Transparent</span> Pricing
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Pay only for what you need. No subscriptions. No hidden fees. Get professional takeoffs instantly.
+              Pay only for what you need. No subscriptions. No hidden fees. <br/>Get professional takeoffs instantly.
             </p>
           </div>
 
@@ -178,7 +178,7 @@ const Pricing = () => {
 
                   {/* Price */}
                   <div className="mb-6">
-                    <span className="text-5xl font-bold text-gray-900">${tier.price}</span>
+                    <span className="text-5xl font-bold text-gray-900">~${tier.price}</span>
                     <span className="text-gray-600 text-lg"> per takeoff</span>
                   </div>
                 </div>

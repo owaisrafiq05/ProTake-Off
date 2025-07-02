@@ -57,8 +57,7 @@ const ContactForm = () => {
             Get in <span className="text-green-600">Touch</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Have questions or need more information? Our team is here to help you transform your business with
-            ProTakeoff.ai.
+            Have questions, need support, or want to learn more about how ProTakeoff.ai can help your business? We’d love to hear from you.
           </p>
         </div>
 
@@ -74,7 +73,7 @@ const ContactForm = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Email Us</div>
-                    <div className="text-gray-600">hello@protakeoff.ai</div>
+                    <div className="text-gray-600">hello@protakeoffs.ai</div>
                     <div className="text-sm text-gray-500">We'll respond within 24 hours</div>
                   </div>
                 </div>
@@ -96,7 +95,7 @@ const ContactForm = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Visit Us</div>
-                    <div className="text-gray-600">San Francisco, CA</div>
+                    <div className="text-gray-600">Dallas, Texas</div>
                     <div className="text-sm text-gray-500">By appointment only</div>
                   </div>
                 </div>
@@ -163,10 +162,13 @@ const ContactForm = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
                     <Input
                       name="phone"
                       type="tel"
+                      required
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="Your phone number"

@@ -6,22 +6,22 @@ const HowItWorks = () => {
   const steps = [
     {
       number: "1",
-      title: "Enter ZIP Code & Project Size",
-      description: "Search for available takeoffs in your area by entering your project details and location.",
+      title: "ZIP Code & Project Size",
+      description: "Search for available takeoffs in your area by entering your location and project details",
       icon: MapPin,
       color: "bg-green-100 text-green-600",
     },
     {
       number: "2",
       title: "Purchase Takeoff",
-      description: "Pay $50-$150 based on project size and complexity. Secure payment processing.",
+      description: "Purchase takeoffs based on project size. Secure payments guaranteed.",
       icon: CreditCard,
       color: "bg-green-100 text-green-600",
     },
     {
       number: "3",
       title: "Instant Email Delivery",
-      description: "Receive your Excel file takeoff immediately after purchase. No waiting, no delays.",
+      description: "Receive your takeoff immediately after purchase. No waiting, no delays.",
       icon: Mail,
       color: "bg-green-100 text-green-600",
     },
@@ -52,8 +52,7 @@ const HowItWorks = () => {
             How It <span className="text-green-600">Works</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Get your takeoffs in minutes, not days. No subscriptions. No delays. Just professional results when you need
-            them.
+            Instant Takeoffs in 4 easy steps. No guesswork. No Delays. Just professional results when you need them
           </p>
         </div>
 
