@@ -1,26 +1,79 @@
 "use client"
-import { Link, useLocation } from "react-router-dom"
+
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Menu, X, ShoppingCart, User, ChevronDown, Settings, LogOut, ShoppingBag } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useCart } from "../components/CartContext"
 import CartDropdown from "../components/CartDropdown"
 import { useAuth } from "./AuthContext"
 
 const Header = () => {
   const location = useLocation()
+  const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { getTotalItems, isOpen, setIsOpen } = useCart()
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const { user, logout, loading } = useAuth()
 
   const navItems = [
-    { href: "/#features", label: "Features" },
+    { href: "/", section: "features", label: "Features" },
     { href: "/find-takeoffs", label: "Find Takeoffs" },
-    { href: "/#how-it-works", label: "How It Works" },
+    { href: "/", section: "how-it-works", label: "How It Works" },
     { href: "/pricing", label: "Pricing" },
     { href: "/checkout", label: "Checkout" },
-    { href: "/#contact", label: "Contact" },
+    { href: "/", section: "contact", label: "Contact" },
   ]
+
+  // Function to scroll to section
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+    }
+  }
+
+  // Function to handle navigation
+  const handleNavigation = (item, e) => {
+    e.preventDefault()
+
+    if (item.section) {
+      // If we're navigating to a section
+      if (location.pathname === item.href) {
+        // Already on the correct page, just scroll
+        scrollToSection(item.section)
+      } else {
+        // Navigate to page first, then scroll
+        navigate(item.href)
+        // Use setTimeout to ensure page loads before scrolling
+        setTimeout(() => {
+          scrollToSection(item.section)
+        }, 100)
+      }
+    } else {
+      // Regular page navigation
+      navigate(item.href)
+      // Scroll to top for new pages
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+
+    closeMobileMenu()
+  }
+
+  // Handle URL hash on page load
+  useEffect(() => {
+    const hash = location.hash.replace("#", "")
+    if (hash) {
+      setTimeout(() => {
+        scrollToSection(hash)
+      }, 100)
+    } else if (location.pathname === "/find-takeoffs") {
+      // Ensure Find Takeoffs page starts at top
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }, [location])
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -30,43 +83,43 @@ const Header = () => {
     setIsMobileMenuOpen(false)
   }
 
+  const isActiveLink = (item) => {
+    if (item.section) {
+      return location.pathname === item.href
+    }
+    return location.pathname === item.href
+  }
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
+            <Link
+              to="/"
+              className="flex items-center space-x-2"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
               <div className="relative flex items-center">
-                {/* <img src="/logo.png" alt="ProTakeoff Logo" className="h-10 w-16" /> */}
-                <img src="/ProTakeoff.ai.png" alt="ProTakeoff.ai" className="h-5 ml-2" />
+                <img src="/ProTakeoff.ai.png" alt="Protakeoffs.ai" className="h-5 ml-2" />
               </div>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
-            {navItems.map((item) =>
-              item.href.startsWith("/#") ? (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
-                >
-                  {item.label}
-                </a>
-              ) : (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className={`font-medium transition-colors ${
-                    location.pathname === item.href ? "text-green-600" : "text-gray-700 hover:text-gray-900"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ),
-            )}
+            {navItems.map((item) => (
+              <button
+                key={`${item.href}-${item.section || "page"}`}
+                onClick={(e) => handleNavigation(item, e)}
+                className={`font-medium transition-colors ${
+                  isActiveLink(item) ? "text-green-600" : "text-gray-700 hover:text-gray-900"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
 
           {/* Desktop Auth Buttons/User Dropdown */}
@@ -112,7 +165,9 @@ const Header = () => {
                             <User className="h-6 w-6 text-white" />
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900">{user.firstName} {user.lastName}</p>
+                            <p className="font-semibold text-gray-900">
+                              {user.firstName} {user.lastName}
+                            </p>
                             <p className="text-sm text-gray-500">{user.email}</p>
                           </div>
                         </div>
@@ -123,7 +178,10 @@ const Header = () => {
                         <Link
                           to="/dashboard"
                           className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
-                          onClick={() => setIsUserDropdownOpen(false)}
+                          onClick={() => {
+                            setIsUserDropdownOpen(false)
+                            window.scrollTo({ top: 0, behavior: "smooth" })
+                          }}
                         >
                           <User className="h-5 w-5 mr-3 text-gray-400" />
                           <span className="font-medium">Dashboard</span>
@@ -131,7 +189,10 @@ const Header = () => {
                         <Link
                           to="/dashboard"
                           className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
-                          onClick={() => setIsUserDropdownOpen(false)}
+                          onClick={() => {
+                            setIsUserDropdownOpen(false)
+                            window.scrollTo({ top: 0, behavior: "smooth" })
+                          }}
                         >
                           <ShoppingBag className="h-5 w-5 mr-3 text-gray-400" />
                           <span className="font-medium">Purchase History</span>
@@ -139,7 +200,10 @@ const Header = () => {
                         <Link
                           to="/dashboard"
                           className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
-                          onClick={() => setIsUserDropdownOpen(false)}
+                          onClick={() => {
+                            setIsUserDropdownOpen(false)
+                            window.scrollTo({ top: 0, behavior: "smooth" })
+                          }}
                         >
                           <Settings className="h-5 w-5 mr-3 text-gray-400" />
                           <span className="font-medium">Settings</span>
@@ -165,12 +229,14 @@ const Header = () => {
                 <Link
                   to="/login"
                   className="px-4 py-2 text-green-600 font-semibold border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
                   className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
                   Sign Up
                 </Link>
@@ -211,8 +277,7 @@ const Header = () => {
                 {/* Menu Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                   <div className="flex items-center space-x-2">
-                    {/* <img src="/logo.png" alt="ProTakeoff Logo" className="h-8 w-12" /> */}
-                    <img src="/ProTakeoff.ai.png" alt="ProTakeoff.ai" className="h-4" />
+                    <img src="/ProTakeoff.ai.png" alt="Protakeoffs.ai" className="h-4" />
                   </div>
                   <button
                     onClick={closeMobileMenu}
@@ -224,31 +289,19 @@ const Header = () => {
 
                 {/* Navigation Links */}
                 <nav className="flex-1 px-4 py-6 space-y-2">
-                  {navItems.map((item) =>
-                    item.href.startsWith("/#") ? (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 py-3 text-lg font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-                        onClick={closeMobileMenu}
-                      >
-                        {item.label}
-                      </a>
-                    ) : (
-                      <Link
-                        key={item.href}
-                        to={item.href}
-                        className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
-                          location.pathname === item.href
-                            ? "text-green-600 bg-green-50"
-                            : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                        }`}
-                        onClick={closeMobileMenu}
-                      >
-                        {item.label}
-                      </Link>
-                    ),
-                  )}
+                  {navItems.map((item) => (
+                    <button
+                      key={`mobile-${item.href}-${item.section || "page"}`}
+                      onClick={(e) => handleNavigation(item, e)}
+                      className={`w-full text-left block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
+                        isActiveLink(item)
+                          ? "text-green-600 bg-green-50"
+                          : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
                 </nav>
 
                 {/* Auth Buttons/User Mobile */}
@@ -277,7 +330,10 @@ const Header = () => {
                       <Link
                         to="/dashboard"
                         className="w-full flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                        onClick={closeMobileMenu}
+                        onClick={() => {
+                          closeMobileMenu()
+                          window.scrollTo({ top: 0, behavior: "smooth" })
+                        }}
                       >
                         <User className="h-5 w-5 mr-3" />
                         <span className="font-medium">Dashboard</span>
@@ -298,14 +354,20 @@ const Header = () => {
                       <Link
                         to="/login"
                         className="w-full flex items-center p-3 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        onClick={closeMobileMenu}
+                        onClick={() => {
+                          closeMobileMenu()
+                          window.scrollTo({ top: 0, behavior: "smooth" })
+                        }}
                       >
                         Login
                       </Link>
                       <Link
                         to="/signup"
                         className="w-full flex items-center p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                        onClick={closeMobileMenu}
+                        onClick={() => {
+                          closeMobileMenu()
+                          window.scrollTo({ top: 0, behavior: "smooth" })
+                        }}
                       >
                         Sign Up
                       </Link>

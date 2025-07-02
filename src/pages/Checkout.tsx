@@ -24,6 +24,7 @@ import {
 
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
+import { useCart } from "../components/CartContext"
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY || "null")
@@ -71,20 +72,8 @@ const CheckoutContent = () => {
     zipCode: "",
     country: "US",
   })
-
-  // Mock order data (in real app, this would come from cart/state)
-  const orderData = {
-    item: {
-      title: "Residential Landscaping - 2,500 sq ft",
-      type: "Medium Project",
-      area: "2,500 sq ft",
-      price: 99,
-      image: "/placeholder.svg?height=100&width=150",
-    },
-    subtotal: 99,
-    tax: 7.92, // 8% tax
-    total: 106.92,
-  }
+  const { items, getTotalPrice, clearCart } = useCart();
+  const [order, setOrder] = useState<any>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBillingInfo({
@@ -95,82 +84,58 @@ const CheckoutContent = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!stripe || !elements) {
       return
     }
-
     setIsProcessing(true)
     setPaymentError("")
-
     const cardElement = elements.getElement(CardElement)
     if (!cardElement) {
       setIsProcessing(false)
       return
     }
-
     try {
-      // Create payment method
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: "card",
+      // Create payment method with Stripe
+      const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
         card: cardElement,
         billing_details: {
           name: `${billingInfo.firstName} ${billingInfo.lastName}`,
           email: billingInfo.email,
-          address: {
-            line1: billingInfo.address,
-            city: billingInfo.city,
-            state: billingInfo.state,
-            postal_code: billingInfo.zipCode,
-            country: billingInfo.country,
-          },
         },
-      })
-
-      if (error) {
-        setPaymentError(error.message || "An error occurred")
-        setIsProcessing(false)
-        return
+      });
+      if (pmError) {
+        setPaymentError(pmError.message || 'Payment error');
+        setIsProcessing(false);
+        return;
       }
-
-      // Create payment intent on your backend
-      const response = await fetch("/api/create-payment-intent", {
+      // Send to backend
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/cart/checkout`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          payment_method_id: paymentMethod.id,
-          amount: Math.round(orderData.total * 100), // Convert to cents
-          currency: "usd",
-          billing_details: billingInfo,
+          cart: items,
+          user: billingInfo,
+          paymentMethodId: paymentMethod.id,
         }),
-      })
-
-      const { client_secret, error: backendError } = await response.json()
-
-      if (backendError) {
-        setPaymentError(backendError)
-        setIsProcessing(false)
-        return
-      }
-
-      // Confirm payment
-      const { error: confirmError } = await stripe.confirmCardPayment(client_secret)
-
-      if (confirmError) {
-        setPaymentError(confirmError.message || "Payment failed")
-        setIsProcessing(false)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPaymentSuccess(true);
+        setOrder(data.order);
+        clearCart();
       } else {
-        setPaymentSuccess(true)
+        setPaymentError(data.message || "Checkout failed");
       }
     } catch (error) {
-      setPaymentError("An unexpected error occurred")
-      setIsProcessing(false)
+      setPaymentError("An unexpected error occurred");
+    } finally {
+      setIsProcessing(false);
     }
   }
 
-  if (paymentSuccess) {
+  if (paymentSuccess && order) {
+    // Show download button for the first purchased takeoff (or all)
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center">
@@ -179,13 +144,23 @@ const CheckoutContent = () => {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
           <p className="text-lg text-gray-600 mb-8">
-            Your takeoff has been purchased successfully. Check your email for the download link.
+            Your takeoff has been purchased successfully. Download your files below.
           </p>
           <div className="space-y-4">
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl">
-              <Download className="h-4 w-4 mr-2" />
-              Download Your Takeoff
-            </Button>
+            {order.items.map((item: any) => (
+              <a
+                key={item.takeoffId}
+                href={item.blueprintUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download {item.title}
+                </Button>
+              </a>
+            ))}
             <Link to="/find-takeoffs">
               <Button variant="outline" className="w-full border-gray-300 text-gray-700 py-3 rounded-xl">
                 Browse More Takeoffs
@@ -376,7 +351,7 @@ const CheckoutContent = () => {
               ) : (
                 <div className="flex items-center justify-center">
                   <Lock className="h-5 w-5 mr-2" />
-                  Complete Purchase - ${orderData.total.toFixed(2)}
+                  Complete Purchase - ${getTotalPrice().toFixed(2)}
                 </div>
               )}
             </Button>
@@ -410,19 +385,19 @@ const CheckoutContent = () => {
             {/* Order Item */}
             <div className="flex items-start space-x-4 mb-6 pb-6 border-b border-gray-200">
               <img
-                src={orderData.item.image || "/placeholder.svg"}
-                alt={orderData.item.title}
+                src={items[0]?.image || "/placeholder.svg"}
+                alt={items[0]?.title}
                 className="w-20 h-16 rounded-lg object-cover"
               />
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1">{orderData.item.title}</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">{items[0]?.title}</h3>
                 <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
                   <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                    {orderData.item.type}
+                    {items[0]?.type}
                   </span>
-                  <span>{orderData.item.area}</span>
+                  <span>{items[0]?.area}</span>
                 </div>
-                <div className="text-lg font-bold text-gray-900">${orderData.item.price}</div>
+                <div className="text-lg font-bold text-gray-900">${items[0]?.price}</div>
               </div>
             </div>
 
@@ -449,16 +424,16 @@ const CheckoutContent = () => {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>${orderData.subtotal.toFixed(2)}</span>
+                <span>${getTotalPrice().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Tax</span>
-                <span>${orderData.tax.toFixed(2)}</span>
+                <span>${(getTotalPrice() * 0.08).toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-3">
                 <div className="flex justify-between text-lg font-bold text-gray-900">
                   <span>Total</span>
-                  <span>${orderData.total.toFixed(2)}</span>
+                  <span>${getTotalPrice().toFixed(2)}</span>
                 </div>
               </div>
             </div>

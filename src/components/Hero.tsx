@@ -33,8 +33,7 @@ const Hero = () => {
                 <span className="text-green-600">Win More.</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-2xl">
-                ProTakeoff.ai is a digital marketplace where landscaping and irrigation companies can instantly purchase
-                completed project takeoffs.
+                Protakeoffs.ai is the first AI-powered marketplace where landscaping and irrigation professionals can instantly purchase accurate, ready-to-use project takeoffs — From Blueprint to Bid, instantly.
               </p>
             </div>
 
@@ -43,7 +42,7 @@ const Hero = () => {
               {[
                 "Instant access to professional takeoffs",
                 "Save 80% of your estimation time",
-                "Win more bids with accurate pricing",
+                "Takeoffs Done. Deals Won.",
               ].map((benefit, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
@@ -90,7 +89,7 @@ const Hero = () => {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl max-w-lg w-full bg-gradient-to-br from-gray-50 to-white border border-gray-200">
                 <img
                   src="/hero.png"
-                  alt="ProTakeoff.ai - Digital marketplace for landscaping and irrigation project takeoffs"
+                  alt="Protakeoffs.ai - Digital marketplace for landscaping and irrigation project takeoffs"
                   className="w-full h-auto object-cover"
                 />
 

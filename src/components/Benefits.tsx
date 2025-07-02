@@ -63,7 +63,7 @@ const Benefits = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Why Choose <span className="text-green-600">ProTakeoff.ai</span>
+            Why Choose <span className="text-green-600">Protakeoffs.ai</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             We help small to midsize contractors eliminate manual blueprint work, bid faster, and grow their business

@@ -61,7 +61,7 @@ const Signup = () => {
           <div className="mb-8">
             <div className="flex items-center space-x-2 mb-8">
               {/* <img src="/logo.png" alt="ProTakeoff Logo" className="h-12 w-20 brightness-0 invert" /> */}
-              <img src="/ProTakeoff.ai.png" alt="ProTakeoff.ai" className="h-6 brightness-0 invert" />
+              <img src="/ProTakeoff.ai.png" alt="Protakeoffs.ai" className="h-6 brightness-0 invert" />
             </div>
           </div>
 
@@ -96,7 +96,7 @@ const Signup = () => {
           {/* Form Header */}
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-            <p className="text-gray-600">Join ProTakeoff.ai and transform your business</p>
+            <p className="text-gray-600">Join Protakeoffs.ai and transform your business</p>
           </div>
 
           {/* Signup Form */}

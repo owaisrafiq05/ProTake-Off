@@ -1,4 +1,17 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+// Fetch all users (no auth)
+export async function getAllUsers() {
+  const res = await fetch(`${API_BASE}/users`);
+  if (!res.ok) throw new Error('Failed to fetch users');
+  return res.json();
+}
+
+// Fetch all user transactions (no auth)
+export async function getAllUserTransactions() {
+  const res = await fetch(`${API_BASE}/orders/transactions`);
+  if (!res.ok) throw new Error('Failed to fetch user transactions');
+  return res.json();
+}
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export async function createTakeoff(data: any) {
   const formData = new FormData();

@@ -1,10 +1,10 @@
-# ProTakeoff.ai
+# Protakeoffs.ai
 
 A digital marketplace where landscaping and irrigation companies can instantly purchase completed project takeoffs. Built with modern web technologies for a fast, reliable, and user-friendly experience.
 
 ## 🚀 Project Overview
 
-ProTakeoff.ai streamlines the bidding process for landscaping and irrigation companies by providing instant access to professionally prepared project takeoffs. Companies can browse, filter, and purchase takeoffs based on project size, type, and location.
+Protakeoffs.ai streamlines the bidding process for landscaping and irrigation companies by providing instant access to professionally prepared project takeoffs. Companies can browse, filter, and purchase takeoffs based on project size, type, and location.
 
 ### Key Features
 
@@ -17,12 +17,12 @@ ProTakeoff.ai streamlines the bidding process for landscaping and irrigation com
 ## 🏗️ Project Structure
 
 ```
-ProTakeoff.ai/
+Protakeoffs.ai/
 ├── public/                     # Static assets
 │   ├── favicon.ico            # Site favicon
 │   ├── hero.png              # Main hero section image
 │   ├── logo.png              # Company logo
-│   ├── ProTakeoff.ai.png     # Brand text logo
+│   ├── Protakeoffs.ai.png     # Brand text logo
 │   └── robots.txt            # SEO robots file
 ├── src/
 │   ├── components/           # Reusable UI components
@@ -237,13 +237,13 @@ Key responsive features:
 
 ## 📄 License
 
-This project is proprietary software for ProTakeoff.ai. All rights reserved.
+This project is proprietary software for Protakeoffs.ai. All rights reserved.
 
 ## 📞 Support
 
 For technical support or questions:
 
-- Email: support@protakeoff.ai
+- Email: support@Protakeoffs.ai
 - Documentation: [Project Wiki](https://lovable.dev/projects/095db277-0f5a-43f3-b727-caa6b97bee03)
 
 ---
