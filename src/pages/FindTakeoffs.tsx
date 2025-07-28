@@ -62,8 +62,12 @@ const FindTakeoffs = () => {
       if (searchTerm) params.search = searchTerm
       if (zipCode) params.zipCode = zipCode
       if (selectedSize) params.size = selectedSize.toLowerCase()
-      if (selectedTypes.length > 0) params.type = selectedTypes.join(",").toLowerCase()
-      if (takeoffType) params.takeoffType = takeoffType.toLowerCase()
+      // Takeoff Type takes precedence over Project Type
+      if (takeoffType) {
+        params.type = takeoffType.toLowerCase()
+      } else if (selectedTypes.length > 0) {
+        params.type = selectedTypes.join(",").toLowerCase()
+      }
       if (distance) params.distance = distance
 
       const data = await getTakeoffs(params)
