@@ -28,8 +28,9 @@ import {
   X,
   CheckCircle,
   AlertCircle,
+  MessageCircle,
 } from "lucide-react"
-import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions } from "../lib/api"
+import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats } from "../lib/api"
 import { Toaster, toast } from "../components/ui/sonner"
 import AdminHeader from "@/components/AdminHeader"
 
@@ -40,6 +41,14 @@ const AdminPanel = () => {
   const [userTransactions, setUserTransactions] = useState<any[]>([])
   const [userSearch, setUserSearch] = useState("")
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+
+  // Contact Management State
+  const [contacts, setContacts] = useState<any[]>([])
+  const [contactStats, setContactStats] = useState<any>(null)
+  const [contactSearch, setContactSearch] = useState("")
+  const [contactStatusFilter, setContactStatusFilter] = useState("all")
+  const [contactPage, setContactPage] = useState(1)
+  const [contactLoading, setContactLoading] = useState(false)
 
   // Fetch all users
   const fetchUsers = async () => {
@@ -67,6 +76,76 @@ const AdminPanel = () => {
       fetchUserTransactions()
     }
   }, [activeTab])
+
+  // Contact Management Functions
+  const fetchContacts = async () => {
+    try {
+      setContactLoading(true)
+      const params: any = {
+        page: contactPage,
+        limit: 10,
+      }
+      
+      // Only add search if it's not empty
+      if (contactSearch && contactSearch.trim()) {
+        params.search = contactSearch
+      }
+      
+      // Only add status if it's not 'all'
+      if (contactStatusFilter && contactStatusFilter !== 'all') {
+        params.status = contactStatusFilter
+      }
+      
+      console.log('Fetching contacts with params:', params)
+      const res = await getAllContacts(params)
+      console.log('Contacts API response:', res)
+      setContacts(res.data.contacts || [])
+      console.log('Set contacts:', res.data.contacts || [])
+    } catch (err: any) {
+      console.error('Error fetching contacts:', err)
+      toast.error("Failed to fetch contacts")
+    } finally {
+      setContactLoading(false)
+    }
+  }
+
+  const fetchContactStats = async () => {
+    try {
+      const res = await getContactStats()
+      setContactStats(res.data)
+    } catch (err: any) {
+      toast.error("Failed to fetch contact statistics")
+    }
+  }
+
+  const handleContactStatusUpdate = async (id: string, status: string) => {
+    try {
+      await updateContactStatus(id, status)
+      toast.success("Contact status updated successfully")
+      fetchContacts()
+    } catch (err: any) {
+      toast.error("Failed to update contact status")
+    }
+  }
+
+  const handleContactDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this contact?")) return
+    
+    try {
+      await deleteContact(id)
+      toast.success("Contact deleted successfully")
+      fetchContacts()
+    } catch (err: any) {
+      toast.error("Failed to delete contact")
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === "contacts") {
+      fetchContacts()
+      fetchContactStats()
+    }
+  }, [activeTab, contactPage, contactSearch, contactStatusFilter])
   const [isEditing, setIsEditing] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -126,8 +205,10 @@ const AdminPanel = () => {
     { id: "active-log", label: "Active Log", icon: Activity },
     { id: "expired-takeoffs", label: "Expired Takeoffs", icon: Archive },
     { id: "user-management", label: "User Management", icon: Settings },
+    { id: "contacts", label: "Contact Forms", icon: MessageCircle },
     { id: "admin", label: "Admin", icon: Settings },
   ]
+
   // Admin User Management & Transaction History View
   const renderUserManagement = () => {
     // Filter users by search
@@ -959,6 +1040,173 @@ const AdminPanel = () => {
     </div>
   )
 
+  const renderContacts = () => (
+    <div className="space-y-8">
+      {/* Contact Statistics */}
+      {contactStats && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Form Statistics</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center p-6 bg-green-50 rounded-xl">
+              <div className="text-3xl font-bold text-green-600 mb-2">
+                {contactStats.total || 0}
+              </div>
+              <div className="text-sm text-gray-600">Total Submissions</div>
+            </div>
+            <div className="text-center p-6 bg-blue-50 rounded-xl">
+              <div className="text-3xl font-bold text-blue-600 mb-2">
+                {contactStats.today || 0}
+              </div>
+              <div className="text-sm text-gray-600">Today's Submissions</div>
+            </div>
+            <div className="text-center p-6 bg-yellow-50 rounded-xl">
+              <div className="text-3xl font-bold text-yellow-600 mb-2">
+                {contactStats.byStatus?.new || 0}
+              </div>
+              <div className="text-sm text-gray-600">New Messages</div>
+            </div>
+            <div className="text-center p-6 bg-purple-50 rounded-xl">
+              <div className="text-3xl font-bold text-purple-600 mb-2">
+                {contactStats.byStatus?.replied || 0}
+              </div>
+              <div className="text-sm text-gray-600">Replied</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contact List */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Form Submissions</h2>
+        
+        {/* Filters and Search */}
+        <div className="mb-6 flex flex-col md:flex-row gap-4">
+          <Input
+            placeholder="Search by name, email, or message..."
+            value={contactSearch}
+            onChange={(e) => setContactSearch(e.target.value)}
+            className="flex-1"
+          />
+          <select
+            value={contactStatusFilter}
+            onChange={(e) => setContactStatusFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          >
+            <option value="all">All Status</option>
+            <option value="new">New</option>
+            <option value="read">Read</option>
+            <option value="replied">Replied</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+
+        {/* Contact Table */}
+        {contactLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
+            <p className="text-gray-500 mt-2">Loading contacts...</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Message</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {contacts.map((contact) => (
+                  <tr key={contact._id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">
+                      {contact.name}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                      {contact.email}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                      {contact.company || '-'}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                      {contact.phone}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      <div className="max-w-xs truncate" title={contact.message}>
+                        {contact.message}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <select
+                        value={contact.status}
+                        onChange={(e) => handleContactStatusUpdate(contact._id, e.target.value)}
+                        className={`px-2 py-1 rounded-full text-xs font-medium border ${
+                          contact.status === 'new' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                          contact.status === 'read' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                          contact.status === 'replied' ? 'bg-green-100 text-green-800 border-green-200' :
+                          'bg-gray-100 text-gray-800 border-gray-200'
+                        }`}
+                      >
+                        <option value="new">New</option>
+                        <option value="read">Read</option>
+                        <option value="replied">Replied</option>
+                        <option value="archived">Archived</option>
+                      </select>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                      {new Date(contact.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <Button
+                          onClick={() => {
+                            // Copy email to clipboard
+                            navigator.clipboard.writeText(contact.email)
+                            toast.success("Email copied to clipboard")
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="border-gray-300 text-gray-700"
+                        >
+                          Copy Email
+                        </Button>
+                        <Button
+                          onClick={() => handleContactDelete(contact._id)}
+                          variant="outline"
+                          size="sm"
+                          className="border-red-300 text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {contacts.length === 0 && !contactLoading && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <MessageCircle className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No contact submissions found</h3>
+            <p className="text-gray-500">
+              {contactSearch || contactStatusFilter !== 'all' ? "Try adjusting your search or filters" : "No contact form submissions yet"}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
   const renderAdmin = () => (
     <div className="space-y-8">
       {/* Admin Overview */}
@@ -1091,6 +1339,7 @@ const AdminPanel = () => {
             {activeTab === "active-log" && renderTakeoffsList("Active Takeoffs")}
             {activeTab === "expired-takeoffs" && renderTakeoffsList("Expired Takeoffs", true)}
             {activeTab === "user-management" && renderUserManagement()}
+            {activeTab === "contacts" && renderContacts()}
             {activeTab === "admin" && renderAdmin()}
           </div>
         </div>

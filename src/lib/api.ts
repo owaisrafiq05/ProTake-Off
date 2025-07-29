@@ -1,3 +1,7 @@
+import Cookies from 'js-cookie';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'https://protakeoff-dev-backend.onrender.com/api';
+
 // Fetch all users (no auth)
 export async function getAllUsers() {
   const res = await fetch(`${API_BASE}/users`);
@@ -11,7 +15,69 @@ export async function getAllUserTransactions() {
   if (!res.ok) throw new Error('Failed to fetch user transactions');
   return res.json();
 }
-const API_BASE = import.meta.env.VITE_API_URL || 'https://protakeoff-dev-backend.onrender.com/api';
+
+// Contact Management API functions
+export async function getAllContacts(params: any = {}) {
+  const query = new URLSearchParams(params).toString();
+  
+  const res = await fetch(`${API_BASE}/contact/admin/all${query ? `?${query}` : ''}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) {
+    console.error('Contact fetch error:', res.status, res.statusText);
+    throw new Error('Failed to fetch contacts');
+  }
+  return res.json();
+}
+
+export async function getContactById(id: string) {
+  const res = await fetch(`${API_BASE}/contact/admin/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('Failed to fetch contact');
+  return res.json();
+}
+
+export async function updateContactStatus(id: string, status: string) {
+  const res = await fetch(`${API_BASE}/contact/admin/${id}/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) throw new Error('Failed to update contact status');
+  return res.json();
+}
+
+export async function deleteContact(id: string) {
+  const res = await fetch(`${API_BASE}/contact/admin/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('Failed to delete contact');
+  return res.json();
+}
+
+export async function getContactStats() {
+  const res = await fetch(`${API_BASE}/contact/admin/stats`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) {
+    console.error('Stats fetch error:', res.status, res.statusText);
+    throw new Error('Failed to fetch contact stats');
+  }
+  return res.json();
+}
+
 
 export async function createTakeoff(data: any) {
   const formData = new FormData();

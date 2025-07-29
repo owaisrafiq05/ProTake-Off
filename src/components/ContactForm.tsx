@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Mail, Phone, MapPin, Send, MessageCircle, Clock } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 const ContactForm = () => {
+  const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,21 +20,117 @@ const ContactForm = () => {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required"
+    } else if (formData.name.length < 2) {
+      newErrors.name = "Name must be at least 2 characters"
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required"
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address"
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required"
+    } else if (formData.phone.length < 10) {
+      newErrors.phone = "Phone number must be at least 10 characters"
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required"
+    } else if (formData.message.length < 10) {
+      newErrors.message = "Message must be at least 10 characters"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
     setIsSubmitting(true)
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsSubmitting(false)
-    // Reset form or show success message
+    setErrors({})
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://protakeoff-dev-backend.onrender.com/api'}/contact/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Success
+        toast({
+          title: "Message sent successfully!",
+          description: "We'll get back to you within 24 hours.",
+        })
+        
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          company: "",
+          phone: "",
+          message: "",
+        })
+      } else {
+        // Handle validation errors from backend
+        if (data.errors && Array.isArray(data.errors)) {
+          const backendErrors: Record<string, string> = {}
+          data.errors.forEach((error: any) => {
+            backendErrors[error.path] = error.msg
+          })
+          setErrors(backendErrors)
+        } else {
+          toast({
+            title: "Error",
+            description: data.message || "Failed to send message. Please try again.",
+            variant: "destructive",
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Contact form submission error:', error)
+      toast({
+        title: "Network Error",
+        description: "Please check your internet connection and try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     })
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ""
+      })
+    }
   }
 
   return (
@@ -57,7 +155,7 @@ const ContactForm = () => {
             Get in <span className="text-green-600">Touch</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Have questions, need support, or want to learn more about how ProTakeoff.ai can help your business? We’d love to hear from you.
+            Have questions, need support, or want to learn more about how ProTakeoff.ai can help your business? We'd love to hear from you.
           </p>
         </div>
 
@@ -129,9 +227,14 @@ const ContactForm = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Enter your full name"
-                      className="border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl"
+                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                        errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                      }`}
                       required
                     />
+                    {errors.name && (
+                      <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -143,9 +246,14 @@ const ContactForm = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Enter your email address"
-                      className="border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl"
+                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                        errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                      }`}
                       required
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                    )}
                   </div>
                 </div>
 
@@ -158,8 +266,13 @@ const ContactForm = () => {
                       value={formData.company}
                       onChange={handleChange}
                       placeholder="Your company name"
-                      className="border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl"
+                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                        errors.company ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                      }`}
                     />
+                    {errors.company && (
+                      <p className="text-red-500 text-sm mt-1">{errors.company}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -172,8 +285,13 @@ const ContactForm = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="Your phone number"
-                      className="border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl"
+                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                        errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                      }`}
                     />
+                    {errors.phone && (
+                      <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+                    )}
                   </div>
                 </div>
 
@@ -188,9 +306,14 @@ const ContactForm = () => {
                     onChange={handleChange}
                     placeholder="Tell us about your project or ask any questions..."
                     rows={6}
-                    className="border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none rounded-xl"
+                    className={`border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none rounded-xl ${
+                      errors.message ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                    }`}
                     required
                   />
+                  {errors.message && (
+                    <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+                  )}
                 </div>
 
                 {/* Submit Button */}
