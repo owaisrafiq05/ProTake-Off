@@ -63,14 +63,6 @@ const CheckoutContent = () => {
   const [paymentError, setPaymentError] = useState("")
   const [billingInfo, setBillingInfo] = useState({
     email: "",
-    firstName: "",
-    lastName: "",
-    company: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "US",
   })
   const { items, getTotalPrice, clearCart } = useCart();
   const [order, setOrder] = useState<any>(null);
@@ -100,7 +92,6 @@ const CheckoutContent = () => {
         type: 'card',
         card: cardElement,
         billing_details: {
-          name: `${billingInfo.firstName} ${billingInfo.lastName}`,
           email: billingInfo.email,
         },
       });
@@ -239,100 +230,7 @@ const CheckoutContent = () => {
               </div>
             </div>
 
-            {/* Billing Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Billing Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    name="firstName"
-                    value={billingInfo.firstName}
-                    onChange={handleInputChange}
-                    placeholder="John"
-                    className="py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    name="lastName"
-                    value={billingInfo.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Doe"
-                    className="py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    required
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Company (Optional)</label>
-                  <Input
-                    name="company"
-                    value={billingInfo.company}
-                    onChange={handleInputChange}
-                    placeholder="Your Company Name"
-                    className="py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Address <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    name="address"
-                    value={billingInfo.address}
-                    onChange={handleInputChange}
-                    placeholder="123 Main Street"
-                    className="py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    City <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    name="city"
-                    value={billingInfo.city}
-                    onChange={handleInputChange}
-                    placeholder="Austin"
-                    className="py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    State <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    name="state"
-                    value={billingInfo.state}
-                    onChange={handleInputChange}
-                    placeholder="TX"
-                    className="py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    ZIP Code <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    name="zipCode"
-                    value={billingInfo.zipCode}
-                    onChange={handleInputChange}
-                    placeholder="78701"
-                    className="py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
+
 
             {/* Payment Information */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -477,25 +375,6 @@ const CheckoutContent = () => {
               <div className="flex items-center text-green-700">
                 <Check className="h-4 w-4 mr-2" />
                 <span className="font-medium">24/7 customer support</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Security Features */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Secure Checkout</h3>
-            <div className="space-y-3">
-              <div className="flex items-center text-sm text-gray-600">
-                <Shield className="h-4 w-4 mr-2 text-green-600" />
-                <span>SSL encrypted payment</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <CreditCard className="h-4 w-4 mr-2 text-green-600" />
-                <span>PCI DSS compliant</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <Lock className="h-4 w-4 mr-2 text-green-600" />
-                <span>Bank-level security</span>
               </div>
             </div>
           </div>
