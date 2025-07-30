@@ -88,7 +88,7 @@ const UserDashboard = () => {
   } = updatesAddress;
 
   useEffect(() => {
-    if (user) setUserProfile(user)
+    if (user) setUserProfile(user as unknown as UserProfile)
   }, [user])
 
   useEffect(() => {

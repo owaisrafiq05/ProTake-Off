@@ -83,7 +83,7 @@ export async function createTakeoff(data: any) {
   const formData = new FormData();
   // Append fields
   for (const key in data) {
-    if (key === 'files' || key === 'images') continue;
+    if (key === 'files' || key === 'pdfPreview') continue;
     if (typeof data[key] === 'object' && data[key] !== null) {
       formData.append(key, JSON.stringify(data[key]));
     } else {
@@ -94,8 +94,8 @@ export async function createTakeoff(data: any) {
   if (data.files && Array.isArray(data.files)) {
     data.files.forEach((file: File) => formData.append('files', file));
   }
-  if (data.images && Array.isArray(data.images)) {
-    data.images.forEach((img: File) => formData.append('images', img));
+  if (data.pdfPreview && Array.isArray(data.pdfPreview)) {
+    data.pdfPreview.forEach((pdf: File) => formData.append('pdfPreview', pdf));
   }
   const res = await fetch(`${API_BASE}/takeoffs`, {
     method: 'POST',
@@ -124,7 +124,7 @@ export async function getTakeoffById(id: string) {
 export async function updateTakeoff(id: string, data: any) {
   const formData = new FormData();
   for (const key in data) {
-    if (key === 'files' || key === 'images') continue;
+    if (key === 'files' || key === 'pdfPreview') continue;
     if (typeof data[key] === 'object' && data[key] !== null) {
       formData.append(key, JSON.stringify(data[key]));
     } else {
@@ -134,8 +134,8 @@ export async function updateTakeoff(id: string, data: any) {
   if (data.files && Array.isArray(data.files)) {
     data.files.forEach((file: File) => formData.append('files', file));
   }
-  if (data.images && Array.isArray(data.images)) {
-    data.images.forEach((img: File) => formData.append('images', img));
+  if (data.pdfPreview && Array.isArray(data.pdfPreview)) {
+    data.pdfPreview.forEach((pdf: File) => formData.append('pdfPreview', pdf));
   }
   const res = await fetch(`${API_BASE}/takeoffs/${id}`, {
     method: 'PUT',

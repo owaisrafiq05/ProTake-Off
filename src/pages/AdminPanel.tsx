@@ -171,7 +171,7 @@ const AdminPanel = () => {
     zipCode: "",
     expirationDate: "",
     price: "",
-    images: [] as File[],
+    pdfPreview: [] as File[],
     files: [] as File[],
     features: "",
     area: "",
@@ -336,9 +336,10 @@ const AdminPanel = () => {
     }
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "images" | "files") => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length > 0) {
+      const type = e.target.id === "pdf-preview-upload" ? "pdfPreview" : "files"
       setFormData((prev) => ({
         ...prev,
         [type]: [...prev[type], ...files],
@@ -346,7 +347,7 @@ const AdminPanel = () => {
     }
   }
 
-  const removeFile = (type: "images" | "files", index: number) => {
+  const removeFile = (index: number, type: "pdfPreview" | "files") => {
     setFormData((prev) => ({
       ...prev,
       [type]: prev[type].filter((_, i) => i !== index),
@@ -411,7 +412,7 @@ const AdminPanel = () => {
         tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
         isActive: true,
         files: formData.files,
-        images: formData.images,
+        pdfPreview: formData.pdfPreview,
       }
       let result
       if (isEditing && editingId) {
@@ -430,7 +431,7 @@ const AdminPanel = () => {
         zipCode: "",
         expirationDate: "",
         price: "",
-        images: [],
+        pdfPreview: [],
         files: [],
         features: "",
         area: "",
@@ -465,7 +466,7 @@ const AdminPanel = () => {
       zipCode: takeoff.zipCode ?? "",
       expirationDate: takeoff.expirationDate ? takeoff.expirationDate.slice(0, 10) : "",
       price: takeoff.price?.toString() ?? "",
-      images: [],
+      pdfPreview: [],
       files: [],
       features: takeoff.features ? takeoff.features.join(", ") : "",
       area: takeoff.specifications?.area?.toString() ?? "",
@@ -539,7 +540,7 @@ const AdminPanel = () => {
                 zipCode: "",
                 expirationDate: "",
                 price: "",
-                images: [],
+                pdfPreview: [],
                 files: [],
                 features: "",
                 area: "",
@@ -784,36 +785,36 @@ const AdminPanel = () => {
           <div className=" rounded-xl p-6 border border-gray-200 mb-6">
             <h3 className="text-lg font-semibold mb-4 text-green-700">Uploads</h3>
             <div className="space-y-6">
-              {/* Add Images */}
+              {/* Add PDF Preview */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Add Images (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Add PDF Preview (Optional)</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
                   <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <ImageIcon className="h-8 w-8 text-gray-400" />
+                    <FileText className="h-8 w-8 text-gray-400" />
                   </div>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".pdf"
                     multiple
-                    onChange={(e) => handleFileUpload(e, "images")}
+                    onChange={handleFileUpload}
                     className="hidden"
-                    id="image-upload"
+                    id="pdf-preview-upload"
                   />
                   <label
-                    htmlFor="image-upload"
+                    htmlFor="pdf-preview-upload"
                     className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover: transition-colors"
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    Upload Images
+                    Upload PDF Preview
                   </label>
-                  {formData.images.length > 0 && (
+                  {formData.pdfPreview.length > 0 && (
                     <div className="mt-4 space-y-2">
-                      {formData.images.map((file, index) => (
+                      {formData.pdfPreview.map((file, index) => (
                         <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
                           <span className="text-sm text-gray-600">{file.name}</span>
                           <button
                             type="button"
-                            onClick={() => removeFile("images", index)}
+                            onClick={() => removeFile(index, "pdfPreview")}
                             className="text-red-500 hover:text-red-700"
                           >
                             <X className="h-4 w-4" />
@@ -835,7 +836,7 @@ const AdminPanel = () => {
                     type="file"
                     accept=".pdf,.dwg,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
                     multiple
-                    onChange={(e) => handleFileUpload(e, "files")}
+                    onChange={handleFileUpload}
                     className="hidden"
                     id="file-upload"
                   />
@@ -853,7 +854,7 @@ const AdminPanel = () => {
                           <span className="text-sm text-gray-600">{file.name}</span>
                           <button
                             type="button"
-                            onClick={() => removeFile("files", index)}
+                            onClick={() => removeFile(index, "files")}
                             className="text-red-500 hover:text-red-700"
                           >
                             <X className="h-4 w-4" />

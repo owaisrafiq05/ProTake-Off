@@ -5,7 +5,7 @@ import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Filter, MapPin, Calendar, Ruler, DollarSign, Navigation } from "lucide-react"
+import { Search, Filter, MapPin, Calendar, Ruler, DollarSign, Navigation, FileText } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { getTakeoffs } from "../lib/api"
 import { useAuth } from "../components/AuthContext"
@@ -23,7 +23,7 @@ interface Takeoff {
   features?: string[]
   specifications?: any
   tags?: string[]
-  images?: any[]
+  pdfPreview?: any[]
   files?: any[]
 }
 
@@ -100,14 +100,14 @@ const FindTakeoffs = () => {
     // eslint-disable-next-line
   }, [page])
 
-  // Infinite scroll observer
+  // Intersection Observer for infinite scroll
   useEffect(() => {
     if (loading) return
-    if (!hasMore) return
+
     if (observer.current) observer.current.disconnect()
 
-    observer.current = new window.IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
         setPage((prev) => prev + 1)
       }
     })
@@ -115,23 +115,32 @@ const FindTakeoffs = () => {
     if (lastTakeoffRef.current) {
       observer.current.observe(lastTakeoffRef.current)
     }
-  }, [loading, hasMore, takeoffs])
 
+    return () => {
+      if (observer.current) observer.current.disconnect()
+    }
+  }, [loading, hasMore])
+
+  // Parse URL params on mount
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const zip = params.get("zipCode") || ""
-    const size = params.get("size") || ""
-    const takeoffTypeParam = params.get("takeoffType") || ""
-    const distanceParam = params.get("distance") || ""
+    const searchParams = new URLSearchParams(location.search)
+    const search = searchParams.get("search")
+    const size = searchParams.get("size")
+    const type = searchParams.get("type")
+    const zip = searchParams.get("zipCode")
+    const dist = searchParams.get("distance")
 
+    if (search) setSearchTerm(search)
+    if (size) setSelectedSize(size)
+    if (type) setTakeoffType(type)
     if (zip) setZipCode(zip)
-    if (size) setSelectedSize(size.charAt(0).toUpperCase() + size.slice(1))
-    if (takeoffTypeParam) setTakeoffType(takeoffTypeParam.charAt(0).toUpperCase() + takeoffTypeParam.slice(1))
-    if (distanceParam) setDistance(distanceParam)
+    if (dist) setDistance(dist)
   }, [location.search])
 
   const handleTypeChange = (type: string) => {
-    setSelectedTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]))
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    )
   }
 
   const clearFilters = () => {
@@ -141,62 +150,88 @@ const FindTakeoffs = () => {
     setTakeoffType("")
     setDistance("")
     setZipCode("")
+    setSort("newest")
   }
 
   const handleViewDetails = (projectId: string) => {
-    if (!user) {
-      toast.error("To complete access please login")
-      navigate("/login")
-      return
-    }
     navigate(`/takeoff-details/${projectId}`)
   }
 
+  // Helper function to get preview image for takeoff
+  const getTakeoffPreview = (takeoff: Takeoff) => {
+    // First try to get PDF first page preview from files array
+    if (takeoff.files && takeoff.files.length > 0) {
+      const pdfFile = takeoff.files.find((file: any) => 
+        file.isPdf && (file.firstPagePreviewUrl || file.cloudinaryUrl)
+      )
+      if (pdfFile) {
+        return pdfFile.firstPagePreviewUrl || pdfFile.cloudinaryUrl
+      }
+    }
+    
+    // Fallback to pdfPreview array
+    if (takeoff.pdfPreview && takeoff.pdfPreview.length > 0) {
+      const pdfPreview = takeoff.pdfPreview.find((pdf: any) => 
+        pdf.firstPagePreviewUrl || pdf.cloudinaryUrl
+      )
+      if (pdfPreview) {
+        return pdfPreview.firstPagePreviewUrl || pdfPreview.cloudinaryUrl
+      }
+    }
+    
+    // Default placeholder
+    return "/placeholder.svg"
+  }
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Hero Section */}
-      <section className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Browse Takeoffs</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Find and purchase takeoffs for your landscaping and irrigation projects.
+      <section id="find-takeoffs" className="relative bg-white py-20 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fillRule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23059669&quot; fillOpacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;7&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] bg-repeat" />
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-green-100/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-green-50/50 to-transparent rounded-full blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Find Your Perfect Takeoff
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Browse through our extensive collection of professional takeoffs. Filter by location, project type, and size to find exactly what you need.
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-12">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                placeholder="Search takeoffs by title, description, or keywords..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 pr-4 py-4 text-lg border-2 border-gray-200 focus:border-green-500 focus:ring-green-500"
+              />
+            </div>
+          </div>
+
+          {/* Filters and Results */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Filters Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                    <Filter className="h-5 w-5 mr-2 text-gray-600" />
-                    Filters
-                  </h3>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-8">
+                <div className="flex items-center mb-6">
+                  <Filter className="h-5 w-5 text-green-600 mr-2" />
+                  <h3 className="text-lg font-bold text-gray-900">Filters</h3>
                 </div>
 
                 <div className="space-y-6">
-                  {/* Search */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Search Projects</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="Search by title..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
                   {/* Zip Code */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
@@ -358,6 +393,27 @@ const FindTakeoffs = () => {
                       <span className={`text-xs text-gray-500 font-medium ${!user ? "blur-sm select-none" : ""}`}>
                         ${project.price}
                       </span>
+                    </div>
+
+                    {/* Project Preview Image */}
+                    <div className="relative mb-4 overflow-hidden rounded-lg">
+                      <img
+                        src={getTakeoffPreview(project)}
+                        alt={project.title}
+                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+                      {/* PDF indicator if it's a PDF file */}
+                      {project.files && project.files.some((file: any) => file.isPdf) && (
+                        <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                          <FileText className="h-3 w-3 mr-1" />
+                          PDF
+                        </div>
+                      )}
                     </div>
 
                     {/* Project Title */}
