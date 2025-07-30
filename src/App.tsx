@@ -15,7 +15,7 @@ import StripeCheckout from "./pages/StripeCheckout";
 import UserDashboard from "./pages/UserDashboard";
 import { CartProvider } from "./components/CartContext";
 import AdminPanel from "./pages/AdminPanel";
-import { AuthProvider } from "@/components/AuthContext";
+import { AuthProvider, useAuth } from "@/components/AuthContext";
 import VerifyEmail from "./pages/VerifyEmail";
 import AdminLogin from "./pages/AdminLogin";
 import { useEffect } from "react";
@@ -29,6 +29,25 @@ function ProtectedAdminRoute({ children }: { children: JSX.Element }) {
   if (!token) {
     return <Navigate to="/admin-login" state={{ from: location }} replace />;
   }
+  return children;
+}
+
+function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
   return children;
 }
 
@@ -48,8 +67,8 @@ const App = () => (
           <Route path="/find-takeoffs" element={<FindTakeoffs />} />
           <Route path="/takeoff-details/:id" element={<TakeoffDetails />} />
           <Route path="/stripe-checkout" element={<StripeCheckout />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin" element={<ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>} />
           <Route path="/verify-email" element={<VerifyEmail />} />
