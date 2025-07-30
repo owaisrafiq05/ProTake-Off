@@ -24,6 +24,7 @@ import {
   Clock,
   Search,
   ExternalLink,
+  FileText,
 } from "lucide-react"
 import { useAuth } from "@/components/AuthContext"
 
@@ -45,6 +46,21 @@ type UserProfile = {
   totalSpent?: number;
 };
 
+type FileItem = {
+  filename: string;
+  originalName: string;
+  cloudinaryUrl: string;
+  size: number;
+};
+
+type OrderItem = {
+  takeoffId: string;
+  title: string;
+  price: number;
+  blueprintUrl: string;
+  files?: FileItem[];
+};
+
 const UserDashboard = () => {
   const { user, updateProfile, loading, logout } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
@@ -54,6 +70,8 @@ const UserDashboard = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [profileUpdates, setProfileUpdates] = useState<Partial<UserProfile>>({})
   const [orders, setOrders] = useState<any[]>([]);
+  const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const {
     firstName = '',
@@ -61,7 +79,7 @@ const UserDashboard = () => {
     email = '',
     phone = '',
     company = '',
-    address: updatesAddress = {},
+    address: updatesAddress = { street: '', city: '', state: '', zipCode: '' },
   } = profileUpdates;
   const {
     street = '',
@@ -244,9 +262,16 @@ const UserDashboard = () => {
                 <span>{new Date(order.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center space-x-2 mt-2">
-                <a href={item.blueprintUrl} target="_blank" rel="noopener noreferrer">
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Download</Button>
-                </a>
+                <Button 
+                  size="sm" 
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => {
+                    setSelectedItem(item);
+                    setShowDownloadModal(true);
+                  }}
+                >
+                  Download
+                </Button>
               </div>
             </div>
           ))
@@ -274,9 +299,16 @@ const UserDashboard = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2 mt-2">
-              <a href={item.blueprintUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Download</Button>
-              </a>
+              <Button 
+                size="sm" 
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => {
+                  setSelectedItem(item);
+                  setShowDownloadModal(true);
+                }}
+              >
+                Download
+              </Button>
             </div>
           </div>
         ))}
@@ -286,6 +318,91 @@ const UserDashboard = () => {
       )}
     </div>
   )
+
+  // Download Modal Component
+  const DownloadModal = () => {
+    if (!showDownloadModal || !selectedItem) return null;
+
+    return (
+      <>
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowDownloadModal(false)} />
+        
+        {/* Modal */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900">Download Files</h3>
+              <button 
+                onClick={() => setShowDownloadModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="h-4 w-4 text-gray-500" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="p-6">
+              <h4 className="font-semibold text-gray-900 mb-4">{selectedItem.title}</h4>
+              <div className="space-y-3">
+                {selectedItem.files && selectedItem.files.length > 0 ? (
+                  selectedItem.files.map((file: FileItem, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <FileText className="h-5 w-5 text-gray-500" />
+                        <div>
+                          <p className="font-medium text-gray-900 text-sm">
+                            {file.originalName || `File ${index + 1}`}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                      <a
+                        href={file.cloudinaryUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
+                      </a>
+                    </div>
+                  ))
+                ) : (
+                  // Fallback for backward compatibility
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <FileText className="h-5 w-5 text-gray-500" />
+                      <div>
+                        <p className="font-medium text-gray-900 text-sm">
+                          {selectedItem.title}
+                        </p>
+                        <p className="text-xs text-gray-500">Blueprint file</p>
+                      </div>
+                    </div>
+                    <a
+                      href={selectedItem.blueprintUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                        <Download className="h-4 w-4 mr-1" />
+                        Download
+                      </Button>
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
 
   const renderSettings = () => (
     <div className="space-y-8">
@@ -445,6 +562,7 @@ const UserDashboard = () => {
       </div>
 
       <Footer />
+      <DownloadModal />
     </div>
   )
 }

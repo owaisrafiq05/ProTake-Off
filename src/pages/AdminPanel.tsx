@@ -172,8 +172,8 @@ const AdminPanel = () => {
     description: "",
     expirationDate: "",
     price: "",
-    imageIcon: null as File | null,
-    blueprint: null as File | null,
+    images: [] as File[],
+    files: [] as File[],
     features: "",
     area: "",
     complexity: "",
@@ -339,14 +339,21 @@ const AdminPanel = () => {
     }
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "imageIcon" | "blueprint") => {
-    const file = e.target.files?.[0]
-    if (file) {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "images" | "files") => {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
       setFormData((prev) => ({
         ...prev,
-        [type]: file,
+        [type]: [...prev[type], ...files],
       }))
     }
+  }
+
+  const removeFile = (type: "images" | "files", index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      [type]: prev[type].filter((_, i) => i !== index),
+    }))
   }
 
   const validateForm = () => {
@@ -369,14 +376,10 @@ const AdminPanel = () => {
       toast.error("Please select at least one project size.");
       return false;
     }
-    // Only require uploads on create
+    // Only require files on create, images are optional
     if (!isEditing) {
-      if (!formData.imageIcon) {
-        toast.error("Please upload an image icon.");
-        return false;
-      }
-      if (!formData.blueprint) {
-        toast.error("Please upload a blueprint file.");
+      if (formData.files.length === 0) {
+        toast.error("Please upload at least one file.");
         return false;
       }
     }
@@ -413,8 +416,8 @@ const AdminPanel = () => {
         expirationDate: formData.expirationDate,
         tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
         isActive: true,
-        files: formData.blueprint ? [formData.blueprint] : [],
-        images: formData.imageIcon ? [formData.imageIcon] : [],
+        files: formData.files,
+        images: formData.images,
       }
       let result
       if (isEditing && editingId) {
@@ -434,8 +437,8 @@ const AdminPanel = () => {
         description: "",
         expirationDate: "",
         price: "",
-        imageIcon: null,
-        blueprint: null,
+        images: [],
+        files: [],
         features: "",
         area: "",
         complexity: "",
@@ -472,8 +475,8 @@ const AdminPanel = () => {
       description: takeoff.description ?? "",
       expirationDate: takeoff.expirationDate ? takeoff.expirationDate.slice(0, 10) : "",
       price: takeoff.price?.toString() ?? "",
-      imageIcon: null,
-      blueprint: null,
+      images: [],
+      files: [],
       features: takeoff.features ? takeoff.features.join(", ") : "",
       area: takeoff.specifications?.area?.toString() ?? "",
       complexity: takeoff.specifications?.complexity ?? "",
@@ -549,8 +552,8 @@ const AdminPanel = () => {
                 description: "",
                 expirationDate: "",
                 price: "",
-                imageIcon: null,
-                blueprint: null,
+                images: [],
+                files: [],
                 features: "",
                 area: "",
                 complexity: "",
@@ -834,9 +837,9 @@ const AdminPanel = () => {
           <div className=" rounded-xl p-6 border border-gray-200 mb-6">
             <h3 className="text-lg font-semibold mb-4 text-green-700">Uploads</h3>
             <div className="space-y-6">
-              {/* Add Image Icon */}
+              {/* Add Images */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Add Image Icon <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Add Images (Optional)</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
                   <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
                     <ImageIcon className="h-8 w-8 text-gray-400" />
@@ -844,7 +847,8 @@ const AdminPanel = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleFileUpload(e, "imageIcon")}
+                    multiple
+                    onChange={(e) => handleFileUpload(e, "images")}
                     className="hidden"
                     id="image-upload"
                   />
@@ -853,33 +857,64 @@ const AdminPanel = () => {
                     className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover: transition-colors"
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    Upload
+                    Upload Images
                   </label>
-                  {formData.imageIcon && <p className="mt-2 text-sm text-green-600">{formData.imageIcon.name}</p>}
+                  {formData.images.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {formData.images.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                          <span className="text-sm text-gray-600">{file.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeFile("images", index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-              {/* Add Blueprint */}
+              {/* Add Files */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Add Blueprint <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Add Files <span className="text-red-500">*</span></label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
                   <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
                     <FileText className="h-8 w-8 text-gray-400" />
                   </div>
                   <input
                     type="file"
-                    accept=".pdf,.dwg,.jpg,.jpeg,.png"
-                    onChange={(e) => handleFileUpload(e, "blueprint")}
+                    accept=".pdf,.dwg,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                    multiple
+                    onChange={(e) => handleFileUpload(e, "files")}
                     className="hidden"
-                    id="blueprint-upload"
+                    id="file-upload"
                   />
                   <label
-                    htmlFor="blueprint-upload"
+                    htmlFor="file-upload"
                     className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover: transition-colors"
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    Upload
+                    Upload Files
                   </label>
-                  {formData.blueprint && <p className="mt-2 text-sm text-green-600">{formData.blueprint.name}</p>}
+                  {formData.files.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {formData.files.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                          <span className="text-sm text-gray-600">{file.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeFile("files", index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

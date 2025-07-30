@@ -135,7 +135,7 @@ const CheckoutContent = () => {
   }
 
   if (paymentSuccess && order) {
-    // Show download button for the first purchased takeoff (or all)
+    // Show download buttons for all purchased files
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center">
@@ -148,18 +148,40 @@ const CheckoutContent = () => {
           </p>
           <div className="space-y-4">
             {order.items.map((item: any) => (
-              <a
-                key={item.takeoffId}
-                href={item.blueprintUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download {item.title}
-                </Button>
-              </a>
+              <div key={item.takeoffId} className="border border-gray-200 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 mb-3">{item.title}</h3>
+                <div className="space-y-2">
+                  {item.files && item.files.length > 0 ? (
+                    item.files.map((file: any, fileIndex: number) => (
+                      <a
+                        key={fileIndex}
+                        href={file.cloudinaryUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl mb-2">
+                          <Download className="h-4 w-4 mr-2" />
+                          Download {file.originalName || `File ${fileIndex + 1}`}
+                        </Button>
+                      </a>
+                    ))
+                  ) : (
+                    // Fallback for backward compatibility
+                    <a
+                      href={item.blueprintUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl">
+                        <Download className="h-4 w-4 mr-2" />
+                        Download {item.title}
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              </div>
             ))}
             <Link to="/find-takeoffs">
               <Button variant="outline" className="w-full border-gray-300 text-gray-700 py-3 rounded-xl">
@@ -351,7 +373,7 @@ const CheckoutContent = () => {
               ) : (
                 <div className="flex items-center justify-center">
                   <Lock className="h-5 w-5 mr-2" />
-                  Complete Purchase - ${getTotalPrice().toFixed(2)}
+                  Complete Purchase - ${(getTotalPrice() * 1.08).toFixed(2)}
                 </div>
               )}
             </Button>
@@ -383,22 +405,26 @@ const CheckoutContent = () => {
             <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
 
             {/* Order Item */}
-            <div className="flex items-start space-x-4 mb-6 pb-6 border-b border-gray-200">
-              <img
-                src={items[0]?.image || "/placeholder.svg"}
-                alt={items[0]?.title}
-                className="w-20 h-16 rounded-lg object-cover"
-              />
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1">{items[0]?.title}</h3>
-                <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                    {items[0]?.type}
-                  </span>
-                  <span>{items[0]?.area}</span>
+            <div className="space-y-4 mb-6 pb-6 border-b border-gray-200">
+              {items.map((item, index) => (
+                <div key={item.id} className="flex items-start space-x-4">
+                  <img
+                    src={item.image || "/placeholder.svg"}
+                    alt={item.title}
+                    className="w-20 h-16 rounded-lg object-cover"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
+                    <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                        {item.type}
+                      </span>
+                      <span>{item.area}</span>
+                    </div>
+                    <div className="text-lg font-bold text-gray-900">${item.price}</div>
+                  </div>
                 </div>
-                <div className="text-lg font-bold text-gray-900">${items[0]?.price}</div>
-              </div>
+              ))}
             </div>
 
             {/* What's Included */}
@@ -407,7 +433,7 @@ const CheckoutContent = () => {
               <div className="space-y-2">
                 <div className="flex items-center text-sm text-gray-600">
                   <FileSpreadsheet className="h-4 w-4 mr-2 text-green-600" />
-                  <span>Excel format takeoff</span>
+                  <span>Excel format takeoffs</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <Zap className="h-4 w-4 mr-2 text-green-600" />
@@ -433,7 +459,7 @@ const CheckoutContent = () => {
               <div className="border-t border-gray-200 pt-3">
                 <div className="flex justify-between text-lg font-bold text-gray-900">
                   <span>Total</span>
-                  <span>${getTotalPrice().toFixed(2)}</span>
+                  <span>${(getTotalPrice() * 1.08).toFixed(2)}</span>
                 </div>
               </div>
             </div>
