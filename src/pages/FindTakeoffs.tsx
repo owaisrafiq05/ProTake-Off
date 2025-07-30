@@ -384,7 +384,7 @@ const FindTakeoffs = () => {
                     </div>
 
                     {/* Project Description */}
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p>
+                    {/* <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p> */}
 
                     {/* View Details Button */}
                     <Button

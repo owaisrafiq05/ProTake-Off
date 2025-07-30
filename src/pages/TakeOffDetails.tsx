@@ -89,20 +89,15 @@ const TakeoffDetails = () => {
   const specifications = [
     { label: "Project Area", value: "2,500 sq ft" },
     { label: "Complexity Level", value: "Intermediate" },
-    { label: "Estimated Hours", value: "32 hours" },
-    { label: "Materials Included", value: "Sod, Trees, Shrubs, Mulch" },
-    { label: "Irrigation", value: "Basic system included" },
   ]
 
   const includedItems = [
-    "15 trees (various species)",
-    "1,200 sq ft sod installation",
-    "8 shrub groupings",
-    "Mulch bed preparation",
-    "Basic irrigation layout",
-    "Material quantity breakdown",
-    "Labor hour estimates",
-    "Equipment requirements list",
+    "Project area calculation",
+    "Complexity assessment",
+    "Feature breakdown",
+    "Project specifications",
+    "Downloadable files",
+    "Instant delivery",
   ]
 
   const deliveryFeatures = [
@@ -207,13 +202,10 @@ const TakeoffDetails = () => {
                 )}
               </div>
 
-              {/* Title and Description */}
+              {/* Title */}
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {takeoff.title}
               </h1>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                {takeoff.description}
-              </p>
 
               {/* Project Stats */}
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
@@ -266,14 +258,6 @@ const TakeoffDetails = () => {
                   <span className="font-medium text-gray-700">Complexity Level:</span>
                   <span className="text-gray-900 font-semibold">{takeoff.specifications?.complexity || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="font-medium text-gray-700">Estimated Hours:</span>
-                  <span className="text-gray-900 font-semibold">{takeoff.specifications?.estimatedHours ? `${takeoff.specifications.estimatedHours} hours` : '-'}</span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="font-medium text-gray-700">Materials Included:</span>
-                  <span className="text-gray-900 font-semibold">{takeoff.specifications?.materials?.join(', ') || '-'}</span>
-                </div>
               </div>
             </div>
 
@@ -319,10 +303,6 @@ const TakeoffDetails = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Project Area:</span>
                   <span className="font-semibold">{takeoff.specifications?.area ? `${takeoff.specifications.area} sq ft` : '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Estimated Hours:</span>
-                  <span className="font-semibold">{takeoff.specifications?.estimatedHours ? `${takeoff.specifications.estimatedHours} hours` : '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Format:</span>

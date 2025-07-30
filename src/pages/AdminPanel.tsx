@@ -169,7 +169,6 @@ const AdminPanel = () => {
     },
     address: "",
     zipCode: "",
-    description: "",
     expirationDate: "",
     price: "",
     images: [] as File[],
@@ -177,8 +176,6 @@ const AdminPanel = () => {
     features: "",
     area: "",
     complexity: "",
-    materials: "",
-    estimatedHours: "",
     tags: "",
   })
 
@@ -358,7 +355,7 @@ const AdminPanel = () => {
 
   const validateForm = () => {
     const requiredFields = [
-      "takeoffName", "address", "zipCode", "description", "expirationDate", "price", "features", "area", "complexity", "materials", "estimatedHours", "tags"
+      "takeoffName", "address", "zipCode", "expirationDate", "price", "features", "area", "complexity", "tags"
     ];
     for (const field of requiredFields) {
       if (!formData[field] || (typeof formData[field] === "string" && formData[field].trim() === "")) {
@@ -400,7 +397,6 @@ const AdminPanel = () => {
         .map(([size, _]) => size)
       const payload: any = {
         title: formData.takeoffName,
-        description: formData.description,
         projectType: selectedCategories.length === 2 ? "both" : selectedCategories[0] || "landscaping",
         projectSize: selectedSizes[0] || "small",
         zipCode: formData.zipCode,
@@ -410,8 +406,6 @@ const AdminPanel = () => {
         specifications: {
           area: Number(formData.area),
           complexity: formData.complexity,
-          materials: formData.materials.split(",").map(m => m.trim()).filter(Boolean),
-          estimatedHours: Number(formData.estimatedHours)
         },
         expirationDate: formData.expirationDate,
         tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
@@ -434,7 +428,6 @@ const AdminPanel = () => {
         sizes: { small: false, medium: false, large: false, corporate: false },
         address: "",
         zipCode: "",
-        description: "",
         expirationDate: "",
         price: "",
         images: [],
@@ -442,8 +435,6 @@ const AdminPanel = () => {
         features: "",
         area: "",
         complexity: "",
-        materials: "",
-        estimatedHours: "",
         tags: "",
       })
       setIsEditing(false)
@@ -472,7 +463,6 @@ const AdminPanel = () => {
       },
       address: takeoff.address ?? "",
       zipCode: takeoff.zipCode ?? "",
-      description: takeoff.description ?? "",
       expirationDate: takeoff.expirationDate ? takeoff.expirationDate.slice(0, 10) : "",
       price: takeoff.price?.toString() ?? "",
       images: [],
@@ -480,8 +470,6 @@ const AdminPanel = () => {
       features: takeoff.features ? takeoff.features.join(", ") : "",
       area: takeoff.specifications?.area?.toString() ?? "",
       complexity: takeoff.specifications?.complexity ?? "",
-      materials: takeoff.specifications?.materials?.join(", ") ?? "",
-      estimatedHours: takeoff.specifications?.estimatedHours?.toString() ?? "",
       tags: takeoff.tags ? takeoff.tags.join(", ") : "",
     })
     setIsEditing(true)
@@ -549,7 +537,6 @@ const AdminPanel = () => {
                 sizes: { small: false, medium: false, large: false, corporate: false },
                 address: "",
                 zipCode: "",
-                description: "",
                 expirationDate: "",
                 price: "",
                 images: [],
@@ -557,8 +544,6 @@ const AdminPanel = () => {
                 features: "",
                 area: "",
                 complexity: "",
-                materials: "",
-                estimatedHours: "",
                 tags: "",
               })
             }}
@@ -728,23 +713,10 @@ const AdminPanel = () => {
             </div>
           </div>
         </div>
-        {/* Description & Features Section */}
+        {/* Features Section */}
         <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-green-700">Description & Features</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Takeoff Description <span className="text-red-500">*</span></label>
-              <Textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Enter detailed description"
-                rows={4}
-                className="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none"
-                required
-              />
-            </div>
+          <h3 className="text-lg font-semibold mb-4 text-green-700">Features</h3>
+          <div className="grid grid-cols-1 gap-6">
             {/* Features */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Features (comma separated) <span className="text-red-500">*</span></label>
@@ -791,31 +763,6 @@ const AdminPanel = () => {
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Materials (comma separated) <span className="text-red-500">*</span></label>
-              <Textarea
-                name="materials"
-                value={formData.materials}
-                onChange={handleInputChange}
-                placeholder="e.g. wood, stone, steel"
-                rows={2}
-                className="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Estimated Hours <span className="text-red-500">*</span></label>
-              <Input
-                name="estimatedHours"
-                value={formData.estimatedHours}
-                onChange={handleInputChange}
-                placeholder="e.g. 10"
-                type="number"
-                min="0"
-                className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
-                required
-              />
             </div>
           </div>
         </div>
