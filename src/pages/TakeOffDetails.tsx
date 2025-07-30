@@ -663,41 +663,6 @@ const TakeoffDetails = () => {
                 </a>
               </p>
             </div>
-
-            {/* Popular This Week */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center mb-6">
-                <TrendingUp className="h-5 w-5 text-green-600 mr-2" />
-                <h3 className="text-lg font-bold text-gray-900">Popular This Week</h3>
-              </div>
-              <div className="space-y-4">
-                {popular.length === 0 && (
-                  <div className="text-gray-400 text-sm text-center py-4">No popular takeoffs available</div>
-                )}
-                {popular.map((project) => {
-                  const projectPdfUrl =
-                    project.files?.find((file: any) => file.isPdf && file.cloudinaryUrl)?.cloudinaryUrl ||
-                    project.pdfPreview?.find((pdf: any) => pdf.cloudinaryUrl)?.cloudinaryUrl
-
-                  return (
-                    <Link to={`/takeoff-details/${project._id}`} key={project._id}>
-                      <div className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
-                        <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200">
-                          <SmallPdfPreview pdfUrl={projectPdfUrl} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-gray-900 text-sm truncate">{project.title}</h4>
-                          <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
-                            <span className="font-semibold text-green-600">${project.price}</span>
-                            <span>{project.downloadCount || 0} downloads</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
           </div>
         </div>
       </div>

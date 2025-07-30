@@ -395,26 +395,7 @@ const FindTakeoffs = () => {
                       </span>
                     </div>
 
-                    {/* Project Preview Image */}
-                    <div className="relative mb-4 overflow-hidden rounded-lg">
-                      <img
-                        src={getTakeoffPreview(project)}
-                        alt={project.title}
-                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                        onError={(e) => {
-                          // Fallback to placeholder if image fails to load
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/placeholder.svg";
-                        }}
-                      />
-                      {/* PDF indicator if it's a PDF file */}
-                      {project.files && project.files.some((file: any) => file.isPdf) && (
-                        <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                          <FileText className="h-3 w-3 mr-1" />
-                          PDF
-                        </div>
-                      )}
-                    </div>
+                    
 
                     {/* Project Title */}
                     <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
