@@ -88,7 +88,7 @@ const Hero = () => {
               {/* Main Image Container */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl max-w-lg w-full bg-gradient-to-br from-gray-50 to-white border border-gray-200">
                 <img
-                  src="/hero.png"
+                  src="/hero.jpg"
                   alt="Protakeoffs.ai - Digital marketplace for landscaping and irrigation project takeoffs"
                   className="w-full h-auto object-cover"
                 />

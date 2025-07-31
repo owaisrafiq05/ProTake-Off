@@ -15,13 +15,15 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-6">
               <div className="relative flex items-center">
-                {/* <img src="/logo.png" alt="ProTakeoff Logo" className="h-10 w-16" /> */}
-                <img src="/ProTakeoff.ai.png" alt="Protakeoffs.ai" className="h-5 ml-2" />
+                <img src="/logoUpdated.png" alt="ProTakeoff.ai" className="h-12" />
+                <span className="ml-2 text-2xl font-bold text-[#5d722f] tracking-wide">
+                  ProTakeoff<span className="text-gray-900">Ai</span>
+                </span>
               </div>
             </div>
             <p className="text-gray-600 mb-8 max-w-md text-lg leading-relaxed">
@@ -106,25 +108,6 @@ const Footer: React.FC = () => {
                   </a>
                 ),
               )}
-            </div>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-6 relative">
-              Stay Updated
-              <div className="absolute -bottom-2 left-0 w-12 h-1 bg-gradient-to-r from-brand-500 to-brand-600 rounded-full"></div>
-            </h3>
-            <p className="text-gray-600 mb-4">Get the latest updates and tips for your takeoff business.</p>
-            <div className="space-y-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200"
-              />
-              <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                Subscribe
-              </Button>
             </div>
           </div>
         </div>
