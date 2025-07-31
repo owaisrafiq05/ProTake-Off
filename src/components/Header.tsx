@@ -102,7 +102,10 @@ const Header = () => {
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
               <div className="relative flex items-center">
-                <img src="/ProTakeoff.ai.png" alt="Protakeoffs.ai" className="h-5 ml-2" />
+                <img src="/logoUpdated.png" alt="ProTakeoff.ai" className="h-12" />
+                <span className="ml-2 text-2xl font-bold text-green-600 tracking-wide">
+                  ProTakeoff<span className="text-gray-900">Ai</span>
+                </span>
               </div>
             </Link>
           </div>
@@ -277,7 +280,10 @@ const Header = () => {
                 {/* Menu Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                   <div className="flex items-center space-x-2">
-                    <img src="/ProTakeoff.ai.png" alt="Protakeoffs.ai" className="h-4" />
+                    <img src="/logoUpdated.png" alt="ProTakeoff.ai" className="h-6" />
+                    <span className="text-lg font-bold text-green-600 tracking-wide">
+                      ProTakeoff<span className="text-gray-900">Ai</span>
+                    </span>
                   </div>
                   <button
                     onClick={closeMobileMenu}
