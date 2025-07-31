@@ -10,6 +10,7 @@ import { useAuth } from "@/components/AuthContext"
 interface LoginFormData {
   email: string
   password: string
+  rememberMe: boolean
 }
 
 const Login = () => {
@@ -28,7 +29,7 @@ const Login = () => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     try {
-      const res = await login(data.email, data.password)
+      const res = await login(data.email, data.password, data.rememberMe)
       if (res.success) {
         // Redirect to the original page they were trying to access, or dashboard as fallback
         const from = location.state?.from?.pathname || '/dashboard'
@@ -156,10 +157,11 @@ const Login = () => {
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
             </div>
 
-            {/* Forgot Password */}
+            {/* Remember Me and Forgot Password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
+                  {...register("rememberMe")}
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
@@ -169,9 +171,9 @@ const Login = () => {
                   Remember me
                 </label>
               </div>
-              <a href="#" className="text-sm text-green-600 hover:text-green-700 font-medium">
+              <Link to="/forgot-password" className="text-sm text-green-600 hover:text-green-700 font-medium">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Submit Button */}

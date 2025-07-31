@@ -19,11 +19,13 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean }>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean }>;
   register: (data: any) => Promise<{ success: boolean }>;
   logout: () => void;
   fetchUser: () => Promise<void>;
   updateProfile: (updates: any) => Promise<{ success: boolean }>;
+  forgotPassword: (email: string) => Promise<{ success: boolean }>;
+  resetPassword: (token: string, email: string, password: string) => Promise<{ success: boolean }>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -50,9 +52,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // eslint-disable-next-line
   }, [token]);
 
-  const saveToken = (token: string) => {
+  const saveToken = (token: string, rememberMe: boolean = false) => {
     setToken(token);
-    Cookies.set('token', token, { expires: 30 });
+    const options = rememberMe ? { expires: 30 } : { expires: 1 }; // 30 days vs 1 day
+    Cookies.set('token', token, options);
   };
 
   const removeToken = () => {
@@ -60,10 +63,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     Cookies.remove('token');
   };
 
-  const login = async (email: string, password: string): Promise<{ success: boolean }> => {
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<{ success: boolean }> => {
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, { email, password });
-      saveToken(res.data.data.token);
+      const res = await axios.post(`${API_URL}/auth/login`, { email, password, rememberMe });
+      saveToken(res.data.data.token, rememberMe);
       setUser(res.data.data.user);
       toast.success('Login successful');
       return { success: true };
@@ -80,6 +83,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: true };
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Registration failed');
+      return { success: false };
+    }
+  };
+
+  const forgotPassword = async (email: string): Promise<{ success: boolean }> => {
+    try {
+      const res = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      toast.success(res.data.message || 'Password reset email sent');
+      return { success: true };
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to send reset email');
+      return { success: false };
+    }
+  };
+
+  const resetPassword = async (token: string, email: string, password: string): Promise<{ success: boolean }> => {
+    try {
+      const res = await axios.post(`${API_URL}/auth/reset-password`, { token, email, password });
+      toast.success(res.data.message || 'Password reset successful');
+      return { success: true };
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Password reset failed');
       return { success: false };
     }
   };
@@ -120,7 +145,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, fetchUser, updateProfile }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      loading, 
+      login, 
+      register, 
+      logout, 
+      fetchUser, 
+      updateProfile,
+      forgotPassword,
+      resetPassword
+    }}>
       {children}
     </AuthContext.Provider>
   );

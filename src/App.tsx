@@ -9,6 +9,8 @@ import FindTakeoffs from "./pages/FindTakeoffs";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import TakeoffDetails from "./pages/TakeOffDetails";
 import Checkout from "./pages/Checkout";
 import StripeCheckout from "./pages/StripeCheckout";
@@ -63,6 +65,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/find-takeoffs" element={<FindTakeoffs />} />
           <Route path="/takeoff-details/:id" element={<TakeoffDetails />} />
