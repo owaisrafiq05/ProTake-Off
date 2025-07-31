@@ -20,6 +20,7 @@ interface Takeoff {
   price: number
   description: string
   expirationDate?: string
+  createdAt?: string
   features?: string[]
   specifications?: any
   tags?: string[]
@@ -181,6 +182,26 @@ const FindTakeoffs = () => {
     
     // Default placeholder
     return "/placeholder.svg"
+  }
+
+  // Helper function to check if takeoff is "New" (within 5 days of creation)
+  const isNewTakeoff = (takeoff: Takeoff) => {
+    if (!takeoff.createdAt) return false
+    const createdAt = new Date(takeoff.createdAt)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - createdAt.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 5
+  }
+
+  // Helper function to check if takeoff is "Expire Soon" (within 5 days of expiration)
+  const isExpireSoon = (takeoff: Takeoff) => {
+    if (!takeoff.expirationDate) return false
+    const expirationDate = new Date(takeoff.expirationDate)
+    const now = new Date()
+    const diffTime = Math.abs(expirationDate.getTime() - now.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 5 && diffDays >= 0
   }
 
   return (
@@ -383,16 +404,32 @@ const FindTakeoffs = () => {
                   <div
                     key={project._id}
                     ref={idx === takeoffs.length - 1 ? lastTakeoffRef : null}
-                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 group"
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 group relative"
                   >
-                    {/* Project Type Badge */}
+                    {/* Status Labels - Top Right Corner */}
+                    <div className="absolute top-4 right-4 z-10">
+                      {isNewTakeoff(project) && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                          New
+                        </span>
+                      )}
+                      {isExpireSoon(project) && !isNewTakeoff(project) && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                          Expire Soon
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Project Type Badge and Price */}
                     <div className="flex items-center justify-between mb-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         {project.projectType.charAt(0).toUpperCase() + project.projectType.slice(1)}
                       </span>
-                      <span className={`text-xs text-gray-500 font-medium ${!user ? "blur-sm select-none" : ""}`}>
-                        ${project.price}
-                      </span>
+                      {/* <div className="flex items-center gap-2">
+                        <span className={`text-sm font-semibold text-gray-900 ${!user ? "blur-sm select-none" : ""}`}>
+                          ${project.price}
+                        </span>
+                      </div> */}
                     </div>
 
                     
@@ -401,6 +438,13 @@ const FindTakeoffs = () => {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
                       {project.title}
                     </h3>
+
+                    {/* Price Display */}
+                    <div className="mb-3">
+                      <span className={`text-lg font-bold text-green-600 ${!user ? "blur-sm select-none" : ""}`}>
+                        ${project.price}
+                      </span>
+                    </div>
 
                     {/* Project Details */}
                     <div className="space-y-2 mb-4">

@@ -501,6 +501,26 @@ const AdminPanel = () => {
     )
   }
 
+  // Helper function to check if takeoff is "New" (within 5 days of creation)
+  const isNewTakeoff = (takeoff: any) => {
+    if (!takeoff.createdAt) return false
+    const createdAt = new Date(takeoff.createdAt)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - createdAt.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 5
+  }
+
+  // Helper function to check if takeoff is "Expire Soon" (within 5 days of expiration)
+  const isExpireSoon = (takeoff: any) => {
+    if (!takeoff.expirationDate) return false
+    const expirationDate = new Date(takeoff.expirationDate)
+    const now = new Date()
+    const diffTime = Math.abs(expirationDate.getTime() - now.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 5 && diffDays >= 0
+  }
+
   // Filtering for active/expired takeoffs
   const now = new Date();
   const isExpired = (takeoff: any) => takeoff.bidExpirationDate && new Date(takeoff.bidExpirationDate) < now;
@@ -905,8 +925,22 @@ const AdminPanel = () => {
         {filteredTakeoffs.map((takeoff) => (
           <div
             key={takeoff._id || takeoff.id}
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow relative"
           >
+            {/* Status Labels - Top Right Corner */}
+            <div className="absolute top-4 right-4 z-10">
+              {isNewTakeoff(takeoff) && (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                  New
+                </span>
+              )}
+              {isExpireSoon(takeoff) && !isNewTakeoff(takeoff) && (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                  Expire Soon
+                </span>
+              )}
+            </div>
+
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">

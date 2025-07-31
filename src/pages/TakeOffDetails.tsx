@@ -343,6 +343,26 @@ const TakeoffDetails = () => {
 
   const formatDate = (dateStr: string) => (dateStr ? new Date(dateStr).toLocaleDateString() : "-")
 
+  // Helper function to check if takeoff is "New" (within 5 days of creation)
+  const isNewTakeoff = (takeoff: any) => {
+    if (!takeoff.createdAt) return false
+    const createdAt = new Date(takeoff.createdAt)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - createdAt.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 5
+  }
+
+  // Helper function to check if takeoff is "Expire Soon" (within 5 days of expiration)
+  const isExpireSoon = (takeoff: any) => {
+    if (!takeoff.expirationDate) return false
+    const expirationDate = new Date(takeoff.expirationDate)
+    const now = new Date()
+    const diffTime = Math.abs(expirationDate.getTime() - now.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 5 && diffDays >= 0
+  }
+
   const handleAddToCart = () => {
     if (!takeoff) return
 
@@ -392,7 +412,21 @@ const TakeoffDetails = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Project Header */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 relative">
+              {/* Status Labels - Top Right Corner */}
+              <div className="absolute top-6 right-6 z-10">
+                {isNewTakeoff(takeoff) && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                    New
+                  </span>
+                )}
+                {isExpireSoon(takeoff) && !isNewTakeoff(takeoff) && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                    Expire Soon
+                  </span>
+                )}
+              </div>
+
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {takeoff.tags?.map((tag: string, index: number) => (
