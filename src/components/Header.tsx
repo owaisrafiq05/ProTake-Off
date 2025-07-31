@@ -103,7 +103,7 @@ const Header = () => {
             >
               <div className="relative flex items-center">
                 <img src="/logoUpdated.png" alt="ProTakeoff.ai" className="h-12" />
-                <span className="ml-2 text-2xl font-bold text-green-600 tracking-wide">
+                <span className="ml-2 text-2xl font-bold text-[#5d722f] tracking-wide">
                   ProTakeoff<span className="text-gray-900">Ai</span>
                 </span>
               </div>
@@ -281,7 +281,7 @@ const Header = () => {
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                   <div className="flex items-center space-x-2">
                     <img src="/logoUpdated.png" alt="ProTakeoff.ai" className="h-6" />
-                    <span className="text-lg font-bold text-green-600 tracking-wide">
+                    <span className="text-lg font-bold text-[#5d722f] tracking-wide">
                       ProTakeoff<span className="text-gray-900">Ai</span>
                     </span>
                   </div>
