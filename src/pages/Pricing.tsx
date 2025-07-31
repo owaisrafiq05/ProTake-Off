@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
@@ -196,16 +197,18 @@ const Pricing = () => {
                 </ul>
 
                 {/* CTA Button */}
-                <Button
-                  className={`w-full py-4 text-lg font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 group ${
-                    tier.popular
-                      ? "bg-brand-600 hover:bg-brand-700 text-white shadow-lg hover:shadow-xl"
-                      : "bg-gray-900 hover:bg-gray-800 text-white"
-                  }`}
-                >
-                  Browse {tier.name}
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link to="/find-takeoffs">
+                  <Button
+                    className={`w-full py-4 text-lg font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 group ${
+                      tier.popular
+                        ? "bg-brand-600 hover:bg-brand-700 text-white shadow-lg hover:shadow-xl"
+                        : "bg-gray-900 hover:bg-gray-800 text-white"
+                    }`}
+                  >
+                    Browse {tier.name}
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
 
                 {/* Hover Effect */}
                 {hoveredCard === index && (
@@ -316,9 +319,11 @@ const Pricing = () => {
               <p className="text-gray-600 mb-6">
                 Our team is here to help you choose the right pricing plan for your business.
               </p>
-              <Button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                Contact Our Team
-              </Button>
+              <Link to="/#contact">
+                <Button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                  Contact Our Team
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

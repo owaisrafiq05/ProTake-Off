@@ -1,9 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
 import { ArrowRight, CheckCircle, Users, Award, TrendingUp } from "lucide-react"
 
 const Hero = () => {
+  const navigate = useNavigate()
   return (
     <section className="relative bg-white py-16 min-h-[calc(100vh-4rem)] overflow-hidden">
       {/* Background Pattern */}
@@ -53,15 +55,9 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group">
+              <Button className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group" onClick={() => navigate('/find-takeoffs')}>
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                variant="outline"
-                className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-200 hover:border-brand-300 hover:text-brand-700"
-              >
-                Watch Demo
               </Button>
             </div>
 

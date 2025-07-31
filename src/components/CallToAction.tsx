@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Rocket, CheckCircle, Zap } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 const CallToAction = () => {
+  const navigate = useNavigate()
   return (
     <section className="relative bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 py-20 overflow-hidden">
       {/* Background Pattern */}
@@ -54,14 +56,9 @@ const CallToAction = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-white text-brand-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group">
+              <Button className="bg-white text-brand-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group" onClick={() => navigate('/find-takeoffs')}>
                 Get Started Now
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                className="bg-white text-brand-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
-              >
-                Watch Demo
               </Button>
             </div>
           </div>

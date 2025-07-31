@@ -20,6 +20,9 @@ import AdminPanel from "./pages/AdminPanel";
 import { AuthProvider, useAuth } from "@/components/AuthContext";
 import VerifyEmail from "./pages/VerifyEmail";
 import AdminLogin from "./pages/AdminLogin";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
 import { useEffect } from "react";
 import Cookies from 'js-cookie';
 
@@ -76,6 +79,9 @@ const App = () => (
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin" element={<ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

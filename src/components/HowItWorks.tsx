@@ -1,8 +1,10 @@
 "use client"
 
 import { MapPin, CreditCard, Mail, FileText, ArrowRight } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 const HowItWorks = () => {
+  const navigate = useNavigate()
   const steps = [
     {
       number: "1",
@@ -102,7 +104,7 @@ const HowItWorks = () => {
             <p className="text-gray-600 mb-6">
               Join hundreds of contractors who are already saving time and winning more bids.
             </p>
-            <button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+            <button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl" onClick={() => navigate('/find-takeoffs')}>
               Find Your First Takeoff
             </button>
           </div>

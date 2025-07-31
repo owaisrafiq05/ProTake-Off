@@ -119,11 +119,15 @@ const Footer: React.FC = () => {
               © 2025 Protakeoffs.ai. All rights reserved. Built with ❤️ for contractors.
             </p>
             <div className="flex space-x-6 text-sm">
-              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((text) => (
-                <a key={text} href="#" className="text-gray-600 hover:text-brand-600 font-medium transition-colors">
-                  {text}
-                </a>
-              ))}
+              <Link to="/privacy-policy" className="text-gray-600 hover:text-brand-600 font-medium transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/terms-of-service" className="text-gray-600 hover:text-brand-600 font-medium transition-colors">
+                Terms of Service
+              </Link>
+              <Link to="/cookie-policy" className="text-gray-600 hover:text-brand-600 font-medium transition-colors">
+                Cookie Policy
+              </Link>
             </div>
           </div>
         </div>
