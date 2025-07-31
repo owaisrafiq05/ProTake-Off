@@ -49,7 +49,7 @@ const StripeCardElement = ({ onChange }: { onChange: (event: any) => void }) => 
   }
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 bg-white focus-within:ring-2 focus-within:ring-green-500 focus-within:border-green-500 transition-all">
+    <div className="border border-gray-300 rounded-lg p-4 bg-white focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500 transition-all">
       <CardElement options={cardElementOptions} onChange={onChange} />
     </div>
   )
@@ -130,8 +130,8 @@ const CheckoutContent = () => {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+          <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="h-8 w-8 text-brand-600" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
           <p className="text-lg text-gray-600 mb-8">
@@ -151,7 +151,7 @@ const CheckoutContent = () => {
                         rel="noopener noreferrer"
                         className="block"
                       >
-                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl mb-2">
+                        <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl mb-2">
                           <Download className="h-4 w-4 mr-2" />
                           Download {file.originalName || `File ${fileIndex + 1}`}
                         </Button>
@@ -165,7 +165,7 @@ const CheckoutContent = () => {
                       rel="noopener noreferrer"
                       className="block"
                     >
-                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl">
+                      <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl">
                         <Download className="h-4 w-4 mr-2" />
                         Download {item.title}
                       </Button>
@@ -222,7 +222,7 @@ const CheckoutContent = () => {
                     value={billingInfo.email}
                     onChange={handleInputChange}
                     placeholder="john@example.com"
-                    className="w-full py-3 rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                    className="w-full py-3 rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500"
                     required
                   />
                   <p className="text-xs text-gray-500 mt-1">We'll send your takeoff download link here</p>
@@ -261,7 +261,7 @@ const CheckoutContent = () => {
             <Button
               type="submit"
               disabled={isProcessing}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isProcessing ? (
                 <div className="flex items-center justify-center">
@@ -284,11 +284,11 @@ const CheckoutContent = () => {
               </div>
               <p>
                 By completing this purchase, you agree to our{" "}
-                <a href="#" className="text-green-600 hover:underline">
+                <a href="#" className="text-brand-600 hover:underline">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-green-600 hover:underline">
+                <a href="#" className="text-brand-600 hover:underline">
                   Privacy Policy
                 </a>
               </p>
@@ -314,7 +314,7 @@ const CheckoutContent = () => {
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
                     <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                      <span className="bg-brand-100 text-brand-800 px-2 py-1 rounded-full text-xs">
                         {item.type}
                       </span>
                       <span>{item.area}</span>
@@ -330,15 +330,15 @@ const CheckoutContent = () => {
               <h4 className="font-semibold text-gray-900 mb-3">What's Included:</h4>
               <div className="space-y-2">
                 <div className="flex items-center text-sm text-gray-600">
-                  <FileSpreadsheet className="h-4 w-4 mr-2 text-green-600" />
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-brand-600" />
                   <span>Excel format takeoffs</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <Zap className="h-4 w-4 mr-2 text-green-600" />
+                  <Zap className="h-4 w-4 mr-2 text-brand-600" />
                   <span>Instant download</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <Users className="h-4 w-4 mr-2 text-green-600" />
+                  <Users className="h-4 w-4 mr-2 text-brand-600" />
                   <span>Multiple project use</span>
                 </div>
               </div>
@@ -363,16 +363,16 @@ const CheckoutContent = () => {
             </div>
 
             {/* Trust Badges */}
-            <div className="bg-green-50 rounded-xl p-4">
-              <div className="flex items-center text-green-700 mb-2">
+            <div className="bg-brand-50 rounded-xl p-4">
+              <div className="flex items-center text-brand-700 mb-2">
                 <Check className="h-4 w-4 mr-2" />
                 <span className="font-medium">30-day money-back guarantee</span>
               </div>
-              <div className="flex items-center text-green-700 mb-2">
+              <div className="flex items-center text-brand-700 mb-2">
                 <Check className="h-4 w-4 mr-2" />
                 <span className="font-medium">Instant email delivery</span>
               </div>
-              <div className="flex items-center text-green-700">
+              <div className="flex items-center text-brand-700">
                 <Check className="h-4 w-4 mr-2" />
                 <span className="font-medium">24/7 customer support</span>
               </div>

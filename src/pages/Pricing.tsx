@@ -30,7 +30,7 @@ const Pricing = () => {
       price: 100,
       size: "5,000 - 15,000 sq ft",
       popular: true,
-      color: "green",
+      color: "brand",
       features: [
         "Residential developments",
         "Commercial properties",
@@ -63,37 +63,37 @@ const Pricing = () => {
       icon: FileText,
       title: "Detailed Material Lists",
       description: "Complete breakdown of all required materials with quantities.",
-      color: "bg-green-100 text-green-600",
+      color: "bg-brand-100 text-brand-600",
     },
     {
       icon: Zap,
       title: "Excel Format",
       description: "Easily customizable spreadsheets for adding your pricing.",
-      color: "bg-green-100 text-green-600",
+      color: "bg-brand-100 text-brand-600",
     },
     {
       icon: Clock,
       title: "Instant Delivery",
       description: "Immediate email delivery after purchase.",
-      color: "bg-green-100 text-green-600",
+      color: "bg-brand-100 text-brand-600",
     },
     {
       icon: Award,
       title: "Labor Estimates",
       description: "Estimated labor hours for project completion.",
-      color: "bg-green-100 text-green-600",
+      color: "bg-brand-100 text-brand-600",
     },
     {
       icon: Shield,
       title: "Equipment Requirements",
       description: "List of necessary equipment for project execution.",
-      color: "bg-green-100 text-green-600",
+      color: "bg-brand-100 text-brand-600",
     },
     {
       icon: Star,
       title: "Bid Templates",
       description: "Ready-to-use templates for submitting professional bids.",
-      color: "bg-green-100 text-green-600",
+      color: "bg-brand-100 text-brand-600",
     },
   ]
 
@@ -130,17 +130,17 @@ const Pricing = () => {
         </div>
 
         {/* Decorative Elements */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-green-100/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-green-50/50 to-transparent rounded-full blur-3xl" />
+        <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-brand-100/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-brand-50/50 to-transparent rounded-full blur-3xl" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 mb-6">
+            <div className="inline-flex items-center bg-brand-50 text-brand-700 px-4 py-2 rounded-full text-sm font-medium border border-brand-200 mb-6">
               <Sparkles className="h-4 w-4 mr-2" />
               No Subscriptions Required
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Simple, <span className="text-green-600">Transparent</span> Pricing
+              Simple, <span className="text-brand-600">Transparent</span> Pricing
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Pay only for what you need. No subscriptions. No hidden fees. <br/>Get professional takeoffs instantly.
@@ -154,8 +154,8 @@ const Pricing = () => {
                 key={index}
                 className={`relative bg-white rounded-2xl p-8 transition-all duration-300 hover:scale-105 ${
                   tier.popular
-                    ? "border-2 border-green-500 shadow-2xl"
-                    : "border-2 border-gray-200 shadow-lg hover:border-green-300 hover:shadow-xl"
+                    ? "border-2 border-brand-500 shadow-2xl"
+                    : "border-2 border-gray-200 shadow-lg hover:border-brand-300 hover:shadow-xl"
                 }`}
                 onMouseEnter={() => setHoveredCard(index)}
                 onMouseLeave={() => setHoveredCard(null)}
@@ -163,7 +163,7 @@ const Pricing = () => {
                 {/* Popular Badge */}
                 {tier.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center">
+                    <div className="bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center">
                       <Star className="h-4 w-4 mr-1 fill-current" />
                       Most Popular
                     </div>
@@ -187,8 +187,8 @@ const Pricing = () => {
                 <ul className="space-y-4 mb-8">
                   {tier.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center">
-                      <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <Check className="h-3 w-3 text-green-600" />
+                      <div className="w-5 h-5 bg-brand-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                        <Check className="h-3 w-3 text-brand-600" />
                       </div>
                       <span className="text-gray-700">{feature}</span>
                     </li>
@@ -199,7 +199,7 @@ const Pricing = () => {
                 <Button
                   className={`w-full py-4 text-lg font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 group ${
                     tier.popular
-                      ? "bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl"
+                      ? "bg-brand-600 hover:bg-brand-700 text-white shadow-lg hover:shadow-xl"
                       : "bg-gray-900 hover:bg-gray-800 text-white"
                   }`}
                 >
@@ -209,7 +209,7 @@ const Pricing = () => {
 
                 {/* Hover Effect */}
                 {hoveredCard === index && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent rounded-2xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-50/50 to-transparent rounded-2xl pointer-events-none" />
                 )}
               </div>
             ))}
@@ -245,7 +245,7 @@ const Pricing = () => {
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              What's <span className="text-green-600">Included</span>
+              What's <span className="text-brand-600">Included</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Every takeoff includes these premium features, regardless of project size. Professional quality
@@ -259,19 +259,19 @@ const Pricing = () => {
               return (
                 <div
                   key={index}
-                  className="group bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="group bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-brand-300 hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   <div className={`w-14 h-14 ${feature.color} rounded-2xl flex items-center justify-center mb-6`}>
                     <IconComponent className="h-7 w-7" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-brand-600 transition-colors">
                     {feature.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">{feature.description}</p>
 
                   {/* Hover Effect */}
                   <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-full h-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></div>
+                    <div className="w-full h-1 bg-gradient-to-r from-brand-500 to-blue-500 rounded-full"></div>
                   </div>
                 </div>
               )
@@ -285,7 +285,7 @@ const Pricing = () => {
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Pricing <span className="text-green-600">FAQ</span>
+              Pricing <span className="text-brand-600">FAQ</span>
             </h2>
             <p className="text-xl text-gray-600 leading-relaxed">
               Common questions about our transparent pricing model.
@@ -296,11 +296,11 @@ const Pricing = () => {
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl p-8 shadow-sm border-2 border-gray-200 hover:border-green-300 hover:shadow-lg transition-all duration-300"
+                className="bg-white rounded-2xl p-8 shadow-sm border-2 border-gray-200 hover:border-brand-300 hover:shadow-lg transition-all duration-300"
               >
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-green-600 font-bold text-sm">{index + 1}</span>
+                  <div className="w-8 h-8 bg-brand-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-brand-600 font-bold text-sm">{index + 1}</span>
                   </div>
                   {faq.question}
                 </h3>
@@ -311,12 +311,12 @@ const Pricing = () => {
 
           {/* Contact CTA */}
           <div className="text-center mt-16">
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 border border-gray-200">
+            <div className="bg-gradient-to-r from-brand-50 to-blue-50 rounded-2xl p-8 border border-gray-200">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Still Have Questions?</h3>
               <p className="text-gray-600 mb-6">
                 Our team is here to help you choose the right pricing plan for your business.
               </p>
-              <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              <Button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 Contact Our Team
               </Button>
             </div>

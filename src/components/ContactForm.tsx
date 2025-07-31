@@ -141,18 +141,18 @@ const ContactForm = () => {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-green-100/30 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-green-50/50 to-transparent rounded-full blur-3xl" />
+      <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-brand-100/30 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-brand-50/50 to-transparent rounded-full blur-3xl" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 mb-6">
+          <div className="inline-flex items-center bg-brand-50 text-brand-700 px-4 py-2 rounded-full text-sm font-medium border border-brand-200 mb-6">
             <MessageCircle className="h-4 w-4 mr-2" />
             Let's Connect
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Get in <span className="text-green-600">Touch</span>
+            Get in <span className="text-brand-600">Touch</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Have questions, need support, or want to learn more about how ProTakeoff.ai can help your business? We'd love to hear from you.
@@ -166,8 +166,8 @@ const ContactForm = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h3>
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-6 w-6 text-green-600" />
+                  <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-6 w-6 text-brand-600" />
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Email Us</div>
@@ -177,8 +177,8 @@ const ContactForm = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-6 w-6 text-green-600" />
+                  <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-6 w-6 text-brand-600" />
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Call Us</div>
@@ -188,8 +188,8 @@ const ContactForm = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-green-600" />
+                  <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-6 w-6 text-brand-600" />
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Visit Us</div>
@@ -201,9 +201,9 @@ const ContactForm = () => {
             </div>
 
             {/* Response Time */}
-            <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-6 border border-gray-200">
+            <div className="bg-gradient-to-br from-brand-50 to-blue-50 rounded-2xl p-6 border border-gray-200">
               <div className="flex items-center space-x-3 mb-3">
-                <Clock className="h-5 w-5 text-green-600" />
+                <Clock className="h-5 w-5 text-brand-600" />
                 <span className="font-semibold text-gray-900">Quick Response</span>
               </div>
               <p className="text-gray-600 text-sm">
@@ -227,7 +227,7 @@ const ContactForm = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Enter your full name"
-                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                      className={`border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 rounded-xl ${
                         errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                       required
@@ -246,7 +246,7 @@ const ContactForm = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Enter your email address"
-                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                      className={`border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 rounded-xl ${
                         errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                       required
@@ -266,7 +266,7 @@ const ContactForm = () => {
                       value={formData.company}
                       onChange={handleChange}
                       placeholder="Your company name"
-                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                      className={`border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 rounded-xl ${
                         errors.company ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                     />
@@ -285,7 +285,7 @@ const ContactForm = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="Your phone number"
-                      className={`border-gray-300 focus:border-green-500 focus:ring-green-500 py-3 rounded-xl ${
+                      className={`border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 rounded-xl ${
                         errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                     />
@@ -306,7 +306,7 @@ const ContactForm = () => {
                     onChange={handleChange}
                     placeholder="Tell us about your project or ask any questions..."
                     rows={6}
-                    className={`border-gray-300 focus:border-green-500 focus:ring-green-500 resize-none rounded-xl ${
+                    className={`border-gray-300 focus:border-brand-500 focus:ring-brand-500 resize-none rounded-xl ${
                       errors.message ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                     }`}
                     required
@@ -321,7 +321,7 @@ const ContactForm = () => {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none group"
+                    className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none group"
                   >
                     {isSubmitting ? (
                       "Sending Message..."

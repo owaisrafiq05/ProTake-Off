@@ -35,7 +35,7 @@ const CartDropdown = () => {
               <ShoppingCart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 mb-4">Your cart is empty</p>
               <Link to="/find-takeoffs">
-                <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => setIsOpen(false)}>
+                <Button className="bg-brand-600 hover:bg-brand-700 text-white" onClick={() => setIsOpen(false)}>
                   Browse Takeoffs
                 </Button>
               </Link>
@@ -55,7 +55,7 @@ const CartDropdown = () => {
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-gray-900 text-sm leading-tight mb-1 truncate">{item.title}</h4>
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                      <span className="bg-brand-100 text-brand-800 px-2 py-1 rounded-full text-xs font-medium">
                         {item.type}
                       </span>
                       <span className="text-xs text-gray-500">{item.area}</span>
@@ -73,13 +73,13 @@ const CartDropdown = () => {
             {/* Total */}
             <div className="flex items-center justify-between mb-4">
               <span className="text-lg font-bold text-gray-900">Total:</span>
-              <span className="text-2xl font-bold text-green-600">${getTotalPrice().toFixed(2)}</span>
+              <span className="text-2xl font-bold text-brand-600">${getTotalPrice().toFixed(2)}</span>
             </div>
 
             {/* Checkout Button */}
             <Link to="/checkout">
               <Button
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl group"
+                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl group"
                 onClick={() => setIsOpen(false)}
               >
                 Proceed to Checkout

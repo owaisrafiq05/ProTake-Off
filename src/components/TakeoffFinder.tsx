@@ -59,18 +59,18 @@ const TakeoffFinder = () => {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-green-100/30 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-green-50/50 to-transparent rounded-full blur-3xl" />
+      <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-brand-100/30 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-brand-50/50 to-transparent rounded-full blur-3xl" />
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Header */}
         <div className="mb-12">
-          <div className="inline-flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 mb-6">
+          <div className="inline-flex items-center bg-brand-50 text-brand-700 px-4 py-2 rounded-full text-sm font-medium border border-brand-200 mb-6">
             <Zap className="h-4 w-4 mr-2" />
             Advanced Search
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Find Your <span className="text-green-600">Takeoff</span>
+            Find Your <span className="text-brand-600">Takeoff</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Use our advanced filters to find the perfect takeoff for your project. Get professional estimates tailored
@@ -85,8 +85,8 @@ const TakeoffFinder = () => {
         >
           {/* Form Header */}
           <div className="flex items-center justify-center mb-8">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-3">
-              <Filter className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center mr-3">
+              <Filter className="h-6 w-6 text-brand-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900">Advanced Takeoff Search</h3>
           </div>
@@ -101,7 +101,7 @@ const TakeoffFinder = () => {
                   placeholder="Enter your ZIP code"
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
-                  className="pl-10 border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                  className="pl-10 border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
                 />
               </div>
             </div>
@@ -110,7 +110,7 @@ const TakeoffFinder = () => {
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 text-left">Takeoff Type</label>
               <Select value={takeoffType} onValueChange={setTakeoffType}>
-                <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all">
                   <SelectValue placeholder="Select takeoff type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -140,7 +140,7 @@ const TakeoffFinder = () => {
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 text-left">Distance</label>
               <Select value={distance} onValueChange={setDistance}>
-                <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all">
                   <SelectValue placeholder="Select search radius" />
                 </SelectTrigger>
                 <SelectContent>
@@ -176,7 +176,7 @@ const TakeoffFinder = () => {
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 text-left">Project Size</label>
               <Select value={projectSize} onValueChange={setProjectSize}>
-                <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all">
                   <SelectValue placeholder="Select your project size" />
                 </SelectTrigger>
                 <SelectContent>
@@ -219,7 +219,7 @@ const TakeoffFinder = () => {
           <div className="mt-8">
             <Button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
             >
               Find Available Takeoffs
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -230,7 +230,7 @@ const TakeoffFinder = () => {
           {/* Trust Indicator */}
           <div className="mt-6 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              <span className="font-medium text-green-600">500+</span> contractors trust Protakeoffs.ai for their
+              <span className="font-medium text-brand-600">500+</span> contractors trust Protakeoffs.ai for their
               estimates
             </p>
           </div>

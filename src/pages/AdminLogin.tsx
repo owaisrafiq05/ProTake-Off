@@ -48,7 +48,7 @@ const AdminLogin = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
           <Input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
         </div>
-        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-medium" disabled={loading}>
+        <Button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </Button>
       </form>

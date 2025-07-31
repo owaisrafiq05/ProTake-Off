@@ -8,7 +8,7 @@ const Testimonials = () => {
       rating: 5,
       text: "Protakeoffs.ai has completely transformed our bidding process. We're now able to bid on twice as many projects in half the time.",
       author: "John Smith",
-      company: "Green Landscapes Inc",
+      company: "brand Landscapes Inc",
       location: "Austin, TX",
       profileImage: "https://ui-avatars.com/api/?name=John+Smith&background=22c55e&color=fff&size=96",
     },
@@ -44,18 +44,18 @@ const Testimonials = () => {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-green-100/30 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-green-50/50 to-transparent rounded-full blur-3xl" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-brand-100/30 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-brand-50/50 to-transparent rounded-full blur-3xl" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 mb-6">
+          <div className="inline-flex items-center bg-brand-50 text-brand-700 px-4 py-2 rounded-full text-sm font-medium border border-brand-200 mb-6">
             <Users className="h-4 w-4 mr-2" />
             Customer Success Stories
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            What Our <span className="text-green-600">Customers Say</span>
+            What Our <span className="text-brand-600">Customers Say</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Trusted by landscaping and irrigation companies across Texas. See how Protakeoffs.ai is transforming
@@ -68,11 +68,11 @@ const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="group bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-green-300 hover:shadow-xl transition-all duration-300 hover:scale-105 relative"
+              className="group bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-brand-300 hover:shadow-xl transition-all duration-300 hover:scale-105 relative"
             >
               {/* Quote Icon */}
               <div className="absolute -top-4 left-8">
-                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center">
                   <Quote className="w-4 h-4 text-white" />
                 </div>
               </div>
@@ -97,22 +97,22 @@ const Testimonials = () => {
                     className="w-14 h-14 rounded-full object-cover border-2 border-gray-200"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement
-                      target.src = `https://ui-avatars.com/api/?name=${testimonial.author}&background=22c55e&color=fff&size=56`
+                      target.src = `https://ui-avatars.com/api/?name=${testimonial.author}&background=5d722f&color=fff&size=56`
                     }}
                   />
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-brand-500 rounded-full border-2 border-white flex items-center justify-center">
                     <Award className="w-3 h-3 text-white" />
                   </div>
                 </div>
                 <div className="ml-4">
                   <div className="font-bold text-gray-900 text-lg">{testimonial.author}</div>
-                  <div className="text-green-600 font-medium">{testimonial.company}</div>
+                  <div className="text-brand-600 font-medium">{testimonial.company}</div>
                   <div className="text-sm text-gray-500">{testimonial.location}</div>
                 </div>
               </div>
 
               {/* Hover Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-50/50 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </div>
           ))}
         </div>

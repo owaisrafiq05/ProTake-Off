@@ -69,8 +69,8 @@ const ForgotPassword = () => {
             </div>
 
             {/* Decorative Elements */}
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-green-500/20 to-transparent rounded-full blur-3xl" />
-            <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-green-600/10 to-transparent rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-brand-500/20 to-transparent rounded-full blur-3xl" />
+            <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-brand-600/10 to-transparent rounded-full blur-3xl" />
           </div>
         </div>
 
@@ -85,8 +85,8 @@ const ForgotPassword = () => {
 
             {/* Success Content */}
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-6">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-brand-100 mb-6">
+                <CheckCircle className="h-6 w-6 text-brand-600" />
               </div>
               
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Check Your Email</h2>
@@ -103,7 +103,7 @@ const ForgotPassword = () => {
               <div className="space-y-4">
                 <Button
                   onClick={() => navigate('/login')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105"
+                  className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105"
                 >
                   Return to Login
                 </Button>
@@ -112,7 +112,7 @@ const ForgotPassword = () => {
                   Didn't receive the email?{" "}
                   <button
                     onClick={() => setIsEmailSent(false)}
-                    className="text-green-600 hover:text-green-700 font-medium"
+                    className="text-brand-600 hover:text-brand-700 font-medium"
                   >
                     Try again
                   </button>
@@ -156,8 +156,8 @@ const ForgotPassword = () => {
           </div>
 
           {/* Decorative Elements */}
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-green-500/20 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-green-600/10 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-brand-500/20 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-brand-600/10 to-transparent rounded-full blur-3xl" />
         </div>
       </div>
 
@@ -198,7 +198,7 @@ const ForgotPassword = () => {
                     },
                   })}
                   type="email"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                   placeholder="Enter your email"
                 />
               </div>
@@ -209,7 +209,7 @@ const ForgotPassword = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? "Sending..." : "Send Reset Link"}
             </Button>
@@ -219,7 +219,7 @@ const ForgotPassword = () => {
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Remember your password?{" "}
-              <Link to="/login" className="text-green-600 hover:text-green-700 font-medium">
+              <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">
                 Sign in
               </Link>
             </p>

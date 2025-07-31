@@ -117,7 +117,7 @@ const Header = () => {
                 key={`${item.href}-${item.section || "page"}`}
                 onClick={(e) => handleNavigation(item, e)}
                 className={`font-medium transition-colors ${
-                  isActiveLink(item) ? "text-green-600" : "text-gray-700 hover:text-gray-900"
+                  isActiveLink(item) ? "text-brand-600" : "text-gray-700 hover:text-gray-900"
                 }`}
               >
                 {item.label}
@@ -135,7 +135,7 @@ const Header = () => {
               >
                 <ShoppingCart className="h-6 w-6" />
                 {getTotalItems() > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-brand-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     {getTotalItems()}
                   </span>
                 )}
@@ -150,7 +150,7 @@ const Header = () => {
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                   className="flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center">
                     <User className="h-5 w-5 text-white" />
                   </div>
                   <ChevronDown className="h-4 w-4" />
@@ -164,7 +164,7 @@ const Header = () => {
                       {/* User Info */}
                       <div className="px-4 py-3 border-b border-gray-200">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                          <div className="w-10 h-10 bg-brand-600 rounded-full flex items-center justify-center">
                             <User className="h-6 w-6 text-white" />
                           </div>
                           <div>
@@ -231,14 +231,14 @@ const Header = () => {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-green-600 font-semibold border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                  className="px-4 py-2 text-brand-600 font-semibold border border-brand-600 rounded-lg hover:bg-brand-50 transition-colors"
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                  className="px-4 py-2 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors"
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
                   Sign Up
@@ -251,7 +251,7 @@ const Header = () => {
           <div className="flex items-center lg:hidden">
             <button
               onClick={toggleMobileMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
@@ -301,7 +301,7 @@ const Header = () => {
                       onClick={(e) => handleNavigation(item, e)}
                       className={`w-full text-left block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
                         isActiveLink(item)
-                          ? "text-green-600 bg-green-50"
+                          ? "text-brand-600 bg-brand-50"
                           : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                       }`}
                     >
@@ -325,7 +325,7 @@ const Header = () => {
                       <span className="font-medium">Cart</span>
                     </div>
                     {getTotalItems() > 0 && (
-                      <span className="bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="bg-brand-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                         {getTotalItems()}
                       </span>
                     )}
@@ -359,7 +359,7 @@ const Header = () => {
                     <>
                       <Link
                         to="/login"
-                        className="w-full flex items-center p-3 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        className="w-full flex items-center p-3 text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                         onClick={() => {
                           closeMobileMenu()
                           window.scrollTo({ top: 0, behavior: "smooth" })
@@ -369,7 +369,7 @@ const Header = () => {
                       </Link>
                       <Link
                         to="/signup"
-                        className="w-full flex items-center p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        className="w-full flex items-center p-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors"
                         onClick={() => {
                           closeMobileMenu()
                           window.scrollTo({ top: 0, behavior: "smooth" })

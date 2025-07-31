@@ -98,7 +98,7 @@ const CheckoutForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="border border-gray-300 rounded-lg p-4 bg-white focus-within:ring-2 focus-within:ring-green-500 focus-within:border-green-500 transition-all">
+      <div className="border border-gray-300 rounded-lg p-4 bg-white focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500 transition-all">
         <CardElement options={cardElementOptions} />
       </div>
       {paymentError && (
@@ -107,7 +107,7 @@ const CheckoutForm = () => {
       <button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="mt-6 w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
       >
         {isProcessing ? "Processing..." : "Complete Purchase"}
       </button>

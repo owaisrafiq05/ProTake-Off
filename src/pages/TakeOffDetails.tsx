@@ -430,7 +430,7 @@ const TakeoffDetails = () => {
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {takeoff.tags?.map((tag: string, index: number) => (
-                  <span key={index} className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <span key={index} className="px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-800">
                     {tag}
                   </span>
                 ))}
@@ -640,13 +640,13 @@ const TakeoffDetails = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Format:</span>
                   <div className="flex items-center">
-                    <FileSpreadsheet className="h-4 w-4 mr-1 text-green-600" />
+                    <FileSpreadsheet className="h-4 w-4 mr-1 text-brand-600" />
                     <span className="font-semibold">PDF Documents</span>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Delivery:</span>
-                  <div className="flex items-center text-green-600">
+                  <div className="flex items-center text-brand-600">
                     <Zap className="h-4 w-4 mr-1" />
                     <span className="font-semibold">Instant Download</span>
                   </div>
@@ -668,13 +668,13 @@ const TakeoffDetails = () => {
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Total Price:</span>
-                  <span className="text-2xl font-bold text-green-600">${takeoff.price}</span>
+                  <span className="text-2xl font-bold text-brand-600">${takeoff.price}</span>
                 </div>
               </div>
 
               {/* Add to Cart Button */}
               <Button
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 onClick={handleAddToCart}
               >
                 Add to Cart
@@ -688,11 +688,11 @@ const TakeoffDetails = () => {
 
               <p className="text-xs text-gray-500 mt-4 text-center">
                 By purchasing, you agree to our{" "}
-                <a href="#" className="text-green-600 hover:underline">
+                <a href="#" className="text-brand-600 hover:underline">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-green-600 hover:underline">
+                <a href="#" className="text-brand-600 hover:underline">
                   Privacy Policy
                 </a>
               </p>

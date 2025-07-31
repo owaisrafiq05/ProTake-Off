@@ -215,8 +215,8 @@ const FindTakeoffs = () => {
         </div>
 
         {/* Decorative Elements */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-green-100/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-green-50/50 to-transparent rounded-full blur-3xl" />
+        <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-brand-100/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-brand-50/50 to-transparent rounded-full blur-3xl" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
@@ -237,7 +237,7 @@ const FindTakeoffs = () => {
                 placeholder="Search takeoffs by title, description, or keywords..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 py-4 text-lg border-2 border-gray-200 focus:border-green-500 focus:ring-green-500"
+                className="pl-12 pr-4 py-4 text-lg border-2 border-gray-200 focus:border-brand-500 focus:ring-brand-500"
               />
             </div>
           </div>
@@ -248,7 +248,7 @@ const FindTakeoffs = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-8">
                 <div className="flex items-center mb-6">
-                  <Filter className="h-5 w-5 text-green-600 mr-2" />
+                  <Filter className="h-5 w-5 text-brand-600 mr-2" />
                   <h3 className="text-lg font-bold text-gray-900">Filters</h3>
                 </div>
 
@@ -279,7 +279,7 @@ const FindTakeoffs = () => {
                             value={type}
                             checked={takeoffType === type}
                             onChange={(e) => setTakeoffType(e.target.value)}
-                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
+                            className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300"
                           />
                           <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors">{type}</span>
                         </label>
@@ -304,7 +304,7 @@ const FindTakeoffs = () => {
                             value={dist.value}
                             checked={distance === dist.value}
                             onChange={(e) => setDistance(e.target.value)}
-                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
+                            className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300"
                           />
                           <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors flex items-center">
                             <Navigation className="h-3 w-3 mr-1 text-gray-400" />
@@ -333,7 +333,7 @@ const FindTakeoffs = () => {
                             value={size.value}
                             checked={selectedSize === size.value}
                             onChange={(e) => setSelectedSize(e.target.value)}
-                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
+                            className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300"
                           />
                           <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors flex items-center">
                             <DollarSign className="h-3 w-3 mr-1 text-gray-400" />
@@ -354,7 +354,7 @@ const FindTakeoffs = () => {
                             type="checkbox"
                             checked={selectedTypes.includes(type)}
                             onChange={() => handleTypeChange(type)}
-                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded"
                           />
                           <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors">{type}</span>
                         </label>
@@ -364,7 +364,7 @@ const FindTakeoffs = () => {
 
                   {/* Filter Actions */}
                   <div className="space-y-3 pt-4 border-t border-gray-200">
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium">
+                    <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium">
                       Apply Filters
                     </Button>
                     <Button
@@ -387,7 +387,7 @@ const FindTakeoffs = () => {
                   Showing <span className="font-medium">{takeoffs.length}</span> takeoffs
                 </p>
                 <select
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
                 >
@@ -422,7 +422,7 @@ const FindTakeoffs = () => {
 
                     {/* Project Type Badge and Price */}
                     <div className="flex items-center justify-between mb-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-800">
                         {project.projectType.charAt(0).toUpperCase() + project.projectType.slice(1)}
                       </span>
                       {/* <div className="flex items-center gap-2">
@@ -435,13 +435,13 @@ const FindTakeoffs = () => {
                     
 
                     {/* Project Title */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors">
                       {project.title}
                     </h3>
 
                     {/* Price Display */}
                     <div className="mb-3">
-                      <span className={`text-lg font-bold text-green-600 ${!user ? "blur-sm select-none" : ""}`}>
+                      <span className={`text-lg font-bold text-brand-600 ${!user ? "blur-sm select-none" : ""}`}>
                         ${project.price}
                       </span>
                     </div>
@@ -470,7 +470,7 @@ const FindTakeoffs = () => {
                     {/* View Details Button */}
                     <Button
                       onClick={() => handleViewDetails(project._id)}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105"
+                      className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105"
                     >
                       View Details
                     </Button>

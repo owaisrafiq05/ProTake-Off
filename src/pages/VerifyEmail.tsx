@@ -37,7 +37,7 @@ const VerifyEmail = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-xl shadow-md text-center">
-        {status === 'loading' && <div className="mb-4 animate-spin h-8 w-8 border-4 border-green-600 border-t-transparent rounded-full mx-auto" />}
+        {status === 'loading' && <div className="mb-4 animate-spin h-8 w-8 border-4 border-brand-600 border-t-transparent rounded-full mx-auto" />}
         <h2 className="text-2xl font-bold mb-2">Verify Email</h2>
         <p className="text-gray-700">{message}</p>
       </div>

@@ -51,7 +51,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Hero Section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#16A34A] text-white relative overflow-hidden">
+              <div className="hidden lg:flex lg:w-1/2 bg-[#5D722F] text-white relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fillRule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fillOpacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;7&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] bg-repeat" />
@@ -79,8 +79,8 @@ const Signup = () => {
           </div>
 
           {/* Decorative Elements */}
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-green-500/20 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-green-600/10 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-brand-500/20 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-brand-600/10 to-transparent rounded-full blur-3xl" />
         </div>
       </div>
 
@@ -114,7 +114,7 @@ const Signup = () => {
                   <input
                     {...register("firstName", { required: "First name is required" })}
                     type="text"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="John"
                   />
                 </div>
@@ -132,7 +132,7 @@ const Signup = () => {
                   <input
                     {...register("lastName", { required: "Last name is required" })}
                     type="text"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="Doe"
                   />
                 </div>
@@ -158,7 +158,7 @@ const Signup = () => {
                     },
                   })}
                   type="email"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                   placeholder="john@example.com"
                 />
               </div>
@@ -183,7 +183,7 @@ const Signup = () => {
                     },
                   })}
                   type={showPassword ? "text" : "password"}
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                   placeholder="Create a strong password"
                 />
                 <button
@@ -214,7 +214,7 @@ const Signup = () => {
                   <input
                     {...register("company", { required: "Company name is required" })}
                     type="text"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="ABC Landscaping"
                   />
                 </div>
@@ -232,7 +232,7 @@ const Signup = () => {
                   <input
                     {...register("phone", { required: "Phone number is required" })}
                     type="tel"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="555-123-4567"
                   />
                 </div>
@@ -243,7 +243,7 @@ const Signup = () => {
             {/* Address Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                <MapPin className="h-5 w-5 mr-2 text-green-600" />
+                <MapPin className="h-5 w-5 mr-2 text-brand-600" />
                 Business Address
               </h3>
 
@@ -251,12 +251,12 @@ const Signup = () => {
                 <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-2">
                   Street Address
                 </label>
-                <input
-                  {...register("address.street", { required: "Street address is required" })}
-                  type="text"
-                  className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                  placeholder="123 Main St"
-                />
+                                  <input
+                    {...register("address.street", { required: "Street address is required" })}
+                    type="text"
+                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                    placeholder="123 Main St"
+                  />
                 {errors.address?.street && <p className="mt-1 text-sm text-red-600">{errors.address.street.message}</p>}
               </div>
 
@@ -268,7 +268,7 @@ const Signup = () => {
                   <input
                     {...register("address.city", { required: "City is required" })}
                     type="text"
-                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="Austin"
                   />
                   {errors.address?.city && <p className="mt-1 text-sm text-red-600">{errors.address.city.message}</p>}
@@ -281,7 +281,7 @@ const Signup = () => {
                   <input
                     {...register("address.state", { required: "State is required" })}
                     type="text"
-                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="TX"
                   />
                   {errors.address?.state && <p className="mt-1 text-sm text-red-600">{errors.address.state.message}</p>}
@@ -294,7 +294,7 @@ const Signup = () => {
                   <input
                     {...register("address.zipCode", { required: "ZIP code is required" })}
                     type="text"
-                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="78701"
                   />
                   {errors.address?.zipCode && (
@@ -311,15 +311,15 @@ const Signup = () => {
                 name="terms"
                 type="checkbox"
                 required
-                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-1"
+                className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded mt-1"
               />
               <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
                 I agree to the{" "}
-                <a href="#" className="text-green-600 hover:text-green-700 font-medium">
+                <a href="#" className="text-brand-600 hover:text-brand-700 font-medium">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-green-600 hover:text-green-700 font-medium">
+                <a href="#" className="text-brand-600 hover:text-brand-700 font-medium">
                   Privacy Policy
                 </a>
               </label>
@@ -329,7 +329,7 @@ const Signup = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
@@ -339,7 +339,7 @@ const Signup = () => {
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Already have an account?{" "}
-              <Link to="/login" className="text-green-600 hover:text-green-700 font-medium">
+              <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">
                 Sign In
               </Link>
             </p>

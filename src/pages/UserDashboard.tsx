@@ -130,7 +130,7 @@ const UserDashboard = () => {
   const renderOverview = () => (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 border border-gray-200">
+      <div className="bg-gradient-to-r from-brand-50 to-blue-50 rounded-2xl p-8 border border-gray-200">
         <div className="flex items-center space-x-6">
           <img
             src={userProfile.avatar || "/placeholder.svg"}
@@ -161,8 +161,8 @@ const UserDashboard = () => {
               <p className="text-sm text-gray-600">Total Purchases</p>
               <p className="text-2xl font-bold text-gray-900">{orders.flatMap(order => order.items).length}</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <ShoppingBag className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+              <ShoppingBag className="h-6 w-6 text-brand-600" />
             </div>
           </div>
         </div>
@@ -173,8 +173,8 @@ const UserDashboard = () => {
               <p className="text-sm text-gray-600">Total Spent</p>
               <p className="text-2xl font-bold text-gray-900">${orders.flatMap(order => order.items).reduce((acc, item) => acc + item.price, 0)}</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <CreditCard className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+              <CreditCard className="h-6 w-6 text-brand-600" />
             </div>
           </div>
         </div>
@@ -187,8 +187,8 @@ const UserDashboard = () => {
                 {orders.flatMap(order => order.items).length}
               </p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <Download className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+              <Download className="h-6 w-6 text-brand-600" />
             </div>
           </div>
         </div>
@@ -264,7 +264,7 @@ const UserDashboard = () => {
               <div className="flex items-center space-x-2 mt-2">
                 <Button 
                   size="sm" 
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-brand-600 hover:bg-brand-700 text-white"
                   onClick={() => {
                     setSelectedItem(item);
                     setShowDownloadModal(true);
@@ -301,7 +301,7 @@ const UserDashboard = () => {
             <div className="flex items-center space-x-2 mt-2">
               <Button 
                 size="sm" 
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-brand-600 hover:bg-brand-700 text-white"
                 onClick={() => {
                   setSelectedItem(item);
                   setShowDownloadModal(true);
@@ -365,7 +365,7 @@ const UserDashboard = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                        <Button size="sm" className="bg-brand-600 hover:bg-brand-700 text-white">
                           <Download className="h-4 w-4 mr-1" />
                           Download
                         </Button>
@@ -389,7 +389,7 @@ const UserDashboard = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                      <Button size="sm" className="bg-brand-600 hover:bg-brand-700 text-white">
                         <Download className="h-4 w-4 mr-1" />
                         Download
                       </Button>
@@ -417,7 +417,7 @@ const UserDashboard = () => {
             </Button>
           ) : (
             <div className="flex space-x-2">
-              <Button onClick={handleSaveProfile} className="bg-green-600 hover:bg-green-700 text-white">
+              <Button onClick={handleSaveProfile} className="bg-brand-600 hover:bg-brand-700 text-white">
                 <Save className="h-4 w-4 mr-2" />
                 Save
               </Button>
@@ -538,7 +538,7 @@ const UserDashboard = () => {
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-colors ${
                         activeTab === tab.id
-                          ? "bg-green-50 text-green-700 border border-green-200"
+                          ? "bg-brand-50 text-brand-700 border border-brand-200"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
