@@ -41,6 +41,9 @@ const AdminPanel = () => {
   const [userTransactions, setUserTransactions] = useState<any[]>([])
   const [userSearch, setUserSearch] = useState("")
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [userPage, setUserPage] = useState(1)
+  const [userPageSize, setUserPageSize] = useState(10)
+  const [userLoading, setUserLoading] = useState(false)
 
   // Contact Management State
   const [contacts, setContacts] = useState<any[]>([])
@@ -53,10 +56,13 @@ const AdminPanel = () => {
   // Fetch all users
   const fetchUsers = async () => {
     try {
+      setUserLoading(true)
       const res = await getAllUsers()
       setUsers(res.data.users || [])
     } catch (err: any) {
       toast.error("Failed to fetch users")
+    } finally {
+      setUserLoading(false)
     }
   }
 
@@ -76,6 +82,11 @@ const AdminPanel = () => {
       fetchUserTransactions()
     }
   }, [activeTab])
+
+  // Reset user page when search changes
+  useEffect(() => {
+    setUserPage(1)
+  }, [userSearch])
 
   // Contact Management Functions
   const fetchContacts = async () => {
@@ -228,6 +239,13 @@ const AdminPanel = () => {
       )
     })
 
+    // Pagination calculations
+    const totalUsers = filteredUsers.length
+    const totalPages = Math.ceil(totalUsers / userPageSize)
+    const startIndex = (userPage - 1) * userPageSize
+    const endIndex = startIndex + userPageSize
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex)
+
     // Find transactions for selected user
     const selectedUserTx = userTransactions.find((utx: any) => utx.user._id === selectedUserId)
 
@@ -242,41 +260,137 @@ const AdminPanel = () => {
               onChange={e => setUserSearch(e.target.value)}
               className="w-full md:w-80"
             />
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600">Show:</label>
+              <select
+                value={userPageSize}
+                onChange={(e) => {
+                  setUserPageSize(Number(e.target.value))
+                  setUserPage(1) // Reset to first page when changing page size
+                }}
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <span className="text-sm text-gray-600">per page</span>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Last Login</th>
-                  <th className="px-4 py-2"></th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
-                {filteredUsers.map(user => (
-                  <tr key={user._id} className={selectedUserId === user._id ? "bg-green-50" : ""}>
-                    <td className="px-4 py-2 whitespace-nowrap">{user.firstName} {user.lastName}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{user.email}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{user.company}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "-"}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      <Button
-                        size="sm"
-                        variant={selectedUserId === user._id ? "default" : "outline"}
-                        onClick={() => setSelectedUserId(user._id)}
-                      >
-                        View Transactions
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          
+          {userLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
+              <p className="text-gray-500 mt-2">Loading users...</p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Last Login</th>
+                      <th className="px-4 py-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-100">
+                    {paginatedUsers.map(user => (
+                      <tr key={user._id} className={selectedUserId === user._id ? "bg-green-50" : ""}>
+                        <td className="px-4 py-2 whitespace-nowrap">{user.firstName} {user.lastName}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{user.email}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{user.company}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "-"}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          <Button
+                            size="sm"
+                            variant={selectedUserId === user._id ? "default" : "outline"}
+                            onClick={() => setSelectedUserId(user._id)}
+                          >
+                            View Transactions
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-between">
+                  <div className="text-sm text-gray-600">
+                    Showing {startIndex + 1} to {Math.min(endIndex, totalUsers)} of {totalUsers} users
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setUserPage(Math.max(1, userPage - 1))}
+                      disabled={userPage === 1}
+                      className="flex items-center gap-1"
+                    >
+                      Previous
+                    </Button>
+                    
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum
+                        if (totalPages <= 5) {
+                          pageNum = i + 1
+                        } else if (userPage <= 3) {
+                          pageNum = i + 1
+                        } else if (userPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i
+                        } else {
+                          pageNum = userPage - 2 + i
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={userPage === pageNum ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setUserPage(pageNum)}
+                            className="w-8 h-8 p-0"
+                          >
+                            {pageNum}
+                          </Button>
+                        )
+                      })}
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setUserPage(Math.min(totalPages, userPage + 1))}
+                      disabled={userPage === totalPages}
+                      className="flex items-center gap-1"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {paginatedUsers.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <Settings className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
+                  <p className="text-gray-500">
+                    {userSearch ? "Try adjusting your search terms" : "No users match the current criteria"}
+                  </p>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* Transaction History for selected user */}
