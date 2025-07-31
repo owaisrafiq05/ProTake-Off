@@ -30,7 +30,7 @@ import {
   AlertCircle,
   MessageCircle,
 } from "lucide-react"
-import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats } from "../lib/api"
+import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats, resendOrderEmail } from "../lib/api"
 import { Toaster, toast } from "../components/ui/sonner"
 import AdminHeader from "@/components/AdminHeader"
 
@@ -137,6 +137,16 @@ const AdminPanel = () => {
       fetchContacts()
     } catch (err: any) {
       toast.error("Failed to delete contact")
+    }
+  }
+
+  // Handle resending order confirmation email
+  const handleResendOrderEmail = async (orderId: string) => {
+    try {
+      await resendOrderEmail(orderId)
+      toast.success("Order confirmation email sent successfully")
+    } catch (err: any) {
+      toast.error("Failed to send order confirmation email")
     }
   }
 
@@ -284,6 +294,7 @@ const AdminPanel = () => {
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
@@ -298,6 +309,17 @@ const AdminPanel = () => {
                               <li key={idx}>{item.title} (${item.price})</li>
                             ))}
                           </ul>
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleResendOrderEmail(tx._id)}
+                            className="flex items-center gap-2"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                            Resend Email
+                          </Button>
                         </td>
                       </tr>
                     ))}

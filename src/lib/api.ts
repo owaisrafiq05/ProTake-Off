@@ -168,4 +168,20 @@ export async function getPopularTakeoffs(limit = 3) {
   const res = await fetch(`${API_BASE}/takeoffs?sort=downloads_desc&limit=${limit}`);
   if (!res.ok) throw new Error('Failed to fetch popular takeoffs');
   return res.json();
+}
+
+// Resend order confirmation email
+export async function resendOrderEmail(orderId: string) {
+  const token = Cookies.get('adminToken');
+  if (!token) throw new Error('Admin authentication required');
+  
+  const res = await fetch(`${API_BASE}/order/resend-email/${orderId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed to resend order email');
+  return res.json();
 } 
