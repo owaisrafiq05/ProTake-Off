@@ -115,6 +115,12 @@ export async function getAllTakeoffs() {
   return res.json();
 }
 
+export async function getAllTakeoffsAdmin() {
+  const res = await fetch(`${API_BASE}/takeoffs/admin/all`);
+  if (!res.ok) throw new Error('Failed to fetch takeoffs');
+  return res.json();
+}
+
 export async function getTakeoffById(id: string) {
   const res = await fetch(`${API_BASE}/takeoffs/${id}`);
   if (!res.ok) throw new Error('Failed to fetch takeoff');

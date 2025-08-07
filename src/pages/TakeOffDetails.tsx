@@ -414,14 +414,14 @@ const TakeoffDetails = () => {
             {/* Project Header */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 relative">
               {/* Status Labels - Top Right Corner */}
-              <div className="absolute top-6 right-6 z-10">
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
                 {isNewTakeoff(takeoff) && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                  <span className="inline-flex items-center px-2 py-1 sm:px-3 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
                     New
                   </span>
                 )}
                 {isExpireSoon(takeoff) && !isNewTakeoff(takeoff) && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                  <span className="inline-flex items-center px-2 py-1 sm:px-3 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
                     Expire Soon
                   </span>
                 )}
@@ -458,10 +458,6 @@ const TakeoffDetails = () => {
                 <div className="flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
                   ZIP {takeoff.zipCode}
-                </div>
-                <div className="flex items-center">
-                  <Download className="h-4 w-4 mr-1" />
-                  {takeoff.downloadCount || 0} downloads
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />

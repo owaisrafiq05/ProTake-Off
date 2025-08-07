@@ -30,7 +30,7 @@ import {
   AlertCircle,
   MessageCircle,
 } from "lucide-react"
-import { createTakeoff, getAllTakeoffs, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats, resendOrderEmail } from "../lib/api"
+import { createTakeoff, getAllTakeoffs, getAllTakeoffsAdmin, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats, resendOrderEmail } from "../lib/api"
 import { Toaster, toast } from "../components/ui/sonner"
 import AdminHeader from "@/components/AdminHeader"
 
@@ -198,6 +198,7 @@ const AdminPanel = () => {
     area: "",
     complexity: "",
     tags: "",
+    isActive: true,
   })
 
   // Fetch takeoffs from API
@@ -205,7 +206,7 @@ const AdminPanel = () => {
   const fetchTakeoffs = async () => {
     setLoading(true)
     try {
-      const data = await getAllTakeoffs()
+      const data = await getAllTakeoffsAdmin()
       setTakeoffs(data)
     } catch {
       setError("Failed to fetch takeoffs")
@@ -546,7 +547,7 @@ const AdminPanel = () => {
         },
         expirationDate: formData.expirationDate,
         tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
-        isActive: true,
+        isActive: formData.isActive,
         files: formData.files,
         pdfPreview: formData.pdfPreview,
       }
@@ -573,6 +574,7 @@ const AdminPanel = () => {
         area: "",
         complexity: "",
         tags: "",
+        isActive: true,
       })
       setIsEditing(false)
       setEditingId(null)
@@ -608,6 +610,7 @@ const AdminPanel = () => {
       area: takeoff.specifications?.area?.toString() ?? "",
       complexity: takeoff.specifications?.complexity ?? "",
       tags: takeoff.tags ? takeoff.tags.join(", ") : "",
+      isActive: takeoff.isActive ?? true,
     })
     setIsEditing(true)
     setEditingId(takeoff._id || takeoff.id)
@@ -659,7 +662,7 @@ const AdminPanel = () => {
 
   // Filtering for active/expired takeoffs
   const now = new Date();
-  const isExpired = (takeoff: any) => takeoff.bidExpirationDate && new Date(takeoff.bidExpirationDate) < now;
+  const isExpired = (takeoff: any) => takeoff.expirationDate && new Date(takeoff.expirationDate) < now;
   const isActive = (takeoff: any) => takeoff.isActive && !isExpired(takeoff);
 
   const filteredTakeoffs = takeoffs.filter((takeoff) => {
@@ -702,6 +705,7 @@ const AdminPanel = () => {
                 area: "",
                 complexity: "",
                 tags: "",
+                isActive: true,
               })
             }}
             variant="outline"
@@ -935,6 +939,24 @@ const AdminPanel = () => {
             className="w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 resize-none"
             required
           />
+        </div>
+        
+        {/* Status Section */}
+        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-brand-700">Status</h3>
+          <div className="flex items-center space-x-3">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="isActive"
+                checked={formData.isActive}
+                onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+                className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded"
+              />
+              <span className="text-gray-700">Active Takeoff</span>
+            </label>
+            <span className="text-sm text-gray-500">When unchecked, the takeoff will be hidden from users</span>
+          </div>
         </div>
         {/* Uploads Section (only for create) */}
         {!isEditing && (
