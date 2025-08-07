@@ -16,7 +16,7 @@ import {
   TrendingUp,
   FileText,
   Lock,
-  ExternalLink,
+  ExternalLink
 } from "lucide-react"
 import { getTakeoffById, getPopularTakeoffs } from "../lib/api"
 import { useCart } from "../components/CartContext"
@@ -672,10 +672,17 @@ create an account to complete your purchase.
                   </div>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Documents:</span>
+                  <span className="text-gray-600">Document:</span>
                   <div className="flex items-center text-black">
                     <FileText className="h-4 w-4 mr-1" />
-                    <span className="font-semibold">2 Files</span>
+                    <span className="font-semibold">Blueprint PDF</span>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Takeoff:</span>
+                  <div className="flex items-center text-black">
+                    <FileSpreadsheet className="h-4 w-4 mr-1" />
+                    <span className="font-semibold">Excel File</span>
                   </div>
                 </div>
               </div>
