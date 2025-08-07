@@ -37,19 +37,19 @@ const Footer: React.FC = () => {
                 <div className="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center">
                   <Mail className="h-5 w-5 text-brand-600" />
                 </div>
-                <span className="font-medium">hello@Protakeoffs.ai</span>
+                <span className="font-medium"><a href="mailto:hello@protakeoffs.ai">hello@protakeoffs.ai</a></span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
+              {/* <div className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
                 <div className="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center">
                   <Phone className="h-5 w-5 text-brand-600" />
                 </div>
                 <span className="font-medium">+1 (555) 123-4567</span>
-              </div>
+              </div> */}
               <div className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
                 <div className="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center">
                   <MapPin className="h-5 w-5 text-brand-600" />
                 </div>
-                <span className="font-medium">San Francisco, CA</span>
+                <span className="font-medium">Dallas, Texas</span>
               </div>
             </div>
 

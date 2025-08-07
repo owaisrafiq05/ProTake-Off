@@ -21,34 +21,32 @@ const TakeoffFinder = () => {
     e.preventDefault()
     setError("")
 
-    if (!zipCode || !/^[0-9]{5}$/.test(zipCode)) {
+    // Allow empty search to show all takeoffs
+    const params = new URLSearchParams()
+
+    // Only add parameters if they are provided
+    if (zipCode && /^[0-9]{5}$/.test(zipCode)) {
+      params.append("zipCode", zipCode)
+    } else if (zipCode && !/^[0-9]{5}$/.test(zipCode)) {
       setError("Please enter a valid 5-digit ZIP code.")
       return
     }
 
-    if (!takeoffType) {
-      setError("Please select a takeoff type.")
-      return
+    if (takeoffType) {
+      params.append("takeoffType", takeoffType)
     }
 
-    if (!distance) {
-      setError("Please select a distance.")
-      return
+    if (distance) {
+      params.append("distance", distance)
     }
 
-    if (!projectSize) {
-      setError("Please select a project size.")
-      return
+    if (projectSize) {
+      params.append("size", projectSize)
     }
 
-    const params = new URLSearchParams({
-      zipCode,
-      takeoffType,
-      distance,
-      size: projectSize,
-    })
-
-    navigate(`/find-takeoffs?${params.toString()}`)
+    // Navigate to find-takeoffs page with or without parameters
+    const queryString = params.toString()
+    navigate(`/find-takeoffs${queryString ? `?${queryString}` : ""}`)
   }
 
   return (
@@ -73,8 +71,8 @@ const TakeoffFinder = () => {
             Find Your <span className="text-brand-600">Takeoff</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Use our advanced filters to find the perfect takeoff for your project. Get professional estimates tailored
-            to your specific needs.
+            Use our advanced filters to find the perfect takeoff for your project, or search for all available takeoffs. 
+            Get professional estimates tailored to your specific needs.
           </p>
         </div>
 
@@ -98,7 +96,7 @@ const TakeoffFinder = () => {
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
-                  placeholder="Enter your ZIP code"
+                  placeholder="Enter your ZIP code (optional)"
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
                   className="pl-10 border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
@@ -111,7 +109,7 @@ const TakeoffFinder = () => {
               <label className="block text-sm font-medium text-gray-700 text-left">Takeoff Type</label>
               <Select value={takeoffType} onValueChange={setTakeoffType}>
                 <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all">
-                  <SelectValue placeholder="Select takeoff type" />
+                  <SelectValue placeholder="Select takeoff type (optional)" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="landscaping">
@@ -141,7 +139,7 @@ const TakeoffFinder = () => {
               <label className="block text-sm font-medium text-gray-700 text-left">Distance</label>
               <Select value={distance} onValueChange={setDistance}>
                 <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all">
-                  <SelectValue placeholder="Select search radius" />
+                  <SelectValue placeholder="Select search radius (optional)" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="25">
@@ -177,7 +175,7 @@ const TakeoffFinder = () => {
               <label className="block text-sm font-medium text-gray-700 text-left">Project Size</label>
               <Select value={projectSize} onValueChange={setProjectSize}>
                 <SelectTrigger className="w-full border-gray-300 text-lg py-4 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all">
-                  <SelectValue placeholder="Select your project size" />
+                  <SelectValue placeholder="Select your project size (optional)" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="small">
@@ -221,7 +219,7 @@ const TakeoffFinder = () => {
               type="submit"
               className="w-full bg-brand-600 hover:bg-brand-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
             >
-              Find Available Takeoffs
+              {zipCode || takeoffType || distance || projectSize ? "Find Available Takeoffs" : "Browse All Takeoffs"}
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             {error && <div className="text-red-500 text-sm text-left pt-3">{error}</div>}

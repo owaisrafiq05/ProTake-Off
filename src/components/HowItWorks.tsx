@@ -23,7 +23,7 @@ const HowItWorks = () => {
     {
       number: "3",
       title: "Instant Email Delivery",
-      description: "Receive your takeoff immediately after purchase. No waiting, no delays.",
+      description: "Receive your takeoff immediately after purchase. No waiting, No delays.",
       icon: Mail,
       color: "bg-brand-100 text-brand-600",
     },
@@ -54,7 +54,7 @@ const HowItWorks = () => {
             How It <span className="text-brand-600">Works</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Instant Takeoffs in 4 easy steps. No guesswork. No Delays. Just professional results when you need them
+            Instant Takeoffs in 4 easy steps. No guesswork. No delays. Just professional results when you need them.
           </p>
         </div>
 
