@@ -20,9 +20,9 @@ const Footer: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-6">
               <div className="relative flex items-center">
-                <img src="/logoUpdated.png" alt="ProTakeoff.ai" className="h-12" />
-                <span className="ml-2 text-2xl font-bold text-[#5d722f] tracking-wide">
-                  ProTakeoff<span className="text-gray-900">Ai</span>
+                {/* <img src="/logoUpdated.png" alt="ProTakeoff.ai" className="h-12" /> */}
+                <span className="ml-2 text-2xl font-bold text-brand-600 tracking-wide">
+                  ProTakeoffs.<span className="text-gray-900">AI</span>
                 </span>
               </div>
             </div>
