@@ -6,6 +6,7 @@ import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, MapPin, Calendar, Ruler, DollarSign, Navigation, FileText } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useLocation, useNavigate } from "react-router-dom"
 import { getTakeoffs } from "../lib/api"
 import { useAuth } from "../components/AuthContext"
@@ -33,7 +34,6 @@ const PAGE_SIZE = 9
 const FindTakeoffs = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSize, setSelectedSize] = useState("")
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [takeoffType, setTakeoffType] = useState("")
   const [distance, setDistance] = useState("")
   const [zipCode, setZipCode] = useState("")
@@ -62,15 +62,23 @@ const FindTakeoffs = () => {
 
       if (searchTerm) params.search = searchTerm
       if (zipCode) params.zipCode = zipCode
-      if (selectedSize) params.size = selectedSize.toLowerCase()
-      // Takeoff Type takes precedence over Project Type
+      // Only send size parameter if it's not "All"
+      if (selectedSize && selectedSize !== "All") {
+        // Map UI size values back to API parameter values
+        const apiSizeMapping: { [key: string]: string } = {
+          'Small': 'small',
+          'Medium': 'medium',
+          'Large': 'large', 
+          'Corporate': 'corporate'
+        }
+        params.size = apiSizeMapping[selectedSize] || selectedSize.toLowerCase()
+      }
       if (takeoffType) {
         params.type = takeoffType.toLowerCase()
-      } else if (selectedTypes.length > 0) {
-        params.type = selectedTypes.join(",").toLowerCase()
       }
       if (distance) params.distance = distance
 
+      console.log('Sending params to API:', params)
       const data = await getTakeoffs(params)
 
       if (reset) {
@@ -92,7 +100,7 @@ const FindTakeoffs = () => {
     setPage(1)
     fetchTakeoffs(true)
     // eslint-disable-next-line
-  }, [searchTerm, selectedSize, selectedTypes, zipCode, sort, takeoffType, distance])
+  }, [searchTerm, selectedSize, takeoffType, zipCode, sort, distance])
 
   // Fetch more on page change
   useEffect(() => {
@@ -127,27 +135,32 @@ const FindTakeoffs = () => {
     const searchParams = new URLSearchParams(location.search)
     const search = searchParams.get("search")
     const size = searchParams.get("size")
-    const type = searchParams.get("type")
+    const type = searchParams.get("type") || searchParams.get("takeoffType")
     const zip = searchParams.get("zipCode")
     const dist = searchParams.get("distance")
 
     if (search) setSearchTerm(search)
-    if (size) setSelectedSize(size)
+    if (size) {
+      // Map URL size parameter to UI size values
+      const sizeMapping: { [key: string]: string } = {
+        'small': 'Small',
+        'medium': 'Medium', 
+        'large': 'Large',
+        'corporate': 'Corporate',
+        'all': 'All'
+      }
+      const mappedSize = sizeMapping[size.toLowerCase()] || size
+      console.log('URL size param:', size, 'mapped to:', mappedSize)
+      setSelectedSize(mappedSize)
+    }
     if (type) setTakeoffType(type)
     if (zip) setZipCode(zip)
     if (dist) setDistance(dist)
   }, [location.search])
 
-  const handleTypeChange = (type: string) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    )
-  }
-
   const clearFilters = () => {
     setSearchTerm("")
     setSelectedSize("")
-    setSelectedTypes([])
     setTakeoffType("")
     setDistance("")
     setZipCode("")
@@ -155,6 +168,11 @@ const FindTakeoffs = () => {
   }
 
   const handleViewDetails = (projectId: string) => {
+    if (!user) {
+      toast.error("Please login to view takeoff details")
+      navigate("/login")
+      return
+    }
     navigate(`/takeoff-details/${projectId}`)
   }
 
@@ -344,24 +362,6 @@ const FindTakeoffs = () => {
                     </div>
                   </div>
 
-                  {/* Project Type */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Project Type</label>
-                    <div className="space-y-3">
-                      {["Landscaping", "Irrigation"].map((type) => (
-                        <label key={type} className="flex items-center cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={selectedTypes.includes(type)}
-                            onChange={() => handleTypeChange(type)}
-                            className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded"
-                          />
-                          <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors">{type}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Filter Actions */}
                   <div className="space-y-3 pt-4 border-t border-gray-200">
                     <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium">
@@ -425,14 +425,7 @@ const FindTakeoffs = () => {
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-800">
                         {project.projectType.charAt(0).toUpperCase() + project.projectType.slice(1)}
                       </span>
-                      {/* <div className="flex items-center gap-2">
-                        <span className={`text-sm font-semibold text-gray-900 ${!user ? "blur-sm select-none" : ""}`}>
-                          ${project.price}
-                        </span>
-                      </div> */}
                     </div>
-
-                    
 
                     {/* Project Title */}
                     <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors">
@@ -441,9 +434,22 @@ const FindTakeoffs = () => {
 
                     {/* Price Display */}
                     <div className="mb-3">
-                      <span className={`text-lg font-bold text-brand-600 ${!user ? "blur-sm select-none" : ""}`}>
-                        ${project.price}
-                      </span>
+                      {!user ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-lg font-bold text-brand-600 blur-[3px] select-none cursor-help">
+                              ${project.price}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Login to see pricing</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <span className="text-lg font-bold text-brand-600">
+                          ${project.price}
+                        </span>
+                      )}
                     </div>
 
                     {/* Project Details */}
@@ -464,15 +470,16 @@ const FindTakeoffs = () => {
                       </div>
                     </div>
 
-                    {/* Project Description */}
-                    {/* <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p> */}
-
                     {/* View Details Button */}
                     <Button
                       onClick={() => handleViewDetails(project._id)}
-                      className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium transition-all duration-200 transform group-hover:scale-105"
+                      className={`w-full font-medium transition-all duration-200 transform group-hover:scale-105 ${
+                        !user 
+                          ? "bg-gray-400 hover:bg-gray-500 text-white cursor-not-allowed" 
+                          : "bg-brand-600 hover:bg-brand-700 text-white"
+                      }`}
                     >
-                      View Details
+                      {!user ? "Login to View Details" : "View Details"}
                     </Button>
                   </div>
                 ))}
