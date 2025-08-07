@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
@@ -25,6 +25,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { useCart } from "../components/CartContext"
+import { useAuth } from "../components/AuthContext"
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY || "null")
@@ -61,11 +62,22 @@ const CheckoutContent = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentSuccess, setPaymentSuccess] = useState(false)
   const [paymentError, setPaymentError] = useState("")
+  const { user } = useAuth()
   const [billingInfo, setBillingInfo] = useState({
     email: "",
   })
   const { items, getTotalPrice, clearCart } = useCart();
   const [order, setOrder] = useState<any>(null);
+
+  // Auto-populate email with logged-in user's email
+  useEffect(() => {
+    if (user?.email && !billingInfo.email) {
+      setBillingInfo(prev => ({
+        ...prev,
+        email: user.email
+      }))
+    }
+  }, [user?.email, billingInfo.email])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBillingInfo({
@@ -331,7 +343,7 @@ const CheckoutContent = () => {
               <div className="space-y-2">
                 <div className="flex items-center text-sm text-gray-600">
                   <FileSpreadsheet className="h-4 w-4 mr-2 text-brand-600" />
-                  <span>Excel format takeoffs</span>
+                  <span>Blueprint PDF & Excel Takeoff</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <Zap className="h-4 w-4 mr-2 text-brand-600" />
@@ -339,7 +351,7 @@ const CheckoutContent = () => {
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <Users className="h-4 w-4 mr-2 text-brand-600" />
-                  <span>Multiple project use</span>
+                  <span>24/7 Customer Support</span>
                 </div>
               </div>
             </div>
@@ -351,7 +363,7 @@ const CheckoutContent = () => {
                 <span>${getTotalPrice().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Tax</span>
+                <span>Taxes</span>
                 <span>${(getTotalPrice() * 0.08).toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-3">
