@@ -7,6 +7,7 @@ import Footer from "../components/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import Cookies from 'js-cookie'
 import {
   Plus,
   Activity,
@@ -30,7 +31,7 @@ import {
   AlertCircle,
   MessageCircle,
 } from "lucide-react"
-import { createTakeoff, getAllTakeoffs, getAllTakeoffsAdmin, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats, resendOrderEmail } from "../lib/api"
+import { createTakeoff, getAllTakeoffs, getAllTakeoffsAdmin, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats, resendOrderEmail, getAllPromoCodes, createPromoCode, updatePromoCode, deletePromoCode } from "../lib/api"
 import { Toaster, toast } from "../components/ui/sonner"
 import AdminHeader from "@/components/AdminHeader"
 
@@ -52,6 +53,24 @@ const AdminPanel = () => {
   const [contactStatusFilter, setContactStatusFilter] = useState("all")
   const [contactPage, setContactPage] = useState(1)
   const [contactLoading, setContactLoading] = useState(false)
+
+  // Promo Code Management State
+  const [promoCodes, setPromoCodes] = useState<any[]>([])
+  const [promoCodeLoading, setPromoCodeLoading] = useState(false)
+  const [editingPromoCode, setEditingPromoCode] = useState<any>(null)
+  const [showPromoCodeForm, setShowPromoCodeForm] = useState(false)
+  const [promoCodeForm, setPromoCodeForm] = useState({
+    code: '',
+    description: '',
+    discountType: 'percentage',
+    discountValue: 0,
+    maxDiscount: null as number | null,
+    minimumOrderAmount: 0,
+    maxUsage: null as number | null,
+    validFrom: new Date().toISOString().split('T')[0],
+    validUntil: '',
+    isActive: true
+  })
 
   // Fetch all users
   const fetchUsers = async () => {
@@ -80,6 +99,9 @@ const AdminPanel = () => {
     if (activeTab === "user-management") {
       fetchUsers()
       fetchUserTransactions()
+    }
+    if (activeTab === "promo-codes") {
+      fetchPromoCodes()
     }
   }, [activeTab])
 
@@ -161,6 +183,91 @@ const AdminPanel = () => {
     }
   }
 
+  // Promo Code Management Functions
+  const fetchPromoCodes = async () => {
+    try {
+      setPromoCodeLoading(true)
+      const res = await getAllPromoCodes()
+      setPromoCodes(res.promoCodes || [])
+    } catch (err: any) {
+      console.error('Error fetching promo codes:', err)
+      if (err.message === 'Admin authentication required') {
+        toast.error("Please log in as admin to manage promo codes")
+      } else {
+        toast.error("Failed to fetch promo codes")
+      }
+    } finally {
+      setPromoCodeLoading(false)
+    }
+  }
+
+  const handlePromoCodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      if (editingPromoCode) {
+        await updatePromoCode(editingPromoCode._id, promoCodeForm)
+        toast.success("Promo code updated successfully")
+      } else {
+        await createPromoCode(promoCodeForm)
+        toast.success("Promo code created successfully")
+      }
+      setShowPromoCodeForm(false)
+      setEditingPromoCode(null)
+      setPromoCodeForm({
+        code: '',
+        description: '',
+        discountType: 'percentage',
+        discountValue: 0,
+        maxDiscount: null,
+        minimumOrderAmount: 0,
+        maxUsage: null,
+        validFrom: new Date().toISOString().split('T')[0],
+        validUntil: '',
+        isActive: true
+      })
+      fetchPromoCodes()
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save promo code")
+    }
+  }
+
+  const handleEditPromoCode = (promoCode: any) => {
+    setEditingPromoCode(promoCode)
+    setPromoCodeForm({
+      code: promoCode.code,
+      description: promoCode.description,
+      discountType: promoCode.discountType,
+      discountValue: promoCode.discountValue,
+      maxDiscount: promoCode.maxDiscount || null,
+      minimumOrderAmount: promoCode.minimumOrderAmount,
+      maxUsage: promoCode.maxUsage || null,
+      validFrom: new Date(promoCode.validFrom).toISOString().split('T')[0],
+      validUntil: new Date(promoCode.validUntil).toISOString().split('T')[0],
+      isActive: promoCode.isActive
+    })
+    setShowPromoCodeForm(true)
+  }
+
+  const handleDeletePromoCode = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this promo code?")) {
+      try {
+        await deletePromoCode(id)
+        toast.success("Promo code deleted successfully")
+        fetchPromoCodes()
+      } catch (err: any) {
+        toast.error("Failed to delete promo code")
+      }
+    }
+  }
+
+  const handlePromoCodeInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target
+    setPromoCodeForm(prev => ({
+      ...prev,
+      [name]: type === 'number' ? (value === '' ? null : Number(value)) : value
+    }))
+  }
+
   useEffect(() => {
     if (activeTab === "contacts") {
       fetchContacts()
@@ -225,6 +332,7 @@ const AdminPanel = () => {
     { id: "expired-takeoffs", label: "Expired Takeoffs", icon: Archive },
     { id: "user-management", label: "User Management", icon: Settings },
     { id: "contacts", label: "Contact Forms", icon: MessageCircle },
+    { id: "promo-codes", label: "Promo Codes", icon: DollarSign },
     { id: "admin", label: "Admin", icon: Settings },
   ]
 
@@ -1382,6 +1490,343 @@ const AdminPanel = () => {
     </div>
   )
 
+  const renderPromoCodes = () => {
+    // Check if admin token exists
+    const adminToken = typeof window !== 'undefined' ? Cookies.get('adminToken') : null;
+    
+    if (!adminToken) {
+      return (
+        <div className="space-y-8">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-5 w-5 text-yellow-400" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Admin Authentication Required
+                </h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>You need to be logged in as an admin to manage promo codes.</p>
+                  <p className="mt-1">Please log in with admin credentials to access this feature.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-8">
+        {/* Header with Add Button */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Promo Code Management</h2>
+            <p className="text-gray-600">Create and manage promotional codes for discounts</p>
+          </div>
+          <Button
+            onClick={() => {
+              setEditingPromoCode(null)
+              setPromoCodeForm({
+                code: '',
+                description: '',
+                discountType: 'percentage',
+                discountValue: 0,
+                maxDiscount: null as number | null,
+                minimumOrderAmount: 0,
+                maxUsage: null as number | null,
+                validFrom: new Date().toISOString().split('T')[0],
+                validUntil: '',
+                isActive: true
+              })
+              setShowPromoCodeForm(true)
+            }}
+            className="bg-brand-600 hover:bg-brand-700 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Promo Code
+          </Button>
+        </div>
+
+      {/* Promo Code Form Modal */}
+      {showPromoCodeForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900">
+                {editingPromoCode ? 'Edit Promo Code' : 'Add New Promo Code'}
+              </h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPromoCodeForm(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <form onSubmit={handlePromoCodeSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Promo Code <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    name="code"
+                    value={promoCodeForm.code}
+                    onChange={handlePromoCodeInputChange}
+                    placeholder="SAVE20"
+                    required
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    name="description"
+                    value={promoCodeForm.description}
+                    onChange={handlePromoCodeInputChange}
+                    placeholder="20% off all takeoffs"
+                    required
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Discount Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="discountType"
+                    value={promoCodeForm.discountType}
+                    onChange={handlePromoCodeInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  >
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed Amount</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Discount Value <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    name="discountValue"
+                    type="number"
+                    value={promoCodeForm.discountValue}
+                    onChange={handlePromoCodeInputChange}
+                    placeholder={promoCodeForm.discountType === 'percentage' ? '20' : '50'}
+                    required
+                    className="w-full"
+                  />
+                </div>
+
+                {promoCodeForm.discountType === 'percentage' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Max Discount Amount
+                    </label>
+                    <Input
+                      name="maxDiscount"
+                      type="number"
+                      value={promoCodeForm.maxDiscount === null ? '' : promoCodeForm.maxDiscount}
+                      onChange={handlePromoCodeInputChange}
+                      placeholder="100"
+                      className="w-full"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Minimum Order Amount
+                  </label>
+                  <Input
+                    name="minimumOrderAmount"
+                    type="number"
+                    value={promoCodeForm.minimumOrderAmount}
+                    onChange={handlePromoCodeInputChange}
+                    placeholder="0"
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Max Usage (leave empty for unlimited)
+                  </label>
+                  <Input
+                    name="maxUsage"
+                    type="number"
+                    value={promoCodeForm.maxUsage === null ? '' : promoCodeForm.maxUsage}
+                    onChange={handlePromoCodeInputChange}
+                    placeholder="100"
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Valid From <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    name="validFrom"
+                    type="date"
+                    value={promoCodeForm.validFrom}
+                    onChange={handlePromoCodeInputChange}
+                    required
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Valid Until <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    name="validUntil"
+                    type="date"
+                    value={promoCodeForm.validUntil}
+                    onChange={handlePromoCodeInputChange}
+                    required
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="isActive"
+                  checked={promoCodeForm.isActive}
+                  onChange={(e) => setPromoCodeForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                  className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                />
+                <label className="text-sm text-gray-700">Active</label>
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowPromoCodeForm(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-brand-600 hover:bg-brand-700 text-white">
+                  {editingPromoCode ? 'Update' : 'Create'} Promo Code
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Promo Codes List */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        {promoCodeLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto"></div>
+            <p className="text-gray-500 mt-2">Loading promo codes...</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usage</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valid Period</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {promoCodes.map((promoCode) => (
+                  <tr key={promoCode._id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">
+                      {promoCode.code}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      <div className="max-w-xs truncate" title={promoCode.description}>
+                        {promoCode.description}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                      {promoCode.discountType === 'percentage' ? `${promoCode.discountValue}%` : `$${promoCode.discountValue}`}
+                      {promoCode.maxDiscount && promoCode.discountType === 'percentage' && (
+                        <span className="text-xs text-gray-500 block">Max: ${promoCode.maxDiscount}</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                      {promoCode.currentUsage || 0}
+                      {promoCode.maxUsage && ` / ${promoCode.maxUsage}`}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                      <div className="text-sm">
+                        <div>From: {new Date(promoCode.validFrom).toLocaleDateString()}</div>
+                        <div>To: {new Date(promoCode.validUntil).toLocaleDateString()}</div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        promoCode.isActive && new Date() >= new Date(promoCode.validFrom) && new Date() <= new Date(promoCode.validUntil) &&
+                        (!promoCode.maxUsage || promoCode.currentUsage < promoCode.maxUsage)
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {promoCode.isActive && new Date() >= new Date(promoCode.validFrom) && new Date() <= new Date(promoCode.validUntil) &&
+                         (!promoCode.maxUsage || promoCode.currentUsage < promoCode.maxUsage) ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <Button
+                          onClick={() => handleEditPromoCode(promoCode)}
+                          variant="outline"
+                          size="sm"
+                          className="border-gray-300 text-gray-700"
+                        >
+                          <Edit3 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDeletePromoCode(promoCode._id)}
+                          variant="outline"
+                          size="sm"
+                          className="border-red-300 text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {promoCodes.length === 0 && !promoCodeLoading && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <DollarSign className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No promo codes found</h3>
+            <p className="text-gray-500">Create your first promo code to start offering discounts</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+  }
+
   const renderAdmin = () => (
     <div className="space-y-8">
       {/* Admin Overview */}
@@ -1515,6 +1960,7 @@ const AdminPanel = () => {
             {activeTab === "expired-takeoffs" && renderTakeoffsList("Expired Takeoffs", true)}
             {activeTab === "user-management" && renderUserManagement()}
             {activeTab === "contacts" && renderContacts()}
+            {activeTab === "promo-codes" && renderPromoCodes()}
             {activeTab === "admin" && renderAdmin()}
           </div>
         </div>

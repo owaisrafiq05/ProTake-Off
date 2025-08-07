@@ -190,4 +190,92 @@ export async function resendOrderEmail(orderId: string) {
   });
   if (!res.ok) throw new Error('Failed to resend order email');
   return res.json();
+}
+
+// Promo Code API functions
+export async function getAllPromoCodes() {
+  const token = Cookies.get('adminToken');
+  if (!token) throw new Error('Admin authentication required');
+  
+  const res = await fetch(`${API_BASE}/promocodes`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error('Admin authentication required');
+    }
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || 'Failed to fetch promo codes');
+  }
+  return res.json();
+}
+
+export async function createPromoCode(data: any) {
+  const token = Cookies.get('adminToken');
+  if (!token) throw new Error('Admin authentication required');
+  
+  const res = await fetch(`${API_BASE}/promocodes`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || 'Failed to create promo code');
+  }
+  return res.json();
+}
+
+export async function updatePromoCode(id: string, data: any) {
+  const token = Cookies.get('adminToken');
+  if (!token) throw new Error('Admin authentication required');
+  
+  const res = await fetch(`${API_BASE}/promocodes/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || 'Failed to update promo code');
+  }
+  return res.json();
+}
+
+export async function deletePromoCode(id: string) {
+  const token = Cookies.get('adminToken');
+  if (!token) throw new Error('Admin authentication required');
+  
+  const res = await fetch(`${API_BASE}/promocodes/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed to delete promo code');
+  return res.json();
+}
+
+// Public promo code validation
+export async function validatePromoCode(code: string, orderAmount: number) {
+  const res = await fetch(`${API_BASE}/promocodes/validate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ code, orderAmount }),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || 'Failed to validate promo code');
+  }
+  return res.json();
 } 

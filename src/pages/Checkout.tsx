@@ -26,6 +26,7 @@ import { loadStripe } from "@stripe/stripe-js"
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { useCart } from "../components/CartContext"
 import { useAuth } from "../components/AuthContext"
+import { validatePromoCode } from "../lib/api"
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY || "null")
@@ -68,6 +69,13 @@ const CheckoutContent = () => {
   })
   const { items, getTotalPrice, clearCart } = useCart();
   const [order, setOrder] = useState<any>(null);
+  
+  // Promo code state
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedPromoCode, setAppliedPromoCode] = useState<any>(null);
+  const [promoCodeLoading, setPromoCodeLoading] = useState(false);
+  const [promoCodeError, setPromoCodeError] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   // Auto-populate email with logged-in user's email
   useEffect(() => {
@@ -120,6 +128,7 @@ const CheckoutContent = () => {
           cart: items,
           user: billingInfo,
           paymentMethodId: paymentMethod.id,
+          promoCodeId: appliedPromoCode?.id,
         }),
       });
       const data = await res.json();
@@ -136,6 +145,48 @@ const CheckoutContent = () => {
       setIsProcessing(false);
     }
   }
+
+  // Handle promo code application
+  const handleApplyPromoCode = async () => {
+    if (!promoCode.trim()) return;
+    
+    setPromoCodeLoading(true);
+    setPromoCodeError("");
+    
+    try {
+      const originalAmount = getTotalPrice();
+      const result = await validatePromoCode(promoCode, originalAmount);
+      
+      if (result.success) {
+        setAppliedPromoCode(result.promoCode);
+        setDiscountAmount(result.discount);
+        setPromoCodeError("");
+      } else {
+        setPromoCodeError(result.message || "Invalid promo code");
+        setAppliedPromoCode(null);
+        setDiscountAmount(0);
+      }
+    } catch (error: any) {
+      setPromoCodeError(error.message || "Failed to validate promo code");
+      setAppliedPromoCode(null);
+      setDiscountAmount(0);
+    } finally {
+      setPromoCodeLoading(false);
+    }
+  };
+
+  // Handle promo code removal
+  const handleRemovePromoCode = () => {
+    setAppliedPromoCode(null);
+    setDiscountAmount(0);
+    setPromoCode("");
+    setPromoCodeError("");
+  };
+
+  // Calculate totals
+  const originalAmount = getTotalPrice();
+  const taxAmount = originalAmount * 0.08;
+  const finalAmount = originalAmount + taxAmount - discountAmount;
 
   if (paymentSuccess && order) {
     // Show download buttons for all purchased files
@@ -244,6 +295,67 @@ const CheckoutContent = () => {
 
 
 
+            {/* Promo Code Section */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Promo Code</h2>
+              
+              {!appliedPromoCode ? (
+                <div className="space-y-4">
+                  <div className="flex space-x-4">
+                    <Input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      placeholder="Enter promo code"
+                      className="flex-1"
+                      onKeyPress={(e) => e.key === 'Enter' && handleApplyPromoCode()}
+                    />
+                    <Button
+                      onClick={handleApplyPromoCode}
+                      disabled={promoCodeLoading || !promoCode.trim()}
+                      className="bg-brand-600 hover:bg-brand-700 text-white"
+                    >
+                      {promoCodeLoading ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      ) : (
+                        "Apply"
+                      )}
+                    </Button>
+                  </div>
+                  {promoCodeError && (
+                    <div className="flex items-center p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <AlertCircle className="h-4 w-4 text-red-600 mr-2" />
+                      <span className="text-red-700 text-sm">{promoCodeError}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                      <div>
+                        <p className="font-medium text-green-800">
+                          Promo code "{appliedPromoCode.code}" applied
+                        </p>
+                        <p className="text-sm text-green-600">
+                          {appliedPromoCode.description}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleRemovePromoCode}
+                      variant="outline"
+                      size="sm"
+                      className="border-green-300 text-green-700 hover:bg-green-100"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Payment Information */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
@@ -283,7 +395,7 @@ const CheckoutContent = () => {
               ) : (
                 <div className="flex items-center justify-center">
                   <Lock className="h-5 w-5 mr-2" />
-                  Complete Purchase - ${(getTotalPrice() * 1.08).toFixed(2)}
+                  Complete Purchase - ${finalAmount.toFixed(2)}
                 </div>
               )}
             </Button>
@@ -360,16 +472,22 @@ const CheckoutContent = () => {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>${getTotalPrice().toFixed(2)}</span>
+                <span>${originalAmount.toFixed(2)}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Discount</span>
+                  <span>-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600">
                 <span>Taxes</span>
-                <span>${(getTotalPrice() * 0.08).toFixed(2)}</span>
+                <span>${taxAmount.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-3">
                 <div className="flex justify-between text-lg font-bold text-gray-900">
                   <span>Total</span>
-                  <span>${(getTotalPrice() * 1.08).toFixed(2)}</span>
+                  <span>${finalAmount.toFixed(2)}</span>
                 </div>
               </div>
             </div>
