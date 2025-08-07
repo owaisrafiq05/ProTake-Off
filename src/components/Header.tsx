@@ -20,7 +20,6 @@ const Header = () => {
     { href: "/find-takeoffs", label: "Find Takeoffs" },
     { href: "/", section: "how-it-works", label: "How It Works" },
     { href: "/pricing", label: "Pricing" },
-    { href: "/checkout", label: "Checkout" },
     { href: "/", section: "contact", label: "Contact" },
   ]
 
@@ -248,7 +247,24 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center lg:hidden">
+          <div className="flex items-center lg:hidden space-x-2">
+            {/* Mobile Cart Button - Outside hamburger menu */}
+            <div className="relative">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="relative p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-brand-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {getTotalItems()}
+                  </span>
+                )}
+              </button>
+              <CartDropdown />
+            </div>
+
+            {/* Hamburger Menu Button */}
             <button
               onClick={toggleMobileMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
@@ -312,25 +328,6 @@ const Header = () => {
 
                 {/* Auth Buttons/User Mobile */}
                 <div className="p-4 border-t border-gray-200 space-y-3">
-                  {/* Mobile Cart Button */}
-                  <button
-                    onClick={() => {
-                      setIsOpen(!isOpen)
-                      closeMobileMenu()
-                    }}
-                    className="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <div className="flex items-center">
-                      <ShoppingCart className="h-5 w-5 mr-3" />
-                      <span className="font-medium">Cart</span>
-                    </div>
-                    {getTotalItems() > 0 && (
-                      <span className="bg-brand-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {getTotalItems()}
-                      </span>
-                    )}
-                  </button>
-
                   {user ? (
                     <>
                       <Link

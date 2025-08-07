@@ -56,9 +56,35 @@ const CartDropdown = () => {
                     <h4 className="font-semibold text-gray-900 text-sm leading-tight mb-1 truncate">{item.title}</h4>
                     <div className="flex items-center space-x-2 mb-2">
                       <span className="bg-brand-100 text-brand-800 px-2 py-1 rounded-full text-xs font-medium">
-                        {item.type}
+                        {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
                       </span>
                       <span className="text-xs text-gray-500">{item.area}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-brand-600">${item.price}</span>
+                      
+                      {/* Quantity Controls */}
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-1 hover:bg-gray-200 rounded transition-colors"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-1 hover:bg-gray-200 rounded transition-colors"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="p-1 hover:bg-red-100 rounded transition-colors ml-2"
+                        >
+                          <Trash2 className="h-3 w-3 text-red-500" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -72,7 +98,7 @@ const CartDropdown = () => {
           <div className="border-t border-gray-200 p-6 bg-gray-50">
             {/* Total */}
             <div className="flex items-center justify-between mb-4">
-              <span className="text-lg font-bold text-gray-900">Total:</span>
+              <span className="text-lg font-bold text-gray-900">Subtotal:</span>
               <span className="text-2xl font-bold text-brand-600">${getTotalPrice().toFixed(2)}</span>
             </div>
 

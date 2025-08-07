@@ -316,7 +316,8 @@ const TakeoffDetails = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [popular, setPopular] = useState<any[]>([])
-  const { addItem } = useCart()
+  const { addItem, items, setIsOpen } = useCart()
+  const [isInCart, setIsInCart] = useState(false)
 
   useEffect(() => {
     async function fetchTakeoff() {
@@ -343,6 +344,14 @@ const TakeoffDetails = () => {
     }
     fetchPopular()
   }, [id])
+
+  // Check if current takeoff is in cart
+  useEffect(() => {
+    if (takeoff) {
+      const inCart = items.some(item => item.id === takeoff._id)
+      setIsInCart(inCart)
+    }
+  }, [items, takeoff])
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-500">Loading...</div>
   if (error) return <div className="min-h-screen flex items-center justify-center text-red-500">{error}</div>
@@ -395,7 +404,13 @@ const TakeoffDetails = () => {
       image: cartImage,
     })
 
+    // Show cart dropdown after adding item
+    setIsOpen(true)
     toast.success("Added to cart!")
+  }
+
+  const handleViewCart = () => {
+    setIsOpen(true)
   }
 
   const pdfFiles = takeoff.files?.filter((file: any) => file.isPdf && file.cloudinaryUrl) || []
@@ -404,7 +419,7 @@ const TakeoffDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         {/* Back Navigation */}
         <div className="mb-6">
           <Link
@@ -416,11 +431,11 @@ const TakeoffDetails = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="xl:col-span-2 space-y-6 lg:space-y-8">
             {/* Project Header */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 relative">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8 relative">
               {/* Status Labels - Top Right Corner */}
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
                 {isNewTakeoff(takeoff) && (
@@ -436,33 +451,33 @@ const TakeoffDetails = () => {
               </div>
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-1 sm:gap-2 mb-4 sm:mb-6">
                 {takeoff.tags?.map((tag: string, index: number) => (
-                  <span key={index} className="px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-800">
+                  <span key={index} className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-800">
                     {tag}
                   </span>
                 ))}
                 {takeoff.projectType && (
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {takeoff.projectType.charAt(0).toUpperCase() + takeoff.projectType.slice(1)}
                   </span>
                 )}
                 {takeoff.projectSize && (
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                  <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                     {takeoff.projectSize.charAt(0).toUpperCase() + takeoff.projectSize.slice(1)}
                   </span>
                 )}
                 {takeoff.specifications?.complexity && (
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                     {takeoff.specifications.complexity.charAt(0).toUpperCase() +
                       takeoff.specifications.complexity.slice(1)}
                   </span>
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{takeoff.title}</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">{takeoff.title}</h1>
 
-              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
                   ZIP {takeoff.zipCode}
@@ -476,7 +491,7 @@ const TakeoffDetails = () => {
 
             {/* PDF Preview Section */}
             {hasPdfFiles && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">Project Documents Preview</h2>
                   <div className="flex items-center text-sm text-gray-500">
@@ -485,7 +500,7 @@ const TakeoffDetails = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {pdfFiles.map((file: any, idx: number) => (
                     <div key={idx} className="relative group">
                       <div className="relative rounded-xl border border-gray-200 overflow-hidden bg-white">
@@ -502,14 +517,14 @@ const TakeoffDetails = () => {
 
                       {/* File Info */}
                       <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <FileText className="h-4 w-4 mr-2 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-700 truncate">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center min-w-0 flex-1">
+                            <FileText className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                            <span className="text-sm font-medium text-gray-700 truncate block">
                               {file.originalName || `Document ${idx + 1}.pdf`}
                             </span>
                           </div>
-                          <span className="text-xs text-gray-500 ml-2">
+                          <span className="text-xs text-gray-500 flex-shrink-0">
                             {file.size ? `${(file.size / 1024).toFixed(1)} KB` : "PDF"}
                           </span>
                         </div>
@@ -539,7 +554,7 @@ create an account to complete your purchase.
 
             {/* Fallback for pdfPreview array */}
             {!hasPdfFiles && takeoff.pdfPreview && takeoff.pdfPreview.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">Project Documents Preview</h2>
                   <div className="flex items-center text-sm text-gray-500">
@@ -548,7 +563,7 @@ create an account to complete your purchase.
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {takeoff.pdfPreview.map((pdf: any, idx: number) => (
                     <div key={idx} className="relative group">
                       <div className="relative rounded-xl border border-gray-200 overflow-hidden bg-white">
@@ -563,14 +578,14 @@ create an account to complete your purchase.
                       </div>
 
                       <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <FileText className="h-4 w-4 mr-2 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-700 truncate">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center min-w-0 flex-1">
+                            <FileText className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+                            <span className="text-sm font-medium text-gray-700 truncate block">
                               {pdf.originalName || `Document ${idx + 1}.pdf`}
                             </span>
                           </div>
-                          <span className="text-xs text-gray-500 ml-2">
+                          <span className="text-xs text-gray-500 flex-shrink-0">
                             {pdf.size ? `${(pdf.size / 1024).toFixed(1)} KB` : "PDF"}
                           </span>
                         </div>
@@ -597,7 +612,7 @@ create an account to complete your purchase.
             )}
 
             {/* Project Specifications */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Specifications</h2>
               <p className="text-gray-600 mb-6">Detailed specifications and requirements for this project</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -628,7 +643,7 @@ create an account to complete your purchase.
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             {/* Purchase Card */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sticky top-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Purchase Takeoff</h3>
@@ -673,12 +688,24 @@ create an account to complete your purchase.
                 </div>
               </div>
 
-              {/* Add to Cart Button */}
+              {/* Add to Cart / View Cart Button */}
+              {isInCart && (
+                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center text-green-700">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm font-medium">This takeoff is in your cart</span>
+                  </div>
+                </div>
+              )}
               <Button
-                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                onClick={handleAddToCart}
+                className={`w-full font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                  isInCart 
+                    ? "bg-green-600 hover:bg-green-700 text-white" 
+                    : "bg-brand-600 hover:bg-brand-700 text-white"
+                }`}
+                onClick={isInCart ? handleViewCart : handleAddToCart}
               >
-                Add to Cart
+                {isInCart ? "View Cart" : "Add to Cart"}
               </Button>
 
               {/* Security Notice */}
