@@ -72,7 +72,7 @@ const PdfIframePreview = ({ pdfUrl, className = "" }) => {
   }
 
   return (
-    <div className={`relative w-full h-96 bg-gray-100 rounded-xl overflow-hidden ${className}`}>
+    <div className={`relative w-full h-40 bg-gray-100 rounded-xl overflow-hidden ${className}`}>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
           <div className="text-center text-gray-500">
@@ -82,15 +82,15 @@ const PdfIframePreview = ({ pdfUrl, className = "" }) => {
         </div>
       )}
       <iframe
-        src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
-        className="w-full h-full border-0"
+        src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH&zoom=150`}
+        className="w-full h-full border-0 opacity-60"
         onLoad={handleLoad}
         onError={handleError}
         title="PDF Preview"
         sandbox="allow-same-origin allow-scripts"
       />
-      {/* Overlay to prevent interaction */}
-      <div className="absolute inset-0 bg-transparent pointer-events-none"></div>
+      {/* Translucent overlay to make PDF appear faded */}
+      <div className="absolute inset-0 bg-white/80 pointer-events-none"></div>
     </div>
   )
 }
@@ -102,7 +102,7 @@ const GoogleDocsPreview = ({ pdfUrl, className = "" }) => {
 
   if (!pdfUrl) {
     return (
-      <div className={`w-full h-96 bg-gray-100 flex items-center justify-center rounded-xl ${className}`}>
+      <div className={`w-full h-40 bg-gray-100 flex items-center justify-center rounded-xl ${className}`}>
         <div className="text-center text-gray-500">
           <FileText className="h-12 w-12 mx-auto mb-2" />
           <p className="text-sm">No PDF available</p>
@@ -111,7 +111,7 @@ const GoogleDocsPreview = ({ pdfUrl, className = "" }) => {
     )
   }
 
-  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`
+  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true&zoom=150`
 
   const handleLoad = () => {
     setLoading(false)
@@ -128,7 +128,7 @@ const GoogleDocsPreview = ({ pdfUrl, className = "" }) => {
   }
 
   return (
-    <div className={`relative w-full h-96 bg-gray-100 rounded-xl overflow-hidden ${className}`}>
+    <div className={`relative w-full h-40 bg-gray-100 rounded-xl overflow-hidden ${className}`}>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
           <div className="text-center text-gray-500">
@@ -139,12 +139,14 @@ const GoogleDocsPreview = ({ pdfUrl, className = "" }) => {
       )}
       <iframe
         src={googleViewerUrl}
-        className="w-full h-full border-0"
+        className="w-full h-full border-0 opacity-60"
         onLoad={handleLoad}
         onError={handleError}
         title="PDF Preview"
         sandbox="allow-same-origin allow-scripts"
       />
+      {/* Translucent overlay to make PDF appear faded */}
+      <div className="absolute inset-0 bg-white/10 pointer-events-none"></div>
     </div>
   )
 }
@@ -203,8 +205,10 @@ const CanvasPdfPreview = ({ pdfUrl, className = "" }) => {
         const context = canvas.getContext("2d")
         const containerWidth = canvas.parentElement?.clientWidth || 600
         const viewport = page.getViewport({ scale: 1 })
-        const scale = Math.min(containerWidth / viewport.width, 600 / viewport.width)
-        const scaledViewport = page.getViewport({ scale })
+        // Increase zoom to 150% and limit height to show only half page
+        const baseScale = Math.min(containerWidth / viewport.width, 600 / viewport.width)
+        const zoomScale = baseScale * 1.5 // 150% zoom
+        const scaledViewport = page.getViewport({ scale: zoomScale })
 
         canvas.height = scaledViewport.height
         canvas.width = scaledViewport.width
@@ -230,7 +234,7 @@ const CanvasPdfPreview = ({ pdfUrl, className = "" }) => {
 
   if (!pdfUrl) {
     return (
-      <div className={`w-full h-96 bg-gray-100 flex items-center justify-center rounded-xl ${className}`}>
+      <div className={`w-full h-40 bg-gray-100 flex items-center justify-center rounded-xl ${className}`}>
         <div className="text-center text-gray-500">
           <FileText className="h-12 w-12 mx-auto mb-2" />
           <p className="text-sm">No PDF available</p>
@@ -241,7 +245,7 @@ const CanvasPdfPreview = ({ pdfUrl, className = "" }) => {
 
   if (loading) {
     return (
-      <div className={`w-full h-96 bg-gray-100 flex items-center justify-center rounded-xl ${className}`}>
+      <div className={`w-full h-40 bg-gray-100 flex items-center justify-center rounded-xl ${className}`}>
         <div className="text-center text-gray-500">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600 mx-auto mb-2"></div>
           <p className="text-sm">Loading PDF preview...</p>
@@ -256,9 +260,11 @@ const CanvasPdfPreview = ({ pdfUrl, className = "" }) => {
 
   return (
     <div
-      className={`flex justify-center items-center bg-white rounded-xl overflow-hidden border border-gray-200 ${className}`}
+      className={`flex justify-center items-center bg-white rounded-xl overflow-hidden border border-gray-200 relative ${className}`}
     >
-      <canvas ref={canvasRef} className="max-w-full h-auto" style={{ display: "block" }} />
+      <canvas ref={canvasRef} className="max-w-full h-auto opacity-60" style={{ display: "block" }} />
+      {/* Translucent overlay to make PDF appear faded */}
+      <div className="absolute inset-0 bg-white/30 pointer-events-none"></div>
     </div>
   )
 }
@@ -292,12 +298,14 @@ const SmallPdfPreview = ({ pdfUrl, className = "" }) => {
   return (
     <div className={`w-full h-full bg-gray-50 flex items-center justify-center rounded overflow-hidden ${className}`}>
       <iframe
-        src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH&zoom=25`}
-        className="w-full h-full border-0 scale-50 origin-top-left"
+        src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH&zoom=150`}
+        className="w-full h-full border-0 scale-50 origin-top-left opacity-60"
         style={{ width: "200%", height: "200%" }}
         title="PDF Thumbnail"
         sandbox="allow-same-origin"
       />
+      {/* Translucent overlay to make PDF appear faded */}
+      <div className="absolute inset-0 bg-white/30 pointer-events-none"></div>
     </div>
   )
 }
@@ -481,7 +489,7 @@ const TakeoffDetails = () => {
                   {pdfFiles.map((file: any, idx: number) => (
                     <div key={idx} className="relative group">
                       <div className="relative rounded-xl border border-gray-200 overflow-hidden bg-white">
-                        <PdfPagePreview pdfUrl={file.cloudinaryUrl} className="min-h-[400px]" />
+                        <PdfPagePreview pdfUrl={file.cloudinaryUrl} className="min-h-[200px]" />
 
                         {/* Overlay for locked content */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -519,8 +527,9 @@ const TakeoffDetails = () => {
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-blue-800">Preview Limitation</h3>
                       <p className="text-sm text-blue-700 mt-1">
-                        You're viewing the first page only. Purchase this takeoff to access the complete PDF documents
-                        with all pages, detailed specifications, and downloadable files.
+                      You’re viewing the first page of the blueprint PDF only. To access 
+the complete set - Blueprint PDF and Takeoff - please login or 
+create an account to complete your purchase.
                       </p>
                     </div>
                   </div>
@@ -543,7 +552,7 @@ const TakeoffDetails = () => {
                   {takeoff.pdfPreview.map((pdf: any, idx: number) => (
                     <div key={idx} className="relative group">
                       <div className="relative rounded-xl border border-gray-200 overflow-hidden bg-white">
-                        <PdfPagePreview pdfUrl={pdf.cloudinaryUrl} className="min-h-[400px]" />
+                        <PdfPagePreview pdfUrl={pdf.cloudinaryUrl} className="min-h-[200px]" />
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <div className="absolute bottom-4 left-4 right-4 text-center text-white">
@@ -606,7 +615,7 @@ const TakeoffDetails = () => {
             </div>
 
             {/* Features */}
-            {takeoff.features && takeoff.features.length > 0 && (
+            {/* {takeoff.features && takeoff.features.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Features</h2>
                 <ul className="list-disc pl-6 text-gray-700 space-y-2">
@@ -615,7 +624,7 @@ const TakeoffDetails = () => {
                   ))}
                 </ul>
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Sidebar */}
@@ -636,28 +645,24 @@ const TakeoffDetails = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Format:</span>
                   <div className="flex items-center">
-                    <FileSpreadsheet className="h-4 w-4 mr-1 text-brand-600" />
-                    <span className="font-semibold">PDF Documents</span>
+                    <FileSpreadsheet className="h-4 w-4 mr-1 text-black" />
+                    <span className="font-semibold text-black">PDF & Excel File</span>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Delivery:</span>
-                  <div className="flex items-center text-brand-600">
+                  <div className="flex items-center text-black">
                     <Zap className="h-4 w-4 mr-1" />
                     <span className="font-semibold">Instant Download</span>
                   </div>
                 </div>
-                {hasPdfFiles && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Documents:</span>
-                    <div className="flex items-center text-blue-600">
-                      <FileText className="h-4 w-4 mr-1" />
-                      <span className="font-semibold">
-                        {pdfFiles.length} PDF file{pdfFiles.length > 1 ? "s" : ""}
-                      </span>
-                    </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Documents:</span>
+                  <div className="flex items-center text-black">
+                    <FileText className="h-4 w-4 mr-1" />
+                    <span className="font-semibold">2 Files</span>
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Price Display */}
