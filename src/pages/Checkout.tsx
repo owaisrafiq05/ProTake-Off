@@ -206,20 +206,42 @@ const CheckoutContent = () => {
                 <h3 className="font-semibold text-gray-900 mb-3">{item.title}</h3>
                 <div className="space-y-2">
                   {item.files && item.files.length > 0 ? (
-                    item.files.map((file: any, fileIndex: number) => (
-                      <a
-                        key={fileIndex}
-                        href={file.cloudinaryUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
-                        <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl mb-2">
-                          <Download className="h-4 w-4 mr-2" />
-                          Download {file.originalName || `File ${fileIndex + 1}`}
-                        </Button>
-                      </a>
-                    ))
+                    item.files.map((file: any, fileIndex: number) => {
+                      // Determine file type based on filename or extension
+                      const fileName = file.originalName || file.filename || '';
+                      const isPDF = fileName.toLowerCase().includes('.pdf') || fileName.toLowerCase().includes('blueprint') || fileName.toLowerCase().includes('document');
+                      const isExcel = fileName.toLowerCase().includes('.xlsx') || fileName.toLowerCase().includes('.xls') || fileName.toLowerCase().includes('takeoff') || fileName.toLowerCase().includes('excel');
+                      
+                      // Get descriptive label
+                      let fileType = "File";
+                      let description = "";
+                      
+                      if (isPDF) {
+                        fileType = "Document";
+                        description = "Blueprint PDF";
+                      } else if (isExcel) {
+                        fileType = "Takeoff";
+                        description = "Excel File";
+                      } else {
+                        fileType = "File";
+                        description = fileName || `File ${fileIndex + 1}`;
+                      }
+                      
+                      return (
+                        <a
+                          key={fileIndex}
+                          href={file.cloudinaryUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block"
+                        >
+                          <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl mb-2">
+                            <Download className="h-4 w-4 mr-2" />
+                            Download {fileType}: {description}
+                          </Button>
+                        </a>
+                      );
+                    })
                   ) : (
                     // Fallback for backward compatibility
                     <a
@@ -230,7 +252,7 @@ const CheckoutContent = () => {
                     >
                       <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl">
                         <Download className="h-4 w-4 mr-2" />
-                        Download {item.title}
+                        Download Document: Blueprint PDF
                       </Button>
                     </a>
                   )}
