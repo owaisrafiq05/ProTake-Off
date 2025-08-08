@@ -73,19 +73,21 @@ const UserDashboard = () => {
   const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
 
-  const {
-    firstName = '',
-    lastName = '',
-    email = '',
-    phone = '',
-    company = '',
-    address: updatesAddress = { street: '', city: '', state: '', zipCode: '' },
-  } = profileUpdates;
-  const {
-    street = '',
-    city = '',
-    state = '',
-  } = updatesAddress;
+  // Helper function to get the current value for a field
+  const getFieldValue = (fieldName: string, defaultValue: string) => {
+    if (!isEditing) return defaultValue;
+    return profileUpdates[fieldName as keyof UserProfile] !== undefined 
+      ? profileUpdates[fieldName as keyof UserProfile] as string 
+      : defaultValue;
+  };
+
+  // Helper function to get address field value
+  const getAddressFieldValue = (fieldName: string, defaultValue: string) => {
+    if (!isEditing) return defaultValue;
+    return profileUpdates.address?.[fieldName as keyof typeof profileUpdates.address] !== undefined
+      ? profileUpdates.address[fieldName as keyof typeof profileUpdates.address] as string
+      : defaultValue;
+  };
 
   useEffect(() => {
     if (user) setUserProfile(user as unknown as UserProfile)
@@ -118,7 +120,13 @@ const UserDashboard = () => {
     const res = await updateProfile(profileUpdates)
     if (res.success) {
       setUserProfile({ ...userProfile, ...profileUpdates })
+      setProfileUpdates({}) // Clear the updates after successful save
     }
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setProfileUpdates({}) // Clear the updates when canceling
   }
 
   const filteredPurchases = orders.filter((order) => {
@@ -421,7 +429,7 @@ const UserDashboard = () => {
                 <Save className="h-4 w-4 mr-2" />
                 Save
               </Button>
-              <Button onClick={() => setIsEditing(false)} variant="outline" className="border-gray-300 text-gray-700">
+              <Button onClick={handleCancelEdit} variant="outline" className="border-gray-300 text-gray-700">
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
@@ -433,7 +441,7 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
             <Input
-              value={isEditing ? firstName || userProfile.firstName : userProfile.firstName}
+              value={getFieldValue('firstName', userProfile.firstName)}
               onChange={(e) => setProfileUpdates({ ...profileUpdates, firstName: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
@@ -442,7 +450,7 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
             <Input
-              value={isEditing ? lastName || userProfile.lastName : userProfile.lastName}
+              value={getFieldValue('lastName', userProfile.lastName)}
               onChange={(e) => setProfileUpdates({ ...profileUpdates, lastName: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
@@ -451,7 +459,7 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
             <Input
-              value={isEditing ? email || userProfile.email : userProfile.email}
+              value={getFieldValue('email', userProfile.email)}
               onChange={(e) => setProfileUpdates({ ...profileUpdates, email: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
@@ -460,7 +468,7 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
             <Input
-              value={isEditing ? phone || userProfile.phone : userProfile.phone}
+              value={getFieldValue('phone', userProfile.phone)}
               onChange={(e) => setProfileUpdates({ ...profileUpdates, phone: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
@@ -469,7 +477,7 @@ const UserDashboard = () => {
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
             <Input
-              value={isEditing ? company || userProfile.company : userProfile.company}
+              value={getFieldValue('company', userProfile.company)}
               onChange={(e) => setProfileUpdates({ ...profileUpdates, company: e.target.value })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
@@ -478,8 +486,15 @@ const UserDashboard = () => {
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
             <Input
-              value={isEditing ? street || userProfile.address.street : userProfile.address.street}
-              onChange={(e) => setProfileUpdates({ ...profileUpdates, address: { ...userProfile.address, ...profileUpdates.address, street: e.target.value } })}
+              value={getAddressFieldValue('street', userProfile.address.street)}
+              onChange={(e) => setProfileUpdates({ 
+                ...profileUpdates, 
+                address: { 
+                  ...userProfile.address, 
+                  ...profileUpdates.address, 
+                  street: e.target.value 
+                } 
+              })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
               placeholder="Street Address"
@@ -488,8 +503,15 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
             <Input
-              value={isEditing ? city || userProfile.address.city : userProfile.address.city}
-              onChange={(e) => setProfileUpdates({ ...profileUpdates, address: { ...userProfile.address, ...profileUpdates.address, city: e.target.value } })}
+              value={getAddressFieldValue('city', userProfile.address.city)}
+              onChange={(e) => setProfileUpdates({ 
+                ...profileUpdates, 
+                address: { 
+                  ...userProfile.address, 
+                  ...profileUpdates.address, 
+                  city: e.target.value 
+                } 
+              })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
@@ -497,8 +519,15 @@ const UserDashboard = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
             <Input
-              value={isEditing ? state || userProfile.address.state : userProfile.address.state}
-              onChange={(e) => setProfileUpdates({ ...profileUpdates, address: { ...userProfile.address, ...profileUpdates.address, state: e.target.value } })}
+              value={getAddressFieldValue('state', userProfile.address.state)}
+              onChange={(e) => setProfileUpdates({ 
+                ...profileUpdates, 
+                address: { 
+                  ...userProfile.address, 
+                  ...profileUpdates.address, 
+                  state: e.target.value 
+                } 
+              })}
               disabled={!isEditing}
               className={!isEditing ? "bg-gray-50" : ""}
             />
