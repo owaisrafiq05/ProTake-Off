@@ -791,9 +791,9 @@ const AdminPanel = () => {
   });
 
   const renderAddNew = () => (
-    <div className={`bg-white rounded-2xl shadow-sm border ${isEditing ? 'border-brand-400' : 'border-gray-200'} p-8`}> 
-      <div className="flex items-center justify-between mb-8">
-        <h2 className={`text-2xl font-bold ${isEditing ? 'text-brand-700' : 'text-gray-900'}`}>{isEditing ? "Edit Takeoff" : "Add New Takeoff"}</h2>
+    <div className={`bg-white rounded-2xl shadow-sm border ${isEditing ? 'border-brand-400' : 'border-gray-200'} p-4 sm:p-8`}> 
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+        <h2 className={`text-xl sm:text-2xl font-bold ${isEditing ? 'text-brand-700' : 'text-gray-900'}`}>{isEditing ? "Edit Takeoff" : "Add New Takeoff"}</h2>
         {isEditing && (
           <Button
             onClick={() => {
@@ -817,18 +817,18 @@ const AdminPanel = () => {
               })
             }}
             variant="outline"
-            className="border-gray-300 text-gray-700"
+            className="border-gray-300 text-gray-700 w-full sm:w-auto"
           >
             <X className="h-4 w-4 mr-2" />
             Cancel Edit
           </Button>
         )}
       </div>
-      <form onSubmit={handleSubmit} className="space-y-10">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-10">
         {/* Project Info Section */}
-        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-brand-700">Project Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Project Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Takeoff Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Takeoff Name <span className="text-red-500">*</span></label>
@@ -895,13 +895,13 @@ const AdminPanel = () => {
           </div>
         </div>
         {/* Categories & Sizes Section */}
-        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-brand-700">Categories & Project Size</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Categories & Project Size</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Categories */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">Categories <span className="text-red-500">*</span></label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -937,7 +937,7 @@ const AdminPanel = () => {
             {/* Sizes */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">Project Sizes <span className="text-red-500">*</span></label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -983,9 +983,9 @@ const AdminPanel = () => {
           </div>
         </div>
         {/* Features Section */}
-        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-brand-700">Features</h3>
-          <div className="grid grid-cols-1 gap-6">
+        <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Features</h3>
+          <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* Features */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Features (comma separated) <span className="text-red-500">*</span></label>
@@ -1002,9 +1002,9 @@ const AdminPanel = () => {
           </div>
         </div>
         {/* Specifications Section */}
-        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-brand-700">Specifications</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Specifications</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Area (sq ft) <span className="text-red-500">*</span></label>
               <Input
@@ -1036,8 +1036,8 @@ const AdminPanel = () => {
           </div>
         </div>
         {/* Tags Section */}
-        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-brand-700">Tags</h3>
+        <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Tags</h3>
           <Textarea
             name="tags"
             value={formData.tags}
@@ -1050,9 +1050,9 @@ const AdminPanel = () => {
         </div>
         
         {/* Status Section */}
-        <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-brand-700">Status</h3>
-          <div className="flex items-center space-x-3">
+        <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Status</h3>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -1068,15 +1068,15 @@ const AdminPanel = () => {
         </div>
         {/* Uploads Section (only for create) */}
         {!isEditing && (
-          <div className=" rounded-xl p-6 border border-gray-200 mb-6">
-            <h3 className="text-lg font-semibold mb-4 text-brand-700">Uploads</h3>
-            <div className="space-y-6">
+          <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+            <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Uploads</h3>
+            <div className="space-y-4 sm:space-y-6">
               {/* Add PDF Preview */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Add PDF Preview (Optional)</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-brand-400 transition-colors">
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <FileText className="h-8 w-8 text-gray-400" />
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-8 text-center hover:border-brand-400 transition-colors">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
                   </div>
                   <input
                     type="file"
@@ -1088,10 +1088,11 @@ const AdminPanel = () => {
                   />
                   <label
                     htmlFor="pdf-preview-upload"
-                    className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover: transition-colors"
+                    className="cursor-pointer inline-flex items-center px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover: transition-colors"
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    Upload PDF Preview
+                    <span className="hidden sm:inline">Upload PDF Preview</span>
+                    <span className="sm:hidden">Upload PDF</span>
                   </label>
                   {formData.pdfPreview.length > 0 && (
                     <div className="mt-4 space-y-2">
@@ -1114,9 +1115,9 @@ const AdminPanel = () => {
               {/* Add Files */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Add Files <span className="text-red-500">*</span></label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-brand-400 transition-colors">
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <FileText className="h-8 w-8 text-gray-400" />
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-8 text-center hover:border-brand-400 transition-colors">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
                   </div>
                   <input
                     type="file"
@@ -1128,7 +1129,7 @@ const AdminPanel = () => {
                   />
                   <label
                     htmlFor="file-upload"
-                    className="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover: transition-colors"
+                    className="cursor-pointer inline-flex items-center px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover: transition-colors"
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Files
@@ -1155,12 +1156,12 @@ const AdminPanel = () => {
           </div>
         )}
         {/* Submit Button */}
-        <div className="pt-6">
+        <div className="pt-4 sm:pt-6">
           <Button
             type="submit"
-            className={`w-full ${isEditing ? 'bg-brand-600 hover:bg-brand-700' : 'bg-brand-600 hover:bg-brand-700'} text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl`}
+            className={`w-full ${isEditing ? 'bg-brand-600 hover:bg-brand-700' : 'bg-brand-600 hover:bg-brand-700'} text-white font-semibold py-3 sm:py-4 text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl`}
           >
-            <Save className="h-5 w-5 mr-2" />
+            <Save className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             {isEditing ? "Update Listing" : "Create Listing"}
           </Button>
         </div>
@@ -1169,29 +1170,29 @@ const AdminPanel = () => {
   )
 
   const renderTakeoffsList = (title: string, showExpired = false) => (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h2>
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search takeoffs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-64"
+              className="pl-10 w-full sm:w-64"
             />
           </div>
         </div>
       </div>
 
       {/* Takeoffs Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {filteredTakeoffs.map((takeoff) => (
           <div
             key={takeoff._id || takeoff.id}
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow relative"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow relative"
           >
             {/* Status Labels - Top Right Corner */}
             <div className="absolute top-4 right-4 z-10">
@@ -1208,46 +1209,46 @@ const AdminPanel = () => {
             </div>
 
             {/* Header */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{takeoff.title ?? takeoff.takeoffName ?? ""}</h3>
-                <div className="flex flex-wrap gap-2 mb-2">
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm sm:text-base">{takeoff.title ?? takeoff.takeoffName ?? ""}</h3>
+                <div className="flex flex-wrap gap-1 sm:gap-2 mb-2">
                   {(Array.isArray(takeoff.categories) ? takeoff.categories : []).map((category) => (
                     <span
                       key={category}
-                      className="px-2 py-1 bg-brand-100 text-brand-800 text-xs font-medium rounded-full"
+                      className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-brand-100 text-brand-800 text-xs font-medium rounded-full"
                     >
                       {category}
                     </span>
                   ))}
                   {(Array.isArray(takeoff.sizes) ? takeoff.sizes : []).map((size) => (
-                    <span key={size} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                    <span key={size} className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
                       {size}
                     </span>
                   ))}
                 </div>
               </div>
-              <button onClick={() => toggleStatus(takeoff.id)} className="ml-2">
+              <button onClick={() => toggleStatus(takeoff.id)} className="ml-2 flex-shrink-0">
                 {isActive(takeoff) ? (
-                  <ToggleRight className="h-6 w-6 text-brand-600" />
+                  <ToggleRight className="h-5 w-5 sm:h-6 sm:w-6 text-brand-600" />
                 ) : (
-                  <ToggleLeft className="h-6 w-6 text-gray-400" />
+                  <ToggleLeft className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
                 )}
               </button>
             </div>
 
             {/* Details */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <MapPin className="h-4 w-4 mr-2" />
-                <span>{takeoff.address}</span>
+            <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
+              <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span className="truncate">{takeoff.address}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <Calendar className="h-4 w-4 mr-2" />
-                <span>Expires: {takeoff.expirationDate}</span>
+              <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span className="truncate">Expires: {takeoff.expirationDate}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <DollarSign className="h-4 w-4 mr-2" />
+              <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
                 <span>${takeoff.price}</span>
               </div>
             </div>
@@ -1923,38 +1924,39 @@ const AdminPanel = () => {
     <div className="min-h-screen ">
       <AdminHeader />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Panel</h1>
-          <p className="text-gray-600">Manage takeoffs, view analytics, and configure system settings</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Admin Panel</h1>
+          <p className="text-sm sm:text-base text-gray-600">Manage takeoffs, view analytics, and configure system settings</p>
         </div>
 
         {/* Tabs */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-8">
           <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
+            <nav className="flex flex-wrap space-x-2 sm:space-x-8 px-4 sm:px-6 overflow-x-auto">
               {tabs.map((tab) => {
                 const IconComponent = tab.icon
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+                    className={`flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                       activeTab === tab.id
                         ? "border-brand-500 text-brand-600"
                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }`}
                   >
-                    <IconComponent className="h-5 w-5" />
-                    <span>{tab.label}</span>
+                    <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                   </button>
                 )
               })}
             </nav>
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {activeTab === "add-new" && renderAddNew()}
             {activeTab === "active-log" && renderTakeoffsList("Active Takeoffs")}
             {activeTab === "expired-takeoffs" && renderTakeoffsList("Expired Takeoffs", true)}
