@@ -432,7 +432,7 @@ const AdminPanel = () => {
 
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-between">
+                <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
                   <div className="text-sm text-gray-600">
                     Showing {startIndex + 1} to {Math.min(endIndex, totalUsers)} of {totalUsers} users
                   </div>
@@ -1521,7 +1521,7 @@ const AdminPanel = () => {
     return (
       <div className="space-y-8">
         {/* Header with Add Button */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-start items-start sm:items-center gap-4 sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Promo Code Management</h2>
             <p className="text-gray-600">Create and manage promotional codes for discounts</p>

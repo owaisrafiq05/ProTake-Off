@@ -452,11 +452,11 @@ const CheckoutContent = () => {
             <div className="space-y-4 mb-6 pb-6 border-b border-gray-200">
               {items.map((item, index) => (
                 <div key={item.id} className="flex items-start space-x-4">
-                  <img
+                  {/* <img
                     src={item.image || "/placeholder.svg"}
                     alt={item.title}
                     className="w-20 h-16 rounded-lg object-cover"
-                  />
+                  /> */}
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
                     <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">

@@ -45,11 +45,11 @@ const CartDropdown = () => {
               {items.map((item) => (
                 <div key={item.id} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
                   {/* Item Image */}
-                  <img
+                  {/* <img
                     src={item.image || "/placeholder.svg"}
                     alt={item.title}
                     className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
-                  />
+                  /> */}
 
                   {/* Item Details */}
                   <div className="flex-1 min-w-0">
