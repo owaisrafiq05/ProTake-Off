@@ -41,7 +41,7 @@ const Hero = () => {
                 <span className="text-brand-600">Win More.</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-2xl">
-                ProTakeoffs is the first AI-powered marketplace where
+                ProTakeoffs.ai is the first AI-powered marketplace where
                 landscaping and irrigation professionals can instantly purchase
                 accurate, ready-to-use project takeoffs — from blueprint to bid
                 in minutes.
@@ -109,7 +109,7 @@ const Hero = () => {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl max-w-lg w-full bg-gradient-to-br from-gray-50 to-white border border-gray-200">
                 <img
                   src="/hero.jpg"
-                  alt="Protakeoffs.ai - Digital marketplace for landscaping and irrigation project takeoffs"
+                  alt="ProTakeoffs.ai - Digital marketplace for landscaping and irrigation project takeoffs"
                   className="w-full h-auto object-cover"
                 />
 

@@ -6,7 +6,7 @@ const Testimonials = () => {
   const testimonials = [
     {
       rating: 5,
-      text: "Protakeoffs.ai has completely transformed our bidding process. We're now able to bid on twice as many projects in half the time.",
+      text: "ProTakeoffs.ai has completely transformed our bidding process. We're now able to bid on twice as many projects in half the time.",
       author: "John Smith",
       company: "brand Landscapes Inc",
       location: "Austin, TX",
@@ -14,7 +14,7 @@ const Testimonials = () => {
     },
     {
       rating: 5,
-      text: "The accuracy of the takeoffs is impressive. We've increased our win rate by 30% since we started using Protakeoffs.ai.",
+      text: "The accuracy of the takeoffs is impressive. We've increased our win rate by 30% since we started using ProTakeoffs.ai.",
       author: "Sarah Johnson",
       company: "Irrigation Experts LLC",
       location: "Dallas, TX",
@@ -58,7 +58,7 @@ const Testimonials = () => {
             What Our <span className="text-brand-600">Customers Say</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Trusted by landscaping and irrigation companies across Texas. See how Protakeoffs.ai is transforming
+            Trusted by landscaping and irrigation companies across Texas. See how ProTakeoffs.ai is transforming
             businesses.
           </p>
         </div>

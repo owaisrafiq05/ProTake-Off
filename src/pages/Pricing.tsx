@@ -106,7 +106,7 @@ const Pricing = () => {
   const faqs = [
     {
       question: "Are there any subscription fees?",
-      answer: "No, Protakeoffs.ai operates on a pay-per-takeoff model. There are no subscriptions or recurring fees.",
+      answer: "No, ProTakeoffs.ai operates on a pay-per-takeoff model. There are no subscriptions or recurring fees.",
     },
     {
       question: "Can I purchase multiple takeoffs?",

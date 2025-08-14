@@ -273,7 +273,7 @@ const TakeoffFinder = () => {
           <div className="mt-6 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
               <span className="font-medium text-brand-600">500+</span>{" "}
-              contractors trust Protakeoffs.ai for their estimates
+              contractors trust ProTakeoffs.ai for their estimates
             </p>
           </div>
         </form>
