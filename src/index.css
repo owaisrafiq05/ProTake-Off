@@ -105,3 +105,121 @@
 body{
   font-family: "Urbanist", sans-serif;
 }
+
+/* Mobile-specific improvements for footer links */
+@layer components {
+  /* Ensure proper touch targets on mobile */
+  .footer-link {
+    @apply min-h-[44px] min-w-[44px] touch-manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Improve touch feedback on mobile */
+  @media (max-width: 768px) {
+    .footer-link:active {
+      @apply opacity-70;
+    }
+    
+    /* Ensure links are properly tappable on mobile */
+    a, button, [role="button"] {
+      cursor: pointer;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Specific improvements for footer links on mobile */
+    footer a, footer button {
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    /* Ensure footer links have proper touch targets */
+    footer .min-h-\[44px\] {
+      min-height: 44px !important;
+      min-width: 44px !important;
+    }
+    
+    /* Prevent any potential touch interference */
+    footer * {
+      touch-action: manipulation;
+    }
+    
+    /* Ensure proper stacking context for footer */
+    footer {
+      position: relative;
+      z-index: 10;
+    }
+    
+    /* Make sure decorative elements don't interfere */
+    footer .pointer-events-none {
+      pointer-events: none !important;
+    }
+    
+    /* Force pointer events on footer links */
+    footer a[href], footer a[to] {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+    
+    /* Ensure proper touch handling for React Router links */
+    footer a[role="button"], footer button {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+  }
+  
+  /* Additional mobile touch improvements */
+  @media (hover: none) and (pointer: coarse) {
+    /* Touch device specific styles */
+    footer a:hover {
+      /* Disable hover effects on touch devices */
+      transform: none !important;
+    }
+    
+    footer a:active {
+      /* Active state for touch feedback */
+      opacity: 0.7;
+      transform: scale(0.98);
+    }
+  }
+  
+  /* Global mobile touch improvements */
+  @media (max-width: 768px) {
+    /* Ensure all interactive elements are properly tappable */
+    a, button, [role="button"], [tabindex] {
+      min-height: 44px;
+      min-width: 44px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Prevent text selection on mobile */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    /* Allow text selection in input fields */
+    input, textarea, [contenteditable] {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+  }
+}
