@@ -1,16 +1,22 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { useNavigate } from "react-router-dom"
-import { ArrowRight, CheckCircle, Users, Award, TrendingUp } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  CheckCircle,
+  Users,
+  Award,
+  TrendingUp,
+} from "lucide-react";
 
 const Hero = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <section className="relative bg-white py-16 min-h-[calc(100vh-4rem)] overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fillRule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23059669&quot; fillOpacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;7&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] bg-repeat" />
+        <div className='absolute inset-0 bg-[url(&apos;data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fillRule="evenodd"%3E%3Cg fill="%23059669" fillOpacity="0.1"%3E%3Ccircle cx="7" cy="7" r="1"/%3E%3Ccircle cx="27" cy="7" r="1"/%3E%3Ccircle cx="47" cy="7" r="1"/%3E%3Ccircle cx="7" cy="27" r="1"/%3E%3Ccircle cx="27" cy="27" r="1"/%3E%3Ccircle cx="47" cy="27" r="1"/%3E%3Ccircle cx="7" cy="47" r="1"/%3E%3Ccircle cx="27" cy="47" r="1"/%3E%3Ccircle cx="47" cy="47" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&apos;)] bg-repeat' />
       </div>
 
       {/* Decorative Elements */}
@@ -35,7 +41,10 @@ const Hero = () => {
                 <span className="text-brand-600">Win More.</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-2xl">
-                Protakeoffs.ai is the first AI-powered marketplace where landscaping and irrigation professionals can instantly purchase accurate, ready-to-use project takeoffs — From Blueprint to Bid, instantly.
+                ProTakeoffs is the first AI-powered marketplace where
+                landscaping and irrigation professionals can instantly purchase
+                accurate, ready-to-use project takeoffs — from blueprint to bid
+                in minutes.
               </p>
             </div>
 
@@ -55,7 +64,10 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group" onClick={() => navigate('/find-takeoffs')}>
+              <Button
+                className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
+                onClick={() => navigate("/find-takeoffs")}
+              >
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -64,16 +76,28 @@ const Hero = () => {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-200">
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">500+</div>
-                <div className="text-sm text-gray-600 font-medium">Active Contractors</div>
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                  500+
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  Active Contractors
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">10K+</div>
-                <div className="text-sm text-gray-600 font-medium">Projects Completed</div>
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                  10K+
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  Projects Completed
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">95%</div>
-                <div className="text-sm text-gray-600 font-medium">Success Rate</div>
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                  95%
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  Success Rate
+                </div>
               </div>
             </div>
           </div>
@@ -100,7 +124,9 @@ const Hero = () => {
                     <TrendingUp className="h-5 w-5 text-brand-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-gray-900">80% Faster</div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      80% Faster
+                    </div>
                     <div className="text-xs text-gray-600">Estimation Time</div>
                   </div>
                 </div>
@@ -112,8 +138,12 @@ const Hero = () => {
                     <Users className="h-5 w-5 text-brand-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-gray-900">500+</div>
-                    <div className="text-xs text-gray-600">Happy Contractors</div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      500+
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      Happy Contractors
+                    </div>
                   </div>
                 </div>
               </div>
@@ -128,7 +158,7 @@ const Hero = () => {
       {/* Bottom Wave Decoration */}
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-50/50 to-transparent" />
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

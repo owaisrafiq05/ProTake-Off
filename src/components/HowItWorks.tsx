@@ -1,46 +1,53 @@
-"use client"
+"use client";
 
-import { MapPin, CreditCard, Mail, FileText, ArrowRight } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { MapPin, CreditCard, Mail, FileText, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const HowItWorks = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const steps = [
     {
       number: "1",
       title: "ZIP Code & Project Size",
-      description: "Search for available takeoffs in your area by entering your location and project details",
+      description:
+        "Search for available takeoffs in your area by entering your location and project details",
       icon: MapPin,
       color: "bg-brand-100 text-brand-600",
     },
     {
       number: "2",
       title: "Purchase Takeoff",
-      description: "Purchase takeoffs based on project size. Secure payments guaranteed.",
+      description:
+        "Purchase takeoffs based on project size. Secure payments guaranteed.",
       icon: CreditCard,
       color: "bg-brand-100 text-brand-600",
     },
     {
       number: "3",
       title: "Instant Email Delivery",
-      description: "Receive your takeoff immediately after purchase. No waiting, No delays.",
+      description:
+        "Receive your takeoff immediately after purchase. No waiting, No delays.",
       icon: Mail,
       color: "bg-brand-100 text-brand-600",
     },
     {
       number: "4",
       title: "Customize & Submit",
-      description: "Add your pricing and submit your bid to the general contractor. Win more projects.",
+      description:
+        "Add your pricing and submit your bid to the general contractor. Win more projects.",
       icon: FileText,
       color: "bg-brand-100 text-brand-600",
     },
-  ]
+  ];
 
   return (
-    <section id="how-it-works" className="relative bg-white py-20 overflow-hidden">
+    <section
+      id="how-it-works"
+      className="relative bg-white py-20 overflow-hidden"
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fillRule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23059669&quot; fillOpacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;7&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;7&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;27&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;7&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;27&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3Ccircle cx=&quot;47&quot; cy=&quot;47&quot; r=&quot;1&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] bg-repeat" />
+        <div className='absolute inset-0 bg-[url(&apos;data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fillRule="evenodd"%3E%3Cg fill="%23059669" fillOpacity="0.1"%3E%3Ccircle cx="7" cy="7" r="1"/%3E%3Ccircle cx="27" cy="7" r="1"/%3E%3Ccircle cx="47" cy="7" r="1"/%3E%3Ccircle cx="7" cy="27" r="1"/%3E%3Ccircle cx="27" cy="27" r="1"/%3E%3Ccircle cx="47" cy="27" r="1"/%3E%3Ccircle cx="7" cy="47" r="1"/%3E%3Ccircle cx="27" cy="47" r="1"/%3E%3Ccircle cx="47" cy="47" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&apos;)] bg-repeat' />
       </div>
 
       {/* Decorative Elements */}
@@ -54,14 +61,15 @@ const HowItWorks = () => {
             How It <span className="text-brand-600">Works</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Instant Takeoffs in 4 easy steps. No guesswork. No delays. Just professional results when you need them.
+            Instant takeoffs in four easy steps. No guesswork. No delays. Just
+            professional results, right when you need them.
           </p>
         </div>
 
         {/* Steps Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => {
-            const IconComponent = step.icon
+            const IconComponent = step.icon;
             return (
               <div key={index} className="relative group">
                 {/* Connection Line */}
@@ -77,13 +85,19 @@ const HowItWorks = () => {
                   </div>
 
                   {/* Icon */}
-                  <div className={`w-12 h-12 ${step.color} rounded-xl flex items-center justify-center mx-auto mb-4`}>
+                  <div
+                    className={`w-12 h-12 ${step.color} rounded-xl flex items-center justify-center mx-auto mb-4`}
+                  >
                     <IconComponent className="h-6 w-6" />
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
+                    {step.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {step.description}
+                  </p>
 
                   {/* Arrow for mobile */}
                   {index < steps.length - 1 && (
@@ -93,25 +107,31 @@ const HowItWorks = () => {
                   )}
                 </div>
               </div>
-            )
+            );
           })}
         </div>
 
         {/* CTA Section */}
         <div className="text-center mt-16">
           <div className="bg-gradient-to-r from-brand-50 to-blue-50 rounded-2xl p-8 border border-gray-200">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Get Started?</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Ready to Get Started?
+            </h3>
             <p className="text-gray-600 mb-6">
-              Join hundreds of contractors who are already saving time and winning more bids.
+              Join hundreds of contractors who are already saving time and
+              winning more bids.
             </p>
-            <button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl" onClick={() => navigate('/find-takeoffs')}>
+            <button
+              className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              onClick={() => navigate("/find-takeoffs")}
+            >
               Find Your First Takeoff
             </button>
           </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default HowItWorks
+export default HowItWorks;

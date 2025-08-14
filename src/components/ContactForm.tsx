@@ -176,7 +176,7 @@ const ContactForm = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
+                {/* <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Phone className="h-6 w-6 text-brand-600" />
                   </div>
@@ -185,7 +185,7 @@ const ContactForm = () => {
                     <div className="text-gray-600">+1 (555) 123-4567</div>
                     <div className="text-sm text-gray-500">Mon-Fri, 9AM-6PM CST</div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
@@ -7,6 +7,11 @@ import { Check, Star, Zap, FileText, Clock, Shield, Award, ArrowRight, Sparkles 
 
 const Pricing = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const pricingTiers = [
     {
