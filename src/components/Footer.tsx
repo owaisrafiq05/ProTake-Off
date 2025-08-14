@@ -146,7 +146,7 @@ const Footer: React.FC = () => {
             <p className="text-gray-600 text-center md:text-left">
               © 2025 Protakeoffs.ai. All rights reserved. Built with ❤️ for contractors.
             </p>
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
+            <div className="flex flex-row space-x-6 sm:flex-row md:space-y-2 sm:space-x-6 text-sm">
               <Link 
                 to="/privacy-policy" 
                 className="text-gray-600 hover:text-brand-600 font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center sm:justify-start touch-manipulation relative z-10 footer-link"
