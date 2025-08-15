@@ -32,7 +32,10 @@ const Signup = () => {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<SignupFormData>()
+
+  const password = watch("password")
 
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true)
@@ -46,6 +49,34 @@ const Signup = () => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Password validation function
+  const validatePassword = (value: string) => {
+    if (!value) return "Password is required"
+    if (value.length < 8) return "Password must be at least 8 characters"
+    if (!/(?=.*[a-z])/.test(value)) return "Password must contain at least one lowercase letter"
+    if (!/(?=.*[A-Z])/.test(value)) return "Password must contain at least one uppercase letter"
+    if (!/(?=.*\d)/.test(value)) return "Password must contain at least one number"
+    if (!/(?=.*[@$!%*?&])/.test(value)) return "Password must contain at least one special character (@$!%*?&)"
+    return true
+  }
+
+  // Phone validation function
+  const validatePhone = (value: string) => {
+    if (!value) return "Phone number is required"
+    // Remove all non-digit characters
+    const cleanPhone = value.replace(/\D/g, '')
+    if (cleanPhone.length !== 10) return "Phone number must be exactly 10 digits"
+    if (!/^\d{10}$/.test(cleanPhone)) return "Phone number must contain only digits"
+    return true
+  }
+
+  // ZIP code validation function
+  const validateZipCode = (value: string) => {
+    if (!value) return "ZIP code is required"
+    if (!/^\d{5}(-\d{4})?$/.test(value)) return "ZIP code must be 5 digits or 5+4 format"
+    return true
   }
 
   return (
@@ -114,7 +145,17 @@ const Signup = () => {
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    {...register("firstName", { required: "First name is required" })}
+                    {...register("firstName", { 
+                      required: "First name is required",
+                      pattern: {
+                        value: /^[a-zA-Z\s'-]+$/,
+                        message: "First name can only contain letters, spaces, hyphens, and apostrophes"
+                      },
+                      minLength: {
+                        value: 2,
+                        message: "First name must be at least 2 characters"
+                      }
+                    })}
                     type="text"
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="John"
@@ -132,7 +173,17 @@ const Signup = () => {
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    {...register("lastName", { required: "Last name is required" })}
+                    {...register("lastName", { 
+                      required: "Last name is required",
+                      pattern: {
+                        value: /^[a-zA-Z\s'-]+$/,
+                        message: "Last name can only contain letters, spaces, hyphens, and apostrophes"
+                      },
+                      minLength: {
+                        value: 2,
+                        message: "Last name must be at least 2 characters"
+                      }
+                    })}
                     type="text"
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="Doe"
@@ -178,11 +229,7 @@ const Signup = () => {
                 </div>
                 <input
                   {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Password must be at least 8 characters",
-                    },
+                    validate: validatePassword
                   })}
                   type={showPassword ? "text" : "password"}
                   className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
@@ -201,6 +248,35 @@ const Signup = () => {
                 </button>
               </div>
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+              
+              {/* Password Requirements */}
+              {password && (
+                <div className="mt-2 text-xs text-gray-600">
+                  <p className="font-medium mb-1">Password must contain:</p>
+                  <ul className="space-y-1">
+                    <li className={`flex items-center ${password.length >= 8 ? 'text-green-600' : 'text-gray-400'}`}>
+                      <span className={`w-2 h-2 rounded-full mr-2 ${password.length >= 8 ? 'bg-green-600' : 'bg-gray-300'}`}></span>
+                      At least 8 characters
+                    </li>
+                    <li className={`flex items-center ${/(?=.*[a-z])/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                      <span className={`w-2 h-2 rounded-full mr-2 ${/(?=.*[a-z])/.test(password) ? 'bg-green-600' : 'bg-gray-300'}`}></span>
+                      One lowercase letter
+                    </li>
+                    <li className={`flex items-center ${/(?=.*[A-Z])/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                      <span className={`w-2 h-2 rounded-full mr-2 ${/(?=.*[A-Z])/.test(password) ? 'bg-green-600' : 'bg-gray-300'}`}></span>
+                      One uppercase letter
+                    </li>
+                    <li className={`flex items-center ${/(?=.*\d)/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                      <span className={`w-2 h-2 rounded-full mr-2 ${/(?=.*\d)/.test(password) ? 'bg-green-600' : 'bg-gray-300'}`}></span>
+                      One number
+                    </li>
+                    <li className={`flex items-center ${/(?=.*[@$!%*?&])/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                      <span className={`w-2 h-2 rounded-full mr-2 ${/(?=.*[@$!%*?&])/.test(password) ? 'bg-green-600' : 'bg-gray-300'}`}></span>
+                      One special character (@$!%*?&)
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Company & Phone */}
@@ -214,7 +290,13 @@ const Signup = () => {
                     <Building className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    {...register("company", { required: "Company name is required" })}
+                    {...register("company", { 
+                      required: "Company name is required",
+                      minLength: {
+                        value: 2,
+                        message: "Company name must be at least 2 characters"
+                      }
+                    })}
                     type="text"
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="ABC Landscaping"
@@ -225,20 +307,31 @@ const Signup = () => {
 
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone
+                  Phone Number
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Phone className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    {...register("phone", { required: "Phone number is required" })}
+                    {...register("phone", {
+                      validate: validatePhone,
+                      onChange: (e) => {
+                        // Remove all non-digit characters as user types
+                        const value = e.target.value.replace(/\D/g, '')
+                        if (value.length <= 10) {
+                          e.target.value = value
+                        }
+                      }
+                    })}
                     type="tel"
+                    maxLength={10}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-                    placeholder="555-123-4567"
+                    placeholder="5551234567"
                   />
                 </div>
                 {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
+                <p className="mt-1 text-xs text-gray-500">Enter 10-digit US phone number (digits only)</p>
               </div>
             </div>
 
@@ -254,7 +347,13 @@ const Signup = () => {
                   Street Address
                 </label>
                                   <input
-                    {...register("address.street", { required: "Street address is required" })}
+                    {...register("address.street", { 
+                      required: "Street address is required",
+                      minLength: {
+                        value: 5,
+                        message: "Street address must be at least 5 characters"
+                      }
+                    })}
                     type="text"
                     className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="123 Main St"
@@ -268,7 +367,17 @@ const Signup = () => {
                     City
                   </label>
                   <input
-                    {...register("address.city", { required: "City is required" })}
+                    {...register("address.city", { 
+                      required: "City is required",
+                      pattern: {
+                        value: /^[a-zA-Z\s'-]+$/,
+                        message: "City can only contain letters, spaces, hyphens, and apostrophes"
+                      },
+                      minLength: {
+                        value: 2,
+                        message: "City must be at least 2 characters"
+                      }
+                    })}
                     type="text"
                     className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="Austin"
@@ -281,10 +390,20 @@ const Signup = () => {
                     State
                   </label>
                   <input
-                    {...register("address.state", { required: "State is required" })}
+                    {...register("address.state", { 
+                      required: "State is required",
+                      pattern: {
+                        value: /^[a-zA-Z]{2}$/,
+                        message: "State must be exactly 2 letters"
+                      }
+                    })}
                     type="text"
-                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                    maxLength={2}
+                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors uppercase"
                     placeholder="TX"
+                    onChange={(e) => {
+                      e.target.value = e.target.value.toUpperCase()
+                    }}
                   />
                   {errors.address?.state && <p className="mt-1 text-sm text-red-600">{errors.address.state.message}</p>}
                 </div>
@@ -294,7 +413,9 @@ const Signup = () => {
                     ZIP Code
                   </label>
                   <input
-                    {...register("address.zipCode", { required: "ZIP code is required" })}
+                    {...register("address.zipCode", {
+                      validate: validateZipCode
+                    })}
                     type="text"
                     className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     placeholder="78701"

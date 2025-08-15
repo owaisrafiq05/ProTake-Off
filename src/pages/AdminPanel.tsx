@@ -203,8 +203,98 @@ const AdminPanel = () => {
     }
   }
 
+  // Promo code validation functions
+  const validatePromoCode = (value: string) => {
+    if (!value.trim()) return "Promo code is required"
+    if (value.length < 3) return "Promo code must be at least 3 characters"
+    if (value.length > 20) return "Promo code must be less than 20 characters"
+    if (!/^[A-Z0-9_-]+$/i.test(value)) return "Promo code can only contain letters, numbers, hyphens, and underscores"
+    return ""
+  }
+
+  const validatePromoDescription = (value: string) => {
+    if (!value.trim()) return "Description is required"
+    if (value.length < 5) return "Description must be at least 5 characters"
+    if (value.length > 200) return "Description must be less than 200 characters"
+    return ""
+  }
+
+  const validatePromoDiscountValue = (value: number) => {
+    if (value <= 0) return "Discount value must be greater than 0"
+    if (promoCodeForm.discountType === 'percentage' && value > 100) return "Percentage discount cannot exceed 100%"
+    if (promoCodeForm.discountType === 'fixed' && value > 1000) return "Fixed discount cannot exceed $1,000"
+    return ""
+  }
+
+  const validatePromoMaxDiscount = (value: number | null) => {
+    if (value !== null && value <= 0) return "Max discount must be greater than 0"
+    if (value !== null && promoCodeForm.discountType === 'percentage' && value > 1000) return "Max discount amount cannot exceed $1,000"
+    return ""
+  }
+
+  const validatePromoMinOrderAmount = (value: number) => {
+    if (value < 0) return "Minimum order amount cannot be negative"
+    if (value > 10000) return "Minimum order amount cannot exceed $10,000"
+    return ""
+  }
+
+  const validatePromoMaxUsage = (value: number | null) => {
+    if (value !== null && value <= 0) return "Max usage must be greater than 0"
+    if (value !== null && value > 10000) return "Max usage cannot exceed 10,000"
+    return ""
+  }
+
+  const validatePromoDates = () => {
+    const validFrom = new Date(promoCodeForm.validFrom)
+    const validUntil = new Date(promoCodeForm.validUntil)
+    const today = new Date()
+    
+    if (validFrom < today) return "Valid from date cannot be in the past"
+    if (validUntil <= validFrom) return "Valid until date must be after valid from date"
+    if (validUntil < today) return "Valid until date cannot be in the past"
+    
+    return ""
+  }
+
+  const validatePromoCodeForm = () => {
+    const errors: string[] = []
+
+    const codeError = validatePromoCode(promoCodeForm.code)
+    if (codeError) errors.push(codeError)
+
+    const descriptionError = validatePromoDescription(promoCodeForm.description)
+    if (descriptionError) errors.push(descriptionError)
+
+    const discountValueError = validatePromoDiscountValue(promoCodeForm.discountValue)
+    if (discountValueError) errors.push(discountValueError)
+
+    const maxDiscountError = validatePromoMaxDiscount(promoCodeForm.maxDiscount)
+    if (maxDiscountError) errors.push(maxDiscountError)
+
+    const minOrderError = validatePromoMinOrderAmount(promoCodeForm.minimumOrderAmount)
+    if (minOrderError) errors.push(minOrderError)
+
+    const maxUsageError = validatePromoMaxUsage(promoCodeForm.maxUsage)
+    if (maxUsageError) errors.push(maxUsageError)
+
+    const datesError = validatePromoDates()
+    if (datesError) errors.push(datesError)
+
+    if (errors.length > 0) {
+      errors.forEach(error => toast.error(error))
+      return false
+    }
+
+    return true
+  }
+
   const handlePromoCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validatePromoCodeForm()) {
+      return
+    }
+
     try {
       if (editingPromoCode) {
         await updatePromoCode(editingPromoCode._id, promoCodeForm)
@@ -581,13 +671,28 @@ const AdminPanel = () => {
       }))
     } else if (name.startsWith("generalContractor.")) {
       const field = name.split(".")[1]
-      setFormData((prev) => ({
-        ...prev,
-        generalContractor: {
-          ...prev.generalContractor,
-          [field]: value,
-        },
-      }))
+      
+      // Special handling for phone field - remove non-digits
+      if (field === 'phone') {
+        const cleanValue = value.replace(/\D/g, '')
+        if (cleanValue.length <= 10) {
+          setFormData((prev) => ({
+            ...prev,
+            generalContractor: {
+              ...prev.generalContractor,
+              [field]: cleanValue,
+            },
+          }))
+        }
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          generalContractor: {
+            ...prev.generalContractor,
+            [field]: value,
+          },
+        }))
+      }
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -614,34 +719,134 @@ const AdminPanel = () => {
     }))
   }
 
+  // Validation functions
+  const validateTakeoffName = (value: string) => {
+    if (!value.trim()) return "Takeoff name is required"
+    if (value.length < 3) return "Takeoff name must be at least 3 characters"
+    if (value.length > 100) return "Takeoff name must be less than 100 characters"
+    return ""
+  }
+
+  const validateAddress = (value: string) => {
+    if (!value.trim()) return "Address is required"
+    if (value.length < 5) return "Address must be at least 5 characters"
+    if (value.length > 200) return "Address must be less than 200 characters"
+    return ""
+  }
+
+  const validateZipCode = (value: string) => {
+    if (!value.trim()) return "ZIP code is required"
+    if (!/^\d{5}(-\d{4})?$/.test(value)) return "ZIP code must be 5 digits or 5+4 format"
+    return ""
+  }
+
+  const validatePrice = (value: string) => {
+    if (!value.trim()) return "Price is required"
+    const numValue = Number(value)
+    if (isNaN(numValue) || numValue <= 0) return "Price must be a positive number"
+    if (numValue > 10000) return "Price must be less than $10,000"
+    return ""
+  }
+
+  const validateArea = (value: string) => {
+    if (!value.trim()) return "Area is required"
+    const numValue = Number(value)
+    if (isNaN(numValue) || numValue <= 0) return "Area must be a positive number"
+    if (numValue > 1000000) return "Area must be less than 1,000,000 sq ft"
+    return ""
+  }
+
+  const validateFeatures = (value: string) => {
+    if (!value.trim()) return "Features are required"
+    if (value.length < 5) return "Features must be at least 5 characters"
+    if (value.length > 500) return "Features must be less than 500 characters"
+    return ""
+  }
+
+  const validateTags = (value: string) => {
+    if (!value.trim()) return "Tags are required"
+    if (value.length < 3) return "Tags must be at least 3 characters"
+    if (value.length > 200) return "Tags must be less than 200 characters"
+    return ""
+  }
+
+  const validateContractorEmail = (value: string) => {
+    if (value.trim() && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+      return "Please enter a valid email address"
+    }
+    return ""
+  }
+
+  const validateContractorPhone = (value: string) => {
+    if (value.trim()) {
+      const cleanPhone = value.replace(/\D/g, '')
+      if (cleanPhone.length !== 0 && cleanPhone.length !== 10) {
+        return "Phone number must be exactly 10 digits"
+      }
+      if (cleanPhone.length === 10 && !/^\d{10}$/.test(cleanPhone)) {
+        return "Phone number must contain only digits"
+      }
+    }
+    return ""
+  }
+
   const validateForm = () => {
-    const requiredFields = [
-      "takeoffName", "address", "zipCode", "expirationDate", "price", "features", "area", "complexity", "tags"
-    ];
-    for (const field of requiredFields) {
-      if (!formData[field] || (typeof formData[field] === "string" && formData[field].trim() === "")) {
-        toast.error(`Please fill the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
-        return false;
-      }
-    }
-    const hasCategory = Object.values(formData.categories).some(Boolean);
+    const errors: Record<string, string> = {}
+
+    // Validate required fields
+    const takeoffNameError = validateTakeoffName(formData.takeoffName)
+    if (takeoffNameError) errors.takeoffName = takeoffNameError
+
+    const addressError = validateAddress(formData.address)
+    if (addressError) errors.address = addressError
+
+    const zipCodeError = validateZipCode(formData.zipCode)
+    if (zipCodeError) errors.zipCode = zipCodeError
+
+    const priceError = validatePrice(formData.price)
+    if (priceError) errors.price = priceError
+
+    const areaError = validateArea(formData.area)
+    if (areaError) errors.area = areaError
+
+    const featuresError = validateFeatures(formData.features)
+    if (featuresError) errors.features = featuresError
+
+    const tagsError = validateTags(formData.tags)
+    if (tagsError) errors.tags = tagsError
+
+    // Validate contractor contact info
+    const contractorEmailError = validateContractorEmail(formData.generalContractor.email)
+    if (contractorEmailError) errors.contractorEmail = contractorEmailError
+
+    const contractorPhoneError = validateContractorPhone(formData.generalContractor.phone)
+    if (contractorPhoneError) errors.contractorPhone = contractorPhoneError
+
+    // Validate categories and sizes
+    const hasCategory = Object.values(formData.categories).some(Boolean)
     if (!hasCategory) {
-      toast.error("Please select at least one category.");
-      return false;
+      errors.categories = "Please select at least one category"
     }
-    const hasSize = Object.values(formData.sizes).some(Boolean);
+
+    const hasSize = Object.values(formData.sizes).some(Boolean)
     if (!hasSize) {
-      toast.error("Please select at least one project size.");
-      return false;
+      errors.sizes = "Please select at least one project size"
     }
-    // Only require files on create, images are optional
-    if (!isEditing) {
-      if (formData.files.length === 0) {
-        toast.error("Please upload at least one file.");
-        return false;
-      }
+
+    // Validate files (only on create)
+    if (!isEditing && formData.files.length === 0) {
+      errors.files = "Please upload at least one file"
     }
-    return true;
+
+    // Display errors
+    if (Object.keys(errors).length > 0) {
+      Object.values(errors).forEach(error => {
+        toast.error(error)
+      })
+      return false
+    }
+
+    return true
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1090,9 +1295,11 @@ const AdminPanel = () => {
                 name="generalContractor.phone"
                 value={formData.generalContractor.phone}
                 onChange={handleInputChange}
-                placeholder="Enter contractor phone"
+                placeholder="5551234567"
+                maxLength={10}
                 className="w-full py-3 rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500"
               />
+              <p className="mt-1 text-xs text-gray-500">Enter 10-digit US phone number (digits only)</p>
             </div>
           </div>
         </div>
@@ -1670,6 +1877,9 @@ const AdminPanel = () => {
                     value={promoCodeForm.code}
                     onChange={handlePromoCodeInputChange}
                     placeholder="SAVE20"
+                    maxLength={20}
+                    pattern="[A-Za-z0-9_-]+"
+                    title="Only letters, numbers, hyphens, and underscores allowed"
                     required
                     className="w-full"
                   />
@@ -1714,6 +1924,9 @@ const AdminPanel = () => {
                     value={promoCodeForm.discountValue}
                     onChange={handlePromoCodeInputChange}
                     placeholder={promoCodeForm.discountType === 'percentage' ? '20' : '50'}
+                    min={promoCodeForm.discountType === 'percentage' ? '1' : '0.01'}
+                    max={promoCodeForm.discountType === 'percentage' ? '100' : '1000'}
+                    step={promoCodeForm.discountType === 'percentage' ? '1' : '0.01'}
                     required
                     className="w-full"
                   />
@@ -1730,6 +1943,9 @@ const AdminPanel = () => {
                       value={promoCodeForm.maxDiscount === null ? '' : promoCodeForm.maxDiscount}
                       onChange={handlePromoCodeInputChange}
                       placeholder="100"
+                      min="0.01"
+                      max="1000"
+                      step="0.01"
                       className="w-full"
                     />
                   </div>
@@ -1739,28 +1955,34 @@ const AdminPanel = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Minimum Order Amount
                   </label>
-                  <Input
-                    name="minimumOrderAmount"
-                    type="number"
-                    value={promoCodeForm.minimumOrderAmount}
-                    onChange={handlePromoCodeInputChange}
-                    placeholder="0"
-                    className="w-full"
-                  />
+                                      <Input
+                      name="minimumOrderAmount"
+                      type="number"
+                      value={promoCodeForm.minimumOrderAmount}
+                      onChange={handlePromoCodeInputChange}
+                      placeholder="0"
+                      min="0"
+                      max="10000"
+                      step="0.01"
+                      className="w-full"
+                    />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Max Usage (leave empty for unlimited)
                   </label>
-                  <Input
-                    name="maxUsage"
-                    type="number"
-                    value={promoCodeForm.maxUsage === null ? '' : promoCodeForm.maxUsage}
-                    onChange={handlePromoCodeInputChange}
-                    placeholder="100"
-                    className="w-full"
-                  />
+                                      <Input
+                      name="maxUsage"
+                      type="number"
+                      value={promoCodeForm.maxUsage === null ? '' : promoCodeForm.maxUsage}
+                      onChange={handlePromoCodeInputChange}
+                      placeholder="100"
+                      min="1"
+                      max="10000"
+                      step="1"
+                      className="w-full"
+                    />
                 </div>
 
                 <div>
@@ -1772,6 +1994,7 @@ const AdminPanel = () => {
                     type="date"
                     value={promoCodeForm.validFrom}
                     onChange={handlePromoCodeInputChange}
+                    min={new Date().toISOString().split('T')[0]}
                     required
                     className="w-full"
                   />
@@ -1786,6 +2009,7 @@ const AdminPanel = () => {
                     type="date"
                     value={promoCodeForm.validUntil}
                     onChange={handlePromoCodeInputChange}
+                    min={promoCodeForm.validFrom}
                     required
                     className="w-full"
                   />

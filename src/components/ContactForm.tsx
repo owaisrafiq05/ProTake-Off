@@ -22,32 +22,50 @@ const ContactForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  // Validation functions
+  const validateName = (value: string) => {
+    if (!value.trim()) return "Name is required"
+    if (value.length < 2) return "Name must be at least 2 characters"
+    if (!/^[a-zA-Z\s'-]+$/.test(value)) return "Name can only contain letters, spaces, hyphens, and apostrophes"
+    return ""
+  }
+
+  const validateEmail = (value: string) => {
+    if (!value.trim()) return "Email is required"
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) return "Please enter a valid email address"
+    return ""
+  }
+
+  const validatePhone = (value: string) => {
+    if (!value.trim()) return "Phone number is required"
+    const cleanPhone = value.replace(/\D/g, '')
+    if (cleanPhone.length !== 10) return "Phone number must be exactly 10 digits"
+    if (!/^\d{10}$/.test(cleanPhone)) return "Phone number must contain only digits"
+    return ""
+  }
+
+  const validateMessage = (value: string) => {
+    if (!value.trim()) return "Message is required"
+    if (value.length < 10) return "Message must be at least 10 characters"
+    if (value.length > 1000) return "Message must be less than 1000 characters"
+    return ""
+  }
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required"
-    } else if (formData.name.length < 2) {
-      newErrors.name = "Name must be at least 2 characters"
-    }
+    // Validate each field
+    const nameError = validateName(formData.name)
+    if (nameError) newErrors.name = nameError
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address"
-    }
+    const emailError = validateEmail(formData.email)
+    if (emailError) newErrors.email = emailError
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required"
-    } else if (formData.phone.length < 10) {
-      newErrors.phone = "Phone number must be at least 10 characters"
-    }
+    const phoneError = validatePhone(formData.phone)
+    if (phoneError) newErrors.phone = phoneError
 
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required"
-    } else if (formData.message.length < 10) {
-      newErrors.message = "Message must be at least 10 characters"
-    }
+    const messageError = validateMessage(formData.message)
+    if (messageError) newErrors.message = messageError
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -119,10 +137,22 @@ const ContactForm = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
+    
+    // Special handling for phone field - remove non-digits
+    if (name === 'phone') {
+      const cleanValue = value.replace(/\D/g, '')
+      if (cleanValue.length <= 10) {
+        setFormData({
+          ...formData,
+          [name]: cleanValue,
+        })
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      })
+    }
     
     // Clear error when user starts typing
     if (errors[name]) {
@@ -284,7 +314,8 @@ const ContactForm = () => {
                       required
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="Your phone number"
+                      placeholder="5551234567"
+                      maxLength={10}
                       className={`border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 rounded-xl ${
                         errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
@@ -292,6 +323,7 @@ const ContactForm = () => {
                     {errors.phone && (
                       <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
                     )}
+                    <p className="mt-1 text-xs text-gray-500">Enter 10-digit US phone number (digits only)</p>
                   </div>
                 </div>
 
@@ -306,6 +338,7 @@ const ContactForm = () => {
                     onChange={handleChange}
                     placeholder="Tell us about your project or ask any questions..."
                     rows={6}
+                    maxLength={1000}
                     className={`border-gray-300 focus:border-brand-500 focus:ring-brand-500 resize-none rounded-xl ${
                       errors.message ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                     }`}
@@ -314,6 +347,9 @@ const ContactForm = () => {
                   {errors.message && (
                     <p className="text-red-500 text-sm mt-1">{errors.message}</p>
                   )}
+                  <div className="mt-1 text-xs text-gray-500 text-right">
+                    {formData.message.length}/1000 characters
+                  </div>
                 </div>
 
                 {/* Submit Button */}
