@@ -30,6 +30,8 @@ import {
   CheckCircle,
   AlertCircle,
   MessageCircle,
+  Mail,
+  Phone,
 } from "lucide-react"
 import { createTakeoff, getAllTakeoffs, getAllTakeoffsAdmin, updateTakeoff, deleteTakeoff as apiDeleteTakeoff, getAllUsers, getAllUserTransactions, getAllContacts, updateContactStatus, deleteContact, getContactStats, resendOrderEmail, getAllPromoCodes, createPromoCode, updatePromoCode, deletePromoCode } from "../lib/api"
 import { Toaster, toast } from "../components/ui/sonner"
@@ -306,6 +308,10 @@ const AdminPanel = () => {
     complexity: "",
     tags: "",
     isActive: true,
+    generalContractor: {
+      email: "",
+      phone: ""
+    }
   })
 
   // Fetch takeoffs from API
@@ -573,6 +579,15 @@ const AdminPanel = () => {
           [subcategory]: checkbox.checked,
         },
       }))
+    } else if (name.startsWith("generalContractor.")) {
+      const field = name.split(".")[1]
+      setFormData((prev) => ({
+        ...prev,
+        generalContractor: {
+          ...prev.generalContractor,
+          [field]: value,
+        },
+      }))
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -658,6 +673,7 @@ const AdminPanel = () => {
         isActive: formData.isActive,
         files: formData.files,
         pdfPreview: formData.pdfPreview,
+        generalContractor: formData.generalContractor,
       }
       let result
       if (isEditing && editingId) {
@@ -683,6 +699,10 @@ const AdminPanel = () => {
         complexity: "",
         tags: "",
         isActive: true,
+        generalContractor: {
+          email: "",
+          phone: ""
+        }
       })
       setIsEditing(false)
       setEditingId(null)
@@ -719,6 +739,10 @@ const AdminPanel = () => {
       complexity: takeoff.specifications?.complexity ?? "",
       tags: takeoff.tags ? takeoff.tags.join(", ") : "",
       isActive: takeoff.isActive ?? true,
+      generalContractor: {
+        email: takeoff.generalContractor?.email || "",
+        phone: takeoff.generalContractor?.phone || ""
+      }
     })
     setIsEditing(true)
     setEditingId(takeoff._id || takeoff.id)
@@ -774,11 +798,16 @@ const AdminPanel = () => {
   const isActive = (takeoff: any) => takeoff.isActive && !isExpired(takeoff);
 
   const filteredTakeoffs = takeoffs.filter((takeoff) => {
-    const name = takeoff.title ?? takeoff.takeoffName ?? "";
-    const address = takeoff.zipCode ?? takeoff.address ?? "";
-    const matchesSearch =
-      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      address.toLowerCase().includes(searchTerm.toLowerCase());
+             const name = takeoff.title ?? takeoff.takeoffName ?? "";
+         const address = takeoff.zipCode ?? takeoff.address ?? "";
+         const contractorEmail = takeoff.generalContractor?.email ?? "";
+         const contractorPhone = takeoff.generalContractor?.phone ?? "";
+         
+         const matchesSearch =
+           name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           contractorEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           contractorPhone.toLowerCase().includes(searchTerm.toLowerCase());
 
     let matchesFilter = true;
     if (activeTab === "active-log") {
@@ -814,6 +843,10 @@ const AdminPanel = () => {
                 complexity: "",
                 tags: "",
                 isActive: true,
+                generalContractor: {
+                  email: "",
+                  phone: ""
+                }
               })
             }}
             variant="outline"
@@ -1035,6 +1068,34 @@ const AdminPanel = () => {
             </div>
           </div>
         </div>
+        
+        {/* General Contractor Contact Information Section */}
+        <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">General Contractor Contact Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Contractor Email</label>
+              <Input
+                name="generalContractor.email"
+                type="email"
+                value={formData.generalContractor.email}
+                onChange={handleInputChange}
+                placeholder="Enter contractor email"
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Contractor Phone</label>
+              <Input
+                name="generalContractor.phone"
+                value={formData.generalContractor.phone}
+                onChange={handleInputChange}
+                placeholder="Enter contractor phone"
+                className="w-full py-3 rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500"
+              />
+            </div>
+          </div>
+        </div>
         {/* Tags Section */}
         <div className=" rounded-xl p-4 sm:p-6 border border-gray-200 mb-6">
           <h3 className="text-base sm:text-lg font-semibold mb-4 text-brand-700">Tags</h3>
@@ -1159,10 +1220,20 @@ const AdminPanel = () => {
         <div className="pt-4 sm:pt-6">
           <Button
             type="submit"
-            className={`w-full ${isEditing ? 'bg-brand-600 hover:bg-brand-700' : 'bg-brand-600 hover:bg-brand-700'} text-white font-semibold py-3 sm:py-4 text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl`}
+            disabled={loading}
+            className={`w-full ${isEditing ? 'bg-brand-600 hover:bg-brand-700' : 'bg-brand-600 hover:bg-brand-700'} text-white font-semibold py-3 sm:py-4 text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-lg`}
           >
-            <Save className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            {isEditing ? "Update Listing" : "Create Listing"}
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
+                {isEditing ? "Updating..." : "Creating..."}
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                {isEditing ? "Update Listing" : "Create Listing"}
+              </>
+            )}
           </Button>
         </div>
       </form>
@@ -1178,7 +1249,7 @@ const AdminPanel = () => {
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
-              placeholder="Search takeoffs..."
+              placeholder="Search takeoffs, addresses, or contractor contact info..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full sm:w-64"
@@ -1252,6 +1323,27 @@ const AdminPanel = () => {
                 <span>${takeoff.price}</span>
               </div>
             </div>
+
+                         {/* General Contractor Information */}
+             {takeoff.generalContractor && (takeoff.generalContractor.email || takeoff.generalContractor.phone) && (
+               <div className="mb-3 sm:mb-4 p-3 bg-gray-50 rounded-lg">
+                 <h4 className="text-xs font-medium text-gray-700 mb-2">General Contractor</h4>
+                 <div className="space-y-1">
+                   {takeoff.generalContractor.email && (
+                     <div className="flex items-center text-xs text-gray-600">
+                       <Mail className="h-3 w-3 mr-1.5 flex-shrink-0" />
+                       <span className="truncate">{takeoff.generalContractor.email}</span>
+                     </div>
+                   )}
+                   {takeoff.generalContractor.phone && (
+                     <div className="flex items-center text-xs text-gray-600">
+                       <Phone className="h-3 w-3 mr-1.5 flex-shrink-0" />
+                       <span className="truncate">{takeoff.generalContractor.phone}</span>
+                     </div>
+                   )}
+                 </div>
+               </div>
+             )}
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4 mb-4 p-3  rounded-lg">
